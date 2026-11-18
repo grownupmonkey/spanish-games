@@ -23,6 +23,7 @@ page = f"""<!DOCTYPE html>
 <script>
 (() => {{
 'use strict';
+{(B/'ninots.js').read_text()}
 {(B/'scene.js').read_text()}
 }})();
 </script>

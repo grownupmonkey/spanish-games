@@ -115,59 +115,9 @@ const flagMat = c => M(c, { side: THREE.DoubleSide });
   const f = mesh(new THREE.PlaneGeometry(2.6, 1.6), flagMat(c), x + 1.3, 34.6, 9, town); f.userData.flag = true;
 });
 
-/* ---------- the falla monument (procedural caricature) ---------- */
-const falla = new THREE.Group(); scene.add(falla);
-const gloss = (c) => M(c, { roughness: .35 });
-const SKIN = 0xF2C6A0, PINKS = [0xFF7AA8, 0xFFB347, 0x6FD3FF, 0xB98CFF, 0x7CE0A3, 0xFF6B5B];
-// pedestal: two tiers painted with stripes
-const plinthTex = canvasTex(512, 64, (g, w, h) => {
-  for (let x = 0; x < w; x += 32) { g.fillStyle = (x / 32) % 2 ? '#2A6FDB' : '#FFD25A'; g.fillRect(x, 0, 32, h); }
-  g.fillStyle = '#FF5A7A'; g.fillRect(0, 0, w, 10); g.fillRect(0, h - 10, w, 10);
-});
-plinthTex.wrapS = THREE.RepeatWrapping; plinthTex.repeat.set(2, 1);
-mesh(new THREE.CylinderGeometry(9, 10, 3, 24), [gloss(0xffffff)].map(m => (m.map = plinthTex, m))[0], 0, 1.5, 0, falla);
-mesh(new THREE.CylinderGeometry(6.5, 7.5, 3, 24), gloss(0x7A4FD6), 0, 4.5, 0, falla);
-// giant ninot: a cheerful chef juggling oranges (Valencia!) on top
-const giant = new THREE.Group(); giant.position.y = 6; falla.add(giant);
-mesh(new THREE.CylinderGeometry(3.4, 4.6, 8, 20), gloss(0xFFFFFF), 0, 4, 0, giant);           // white coat
-mesh(new THREE.CylinderGeometry(4.65, 4.65, 1, 20), gloss(0xD8323C), 0, .8, 0, giant);          // red hem
-mesh(new THREE.CylinderGeometry(3.55, 4.5, 6.2, 20, 1, true, -0.9, 1.8), gloss(0x2A6FDB, { side: THREE.DoubleSide }), 0, 3.6, .15, giant); // apron
-mesh(new THREE.TorusGeometry(3.1, .55, 10, 24), gloss(0xD8323C), 0, 8.1, 0, giant).rotation.x = Math.PI / 2; // neckerchief
-const head = mesh(new THREE.SphereGeometry(4.2, 28, 20), gloss(SKIN), 0, 11.6, 0, giant);
-head.scale.set(1, 1.08, .95);
-mesh(new THREE.SphereGeometry(1.25, 16, 12), gloss(0xF59C83), 0, 11.2, 3.9, giant);            // nose
-[-1.6, 1.6].forEach(x => {
-  mesh(new THREE.SphereGeometry(.95, 16, 12), gloss(0xffffff), x, 12.9, 3.2, giant);
-  mesh(new THREE.SphereGeometry(.45, 12, 10), gloss(0x2A2140), x, 12.9, 4.05, giant);
-  const brow = mesh(new THREE.BoxGeometry(1.6, .35, .4), gloss(0x3B2A20), x, 14.2, 3.5, giant); brow.rotation.z = x > 0 ? -.25 : .25;
-});
-const moustache = mesh(new THREE.TorusGeometry(1.5, .38, 8, 20, Math.PI), gloss(0x3B2A20), 0, 10.1, 3.7, giant);
-moustache.rotation.z = Math.PI;
-const smile = mesh(new THREE.TorusGeometry(1.1, .18, 8, 16, Math.PI), gloss(0x8B2E3B), 0, 9.3, 3.75, giant); smile.rotation.z = Math.PI;
-mesh(new THREE.CylinderGeometry(3.1, 2.8, 4.5, 20), gloss(0xffffff), 0, 17.4, 0, giant);        // chef hat
-mesh(new THREE.CylinderGeometry(3.15, 3.15, .9, 20), gloss(0xFFC27A), 0, 15.6, 0, giant);        // hat band
-mesh(new THREE.SphereGeometry(3.6, 20, 14), gloss(0xffffff), 0, 20.2, 0, giant).scale.set(1, .7, 1);
-// arms up, juggling
-[-1, 1].forEach(s => {
-  const arm = mesh(new THREE.CylinderGeometry(.9, 1.1, 6.5, 12), gloss(0xffffff), s * 4.4, 8.4, .5, giant);
-  arm.rotation.z = s * -0.75;
-  mesh(new THREE.SphereGeometry(1.1, 14, 10), gloss(SKIN), s * 6.6, 10.8, .8, giant);
-});
-const oranges = [];
-for (let i = 0; i < 5; i++) { const o = mesh(new THREE.SphereGeometry(1, 16, 12), gloss(0xFF8A1E), 0, 0, 0, giant); oranges.push(o); }
-// ring of small ninots around the base, each a little scene
-const SMALL = [];
-for (let i = 0; i < 7; i++) {
-  const a = i / 7 * Math.PI * 2 + .2, g = new THREE.Group();
-  g.position.set(Math.cos(a) * 7.8, 3, Math.sin(a) * 7.8); g.rotation.y = -a + Math.PI / 2; falla.add(g);
-  const col = PINKS[i % PINKS.length];
-  mesh(new THREE.CylinderGeometry(.7, 1, 2.4, 12), gloss(col), 0, 1.2, 0, g);
-  mesh(new THREE.SphereGeometry(1.15, 16, 12), gloss(SKIN), 0, 3.2, 0, g);
-  mesh(new THREE.SphereGeometry(.32, 10, 8), gloss(0xF59C83), 0, 3.1, 1.1, g);
-  mesh(new THREE.ConeGeometry(.9, 1.4, 12), gloss(PINKS[(i + 2) % PINKS.length]), 0, 4.5, 0, g);
-  if (i % 2) mesh(new THREE.BoxGeometry(1.4, 1, .2), gloss(0x2E2A45), .9, 1.8, .6, g); // holding a phone / sign
-  SMALL.push(g);
-}
+/* ---------- the falla monument (see ninots.js) ---------- */
+const FALLA = buildFalla(scene);
+const rim = new THREE.DirectionalLight(0xC9DAFF, .45); rim.position.set(40, 30, -40); scene.add(rim);
 
 /* ---------- barriers, the rope of firecrackers, and the crowd ---------- */
 const metal = M(0xB8BEC8, { metalness: .6, roughness: .35 });
@@ -217,10 +167,10 @@ scene.add(bodies, heads);
 const falleras = [];
 for (let i = 0; i < 9; i++) {
   const g = new THREE.Group(); g.position.set(-12 + i * 3, 0, -40 + Math.random()); scene.add(g);
-  mesh(skirtGeo, gloss(pick([0xF6D9A8, 0xBFD8F2, 0xF2C1D1, 0xE9E1F7])), 0, .75, 0, g);
-  mesh(new THREE.CylinderGeometry(.3, .4, .9, 8), gloss(0xFFF4E2), 0, 1.9, 0, g);
-  mesh(new THREE.SphereGeometry(.3, 10, 8), gloss(pick(SKINS)), 0, 2.6, 0, g);
-  [-1, 1].forEach(s => mesh(new THREE.SphereGeometry(.2, 8, 6), gloss(0x3B2A20), s * .32, 2.65, -.05, g)); // side buns
+  mesh(skirtGeo, lacq(pick([0xF6D9A8, 0xBFD8F2, 0xF2C1D1, 0xE9E1F7])), 0, .75, 0, g);
+  mesh(new THREE.CylinderGeometry(.3, .4, .9, 8), lacq(0xFFF4E2), 0, 1.9, 0, g);
+  mesh(new THREE.SphereGeometry(.3, 10, 8), lacq(pick(SKINS)), 0, 2.6, 0, g);
+  [-1, 1].forEach(s => mesh(new THREE.SphereGeometry(.2, 8, 6), lacq(0x3B2A20), s * .32, 2.65, -.05, g)); // side buns
   mesh(new THREE.ConeGeometry(.12, .35, 6), M(0xF1BF00, { metalness: .7, roughness: .3 }), 0, 3, -.15, g); // peineta
   falleras.push(g);
 }
@@ -324,11 +274,11 @@ const sparkTex = canvasTex(128, 128, (g) => {
 const GEMS = [
   { id: 'mascleta', pos: [0, 12.5, -47.5], es: 'Del 1 al 19 de marzo, a las dos de la tarde, hay una mascletà en esta plaza. Desde el balcón, la fallera mayor dice: «Senyor pirotècnic, pot començar la mascletà!».',
     en: 'Every day from 1 to 19 March at 2 p.m. there is a mascletà here: a daytime show judged by rhythm and noise, not by light. The fallera mayor starts it from the town-hall balcony, in valenciano.' },
-  { id: 'ninots', pos: [0, 30, 4], es: 'Los ninots son las figuras de la falla. Son de cartón, madera y corcho. Muchos son caricaturas de políticos y famosos.',
+  { id: 'ninots', pos: FALLA.spots.giantFace.toArray(), es: 'Los ninots son las figuras de la falla. Son de cartón, madera y corcho. Muchos son caricaturas de políticos y famosos.',
     en: 'Ninots are the figures that make up a falla. Many are satirical caricatures. Artists work on them for most of the year.' },
-  { id: 'indultat', pos: [7.8, 8.2, 2.2], es: 'Cada año, la gente vota para salvar un ninot del fuego. Es el ninot indultat, y va al Museo Fallero.',
+  { id: 'indultat', pos: FALLA.spots.indultat.toArray(), es: 'Cada año, la gente vota para salvar un ninot del fuego. Es el ninot indultat, y va al Museo Fallero.',
     en: 'Each year the public votes to save one ninot from the fire: the ninot indultat ("pardoned ninot"). It goes to the Fallas Museum.' },
-  { id: 'cremà', pos: [-8, 6.5, 2], es: 'La noche del 19 de marzo es la cremà: queman casi todas las fallas de la ciudad. ¡Todo el trabajo del año termina en el fuego!',
+  { id: 'cremà', pos: FALLA.spots.plinth.toArray(), es: 'La noche del 19 de marzo es la cremà: queman casi todas las fallas de la ciudad. ¡Todo el trabajo del año termina en el fuego!',
     en: 'On the night of 19 March, the cremà, almost every falla in the city is burned. The town-square falla burns last.' },
   { id: 'valenciano', pos: [-31.5, 6, 30.5], es: 'En Valencia se hablan dos idiomas: castellano y valenciano. «Plaça de l\'Ajuntament» significa «Plaza del Ayuntamiento».',
     en: 'Valencia has two official languages, Spanish and Valencian. Street signs are often in valenciano.' },
@@ -374,18 +324,18 @@ $('#slow').onclick = () => speak(lastLine, true);
 $('#showText').onchange = e => document.body.classList.toggle('show-text', e.target.checked);
 
 /* ---------- camera: drag to orbit, wheel to zoom, gentle idle drift ---------- */
-const orbit = { th: .35, ph: 1.08, r: 78, tTh: .35, tPh: 1.08, tR: 78, target: new THREE.Vector3(0, 8, -6) };
+const orbit = { th: .35, ph: 1.12, r: 92, tTh: .35, tPh: 1.12, tR: 92, target: new THREE.Vector3(0, 17, -2) };
 let drag = null, moved = 0, shake = 0;
 renderer.domElement.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; moved = 0; renderer.domElement.setPointerCapture(e.pointerId); });
 renderer.domElement.addEventListener('pointermove', e => {
   if (drag) {
     const dx = e.clientX - drag.x, dy = e.clientY - drag.y; moved += Math.abs(dx) + Math.abs(dy);
-    orbit.tTh -= dx * .005; orbit.tPh = Math.min(1.38, Math.max(.55, orbit.tPh - dy * .004));
+    orbit.tTh -= dx * .005; orbit.tPh = Math.min(1.5, Math.max(.55, orbit.tPh - dy * .004));
     drag = { x: e.clientX, y: e.clientY };
   } else hover(e);
 });
 renderer.domElement.addEventListener('pointerup', e => { if (moved < 6) click(e); drag = null; });
-renderer.domElement.addEventListener('wheel', e => { e.preventDefault(); orbit.tR = Math.min(110, Math.max(38, orbit.tR + e.deltaY * .05)); }, { passive: false });
+renderer.domElement.addEventListener('wheel', e => { e.preventDefault(); orbit.tR = Math.min(125, Math.max(30, orbit.tR + e.deltaY * .05)); }, { passive: false });
 
 const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
 function hitGem(e) {
@@ -419,10 +369,7 @@ function frame() {
   });
   bodies.instanceMatrix.needsUpdate = heads.instanceMatrix.needsUpdate = true;
 
-  // juggling oranges and bobbing ninots
-  oranges.forEach((o, i) => { const a = t * 1.6 + i / oranges.length * Math.PI * 2; o.position.set(Math.cos(a) * 6.2, 15 + Math.sin(a) * 3.2 + 2, 1.2); });
-  giant.rotation.y = Math.sin(t * .4) * .12;
-  SMALL.forEach((g, i) => g.children[1].position.y = 3.2 + Math.sin(t * 2 + i) * .06);
+  FALLA.anims.forEach(f => f(t));
   scene.traverse(o => { if (o.userData.flag) o.rotation.y = Math.sin(t * 2 + o.position.x) * .25; });
   GEMS.forEach((g, i) => { const k = 2.3 + Math.sin(t * 3 + i) * .35; g.sprite.scale.set(k, k, 1); });
 
@@ -444,4 +391,4 @@ frame();
 
 $('#goBtn').onclick = startMascleta;
 say('¡Ya son casi las dos! Aquí estaremos muy bien para ver la mascletà.', 'Your host sister: "It\'s almost two! We\'ll have a great view of the mascletà from here."');
-window.__fallas = { startMascleta, openGem, GEMS, found };
+window.__fallas = { startMascleta, openGem, GEMS, found }; window.__orbit = orbit;
