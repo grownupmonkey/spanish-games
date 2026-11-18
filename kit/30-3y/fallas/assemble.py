@@ -7,7 +7,7 @@ page = f"""<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>¡Fallas! · Valencia (prototipo 3D)</title>
+<title>¡Fallas! · Valencia (prototipo de La semana)</title>
 <meta name="sg-game" content="33">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,8 +23,9 @@ page = f"""<!DOCTYPE html>
 <script>
 (() => {{
 'use strict';
+{(B/'world.js').read_text()}
 {(B/'ninots.js').read_text()}
-{(B/'scene.js').read_text()}
+{(B/'scenes.js').read_text()}
 }})();
 </script>
 </body>

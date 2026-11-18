@@ -19,3 +19,9 @@ body.no-tts .linebar .audio button { display: none; }
 .gemcard .gh { font: 700 12px/1 'Manrope', sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #FFC27A; margin-bottom: 8px; }
 .gemcard .es { font-weight: 600; margin: 0 0 8px; } .gemcard .en2 { color: #B9B2D6; font-size: 14px; margin: 0 0 12px; }
 @media (max-width: 800px) { .linebar { grid-template-columns: 1fr; } }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 10px; }
+.tabs button { font: 600 14px/1 'Manrope', sans-serif; color: #E9E4FF; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: 999px; padding: 10px 16px; cursor: pointer; }
+.tabs button.on { background: #5FE0C8; color: #17122E; border-color: #5FE0C8; }
+.tabs .sp { flex: 1; }
+.tabs .ghostbtn { color: #FFC27A; border-color: rgba(255,194,122,.4); }
+.themename { color: #B9B2D6; font-size: 13px; margin: 0 0 12px; }
