@@ -100,7 +100,7 @@ function ember(parent, x, y, z, v, color = 0xFFB050, life = 1.6, grav = 6, size 
 /* ---------- audio: synthesized bangs, crackle and whoosh (Web Audio, no files) ---------- */
 let AC = null;
 function noiseHit({ gain = .5, freq = 2000, decay = 5, len = .35, type = 'lowpass', sweep = 0 } = {}) {
-  if (window.__mute || !SFXON) return;
+  if (window.__mute || !sfxOn()) return;
   AC = AC || new (window.AudioContext || window.webkitAudioContext)();
   const n = Math.floor(AC.sampleRate * len), buf = AC.createBuffer(1, n, AC.sampleRate), d = buf.getChannelData(0);
   for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, decay);
@@ -109,29 +109,10 @@ function noiseHit({ gain = .5, freq = 2000, decay = 5, len = .35, type = 'lowpas
   if (sweep) f.frequency.exponentialRampToValueAtTime(Math.max(60, freq * sweep), AC.currentTime + len);
   const g = AC.createGain(); g.gain.value = gain; src.connect(f).connect(g).connect(AC.destination); src.start();
 }
-let SFXON = true;
+const SFXON_ = { on: true }; const sfxOn = () => SFXON_.on && !(window.SFX && SFX.muted && SFX.muted());
 const bang = (gain = .5, low = false) => noiseHit({ gain, freq: low ? 380 : rnd(1400, 3200), decay: low ? 2 : 5 });
 const crackle = () => noiseHit({ gain: .12, freq: rnd(2500, 5000), decay: 9, len: .08, type: 'highpass' });
 const whoosh = () => noiseHit({ gain: .18, freq: 600, decay: .6, len: 1.1, type: 'bandpass', sweep: 5 });
-
-/* ---------- speech: one Spanish voice; hide audio if none ---------- */
-let VOZ = null;
-function rankVoice(v) {
-  const n = (v.name + ' ' + v.lang).toLowerCase(); if (!/^es/.test(v.lang.toLowerCase())) return -1; let s = 0;
-  if (/natural|online/.test(n)) s += 50; if (/google/.test(n)) s += 30;
-  return s + (({ 'es-es': 9, 'es-mx': 8, 'es-us': 6, 'es-419': 4 })[v.lang.toLowerCase()] || 1);
-}
-function pickVoice() { const vs = speechSynthesis.getVoices().filter(v => rankVoice(v) >= 0).sort((a, b) => rankVoice(b) - rankVoice(a)); VOZ = vs[0] || null; document.body.classList.toggle('no-tts', !VOZ); }
-if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } else document.body.classList.add('no-tts');
-function speak(t, slow) {
-  if (!VOZ || window.__mute) return;
-  speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t.replace(/[«»]/g, '')); u.voice = VOZ; u.lang = VOZ.lang; u.rate = slow ? .7 : .95; speechSynthesis.speak(u);
-}
-let lastLine = '';
-function say(es, en, who = 'Nerea') { lastLine = es; $('#who').textContent = who; $('#lineEs').textContent = es; $('#lineEn').textContent = en; speak(es); }
-$('#replay').onclick = () => speak(lastLine);
-$('#slow').onclick = () => speak(lastLine, true);
-$('#showText').onchange = e => document.body.classList.toggle('show-text', e.target.checked);
 
 /* ---------- gems: six "Datos de Valencia" spread across the week ---------- */
 const found = new Set();
@@ -141,8 +122,8 @@ function addGem(group, gem) {
 }
 function openGem(gem) {
   found.add(gem.id); gem.sprite.material.opacity = .35;
-  $('#gemEs').textContent = gem.es; $('#gemEn').textContent = gem.en; $('#gemCount').textContent = `${found.size}/6`; $('#gemCard').hidden = false;
-  speak(gem.es);
+  $('#gemEs').textContent = gem.es; $('#gemEn').textContent = gem.en; $('#gemCard').hidden = false;
+  if (window.onGem) window.onGem(gem);
 }
 $('#gemClose').onclick = () => $('#gemCard').hidden = true;
 
@@ -153,9 +134,20 @@ const cv = renderer.domElement;
 cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; moved = 0; cv.setPointerCapture(e.pointerId); });
 cv.addEventListener('pointermove', e => {
   if (drag) { const dx = e.clientX - drag.x, dy = e.clientY - drag.y; moved += Math.abs(dx) + Math.abs(dy); orbit.tTh -= dx * .005; orbit.tPh = Math.min(orbit.maxPh, Math.max(orbit.minPh, orbit.tPh - dy * .004)); drag = { x: e.clientX, y: e.clientY }; }
-  else cv.style.cursor = hitGem(e) ? 'pointer' : 'grab';
+  else cv.style.cursor = hitGem(e) || hitPick(e) ? 'pointer' : 'grab';
 });
-cv.addEventListener('pointerup', e => { if (moved < 6) { const g = hitGem(e); if (g) openGem(g); } drag = null; });
+cv.addEventListener('pointerup', e => { if (moved < 6) { const g = hitGem(e); if (g) openGem(g); else { const p = hitPick(e); if (p) PICK.cb(p); } } drag = null; });
+let PICK = null;
+window.__pick = id => PICK && PICK.cb(id); window.__hasPick = () => !!PICK;
+function setPick(targets, cb) { PICK = targets && targets.length ? { targets, cb } : null; }
+function hitPick(e) {
+  if (!PICK) return null;
+  const r = cv.getBoundingClientRect(); mouse.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+  ray.setFromCamera(mouse, camera);
+  let best = null;
+  PICK.targets.forEach(tg => { const h = ray.intersectObject(tg.obj, true)[0]; if (h && (!best || h.distance < best.d)) best = { d: h.distance, id: tg.id }; });
+  return best && best.id;
+}
 cv.addEventListener('wheel', e => { e.preventDefault(); orbit.tR = Math.min(orbit.maxR, Math.max(orbit.minR, orbit.tR + e.deltaY * .05)); }, { passive: false });
 const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
 function hitGem(e) {
@@ -169,22 +161,19 @@ const DEFS = {}, BUILT = {};
 let CUR = null, CURKEY = null;
 function defineScene(key, def) { DEFS[key] = def; }
 function disposeGroup(g) { g.traverse(o => { if (o.geometry) o.geometry.dispose(); }); g.parent && g.parent.remove(g); }
-function enterScene(key) {
+function enterScene(key, opts = {}) {
   if (CUR && CUR.onExit) CUR.onExit();
   clearParts(); $('#gemCard').hidden = true;
   const def = DEFS[key];
   if (!BUILT[key]) { const g = new THREE.Group(); scene.add(g); const r = def.build(g) || {}; BUILT[key] = Object.assign({ group: g, anims: [], gems: [] }, r); (def.gems || []).forEach(gm => BUILT[key].gems.push(gm)); BUILT[key].gems.forEach(gm => addGem(g, gm)); }
   for (const k in BUILT) BUILT[k].group.visible = k === key;
   CUR = BUILT[key]; CURKEY = key;
-  setLook(def.look);
+  setLook(opts.look || def.look); setPick(null);
   const c = def.cam; Object.assign(orbit, { tTh: c.th, th: c.th, tPh: c.ph, ph: c.ph, tR: c.r, r: c.r, minR: c.minR || 30, maxR: c.maxR || 125, minPh: c.minPh || .55, maxPh: c.maxPh || 1.5, drift: c.drift ?? .02 });
   orbit.target.set(...c.target);
-  $('#place').innerHTML = def.place;
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.k === key));
-  const btn = $('#goBtn');
-  if (CUR.action) { btn.hidden = false; btn.disabled = false; btn.textContent = CUR.action.label; btn.onclick = () => CUR.action.fn(btn); } else btn.hidden = true;
+  $('#place').innerHTML = opts.place || def.place;
   if (CUR.onEnter) CUR.onEnter();
-  say(...def.line);
+  return CUR.api;
 }
 function rebuild(keys) { keys.forEach(k => { if (BUILT[k]) { disposeGroup(BUILT[k].group); delete BUILT[k]; } }); }
 

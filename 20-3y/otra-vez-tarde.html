@@ -1792,6 +1792,7 @@ wireSfxToggle();
 #sgrSheet ol.tr li { margin: 1pt 0; break-inside: avoid; }
 #sgrSheet .outc { font-size: 9pt; color: #444; }
 #sgrSheet .foot { margin-top: 14pt; font-size: 8.5pt; color: #666; border-top: 1px solid #ccc; padding-top: 5pt; }
+
 </style>
 <script>
 /* ---- end-of-session report with a code (parts/report.js) ----
@@ -1821,7 +1822,10 @@ wireSfxToggle();
     25: ['20-3Y', '¡Gol!', 'Escena 5 · Buenos Aires'],
     26: ['20-3Y', 'La farmacia de guardia', 'Escena 6 · Puerto Viejo'],
     27: ['20-3Y', 'Conexión perdida', 'Escena 7 · Lima'],
-    28: ['20-3Y', 'Mismo idioma, otro mundo', 'Escena 8 · Lethbridge']
+    28: ['20-3Y', 'Mismo idioma, otro mundo', 'Escena 8 · Lethbridge'],
+    31: ['30-3Y', 'Noche de leyendas', 'Juego 1 · Antigua Guatemala'],
+    32: ['30-3Y', 'Cuando era pequeño', 'Juego 2 · Montevideo'],
+    33: ['30-3Y', '¡Fallas!', 'Juego 3 · Valencia']
   };
   const LEVELS = ['10-3Y', '20-3Y', '30-3Y'];
   const B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'; // Crockford base 32 (no I, L, O, U)
@@ -1829,7 +1833,7 @@ wireSfxToggle();
   const EPOCH = Date.UTC(2026, 0, 1);
   const meta = document.querySelector('meta[name="sg-game"]');
   const GID = meta ? (parseInt(meta.content, 10) || 0) : 0;
-  const GAME = GAMES[GID] || [document.title.includes('20-3Y') ? '20-3Y' : '10-3Y', document.title, ''];
+  const GAME = GAMES[GID] || [document.title.includes('30-3Y') ? '30-3Y' : document.title.includes('20-3Y') ? '20-3Y' : '10-3Y', document.title, ''];
 
   const store = {
     get(k) { try { return window.localStorage.getItem('sgr.' + k) || ''; } catch (e) { return ''; } },
@@ -2002,7 +2006,7 @@ wireSfxToggle();
     cur = { d, at: new Date(), mins: Math.max(1, Math.min(255, Math.round((Date.now() - t0) / 60000))) };
     const box = document.createElement('div');
     box.className = 'sgr';
-    const lvlSaved = store.get('level'), lvl = LEVELS.includes(lvlSaved) && !(GAME[0] === '20-3Y' && lvlSaved === '10-3Y') ? lvlSaved : GAME[0];
+    const lvlSaved = store.get('level'), lvl = LEVELS.includes(lvlSaved) && LEVELS.indexOf(lvlSaved) >= LEVELS.indexOf(GAME[0]) ? lvlSaved : GAME[0];
     box.innerHTML = `
       <h3 class="lbl">Informe de la sesión</h3>
       <p class="sgr-help">Write your name and course, then print this report or copy it for Teams.</p>
@@ -2073,5 +2077,6 @@ wireSfxToggle();
   window.__report = { encode, decode, scrape, normName, GAMES, gid: GID, code: currentCode, teamsText: () => (cur ? teamsText() : '') };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();
 })();
+
 </script>
 <!-- /sg-report -->

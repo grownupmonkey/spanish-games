@@ -448,8 +448,9 @@ function buildFalla(parent, key, opts = {}) {
     const y0 = rider.position.y; anims.push(t => { rider.position.y = y0 + Math.sin(t * 1.4 + i) * .25; });
   });
   // little stories around the base
-  shuffle(ESCENAS).slice(0, nScenes).forEach((e, i) => {
-    const a = i / nScenes * Math.PI * 2 + .25, n = ninot(randSpec(e)); n.scale.setScalar(.62);
+  const escenas = [], specs = opts.escenas || shuffle(ESCENAS).slice(0, nScenes).map(e => randSpec(e)), nE = specs.length;
+  specs.forEach((sp, i) => {
+    const a = i / nE * Math.PI * 2 + .25, n = ninot(sp); n.scale.setScalar(.62); escenas.push({ group: n, spec: sp });
     n.position.set(Math.cos(a) * 10.4, 4.2, Math.sin(a) * 10.4); n.rotation.y = -a + Math.PI / 2; F.add(n);
     if (i === 0) spots.escena = n.position.clone().add(new THREE.Vector3(0, 7.5, 0));
   });
@@ -466,5 +467,5 @@ function buildFalla(parent, key, opts = {}) {
   spots.plinth = new THREE.Vector3(5, 2.2, 11.8);
   const s = opts.scale || 1; F.scale.setScalar(s);
   for (const k in spots) spots[k].multiplyScalar(s);
-  return { group: F, anims, spots, theme: T };
+  return { group: F, anims, spots, theme: T, escenas };
 }

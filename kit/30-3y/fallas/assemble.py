@@ -1,13 +1,16 @@
-import pathlib
+import pathlib, sys
+sys.path.insert(0, '/home/claude/report')
+from report_inject import inject
 K = pathlib.Path('/home/claude/src/kit/parts')
 B = pathlib.Path(__file__).parent
+sfx = (K/'sfx.js').read_text(); SFXJS = sfx[:sfx.index('const CAST = {')]
 css = (K/'base.css').read_text() + '\n' + (K/'theme.css').read_text() + '\n' + (B/'game.css').read_text()
 page = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>¡Fallas! · Valencia (prototipo de La semana)</title>
+<title>¡Fallas! · Valencia</title>
 <meta name="sg-game" content="33">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,14 +26,17 @@ page = f"""<!DOCTYPE html>
 <script>
 (() => {{
 'use strict';
+{SFXJS}
 {(B/'world.js').read_text()}
 {(B/'ninots.js').read_text()}
 {(B/'scenes.js').read_text()}
+{(B/'game.js').read_text()}
 }})();
 </script>
 </body>
 </html>
 """
-out = pathlib.Path('/home/claude/out/fallas-prototipo.html')
+out = pathlib.Path('/home/claude/out/fallas.html')
+page = inject(page, 33)
 out.write_text(page)
 print(len(page))

@@ -123,14 +123,37 @@ defineScene('plaza', {
     for (let i = 0; i < poles.length - 1; i++) string(poles[i], poles[i + 1]);
     string([-24, 0], [-20, 18]); string([24, 0], [20, 18]);
     const fl = new THREE.PointLight(0xFFD27A, 0, 40); fl.position.set(0, 7, 12); g.add(fl);
+    // buñuelos stand and a newspaper kiosk: meeting points
+    const stand = new THREE.Group(); stand.position.set(38, 0, 22); stand.rotation.y = -2.2; g.add(stand);
+    mesh(new THREE.BoxGeometry(5, 2.2, 2.4), M(0xF4E6D0), 0, 1.1, 0, stand);
+    const awT = canvasTex(256, 64, c => { for (let x = 0; x < 256; x += 32) { c.fillStyle = (x / 32) % 2 ? '#FFFFFF' : '#D8323C'; c.fillRect(x, 0, 32, 64); } });
+    mesh(new THREE.BoxGeometry(5.6, .2, 3), M(0xffffff, { map: awT }), 0, 3.8, .3, stand).rotation.x = .2;
+    [-2.5, 2.5].forEach(x => mesh(new THREE.CylinderGeometry(.08, .08, 3.8), M(0x6B5A4A), x, 1.9, 1.4, stand));
+    textPlane(stand, 4.4, 1.1, c => { c.fillStyle = '#2E2A45'; c.fillRect(0, 0, 512, 128); c.fillStyle = '#FFC27A'; c.font = '700 56px Manrope, sans-serif'; c.textAlign = 'center'; c.fillText('Bunyols · Buñuelos', 256, 84); }, 0, 2.8, 1.22);
+    const kiosk = new THREE.Group(); kiosk.position.set(-40, 0, -16); kiosk.rotation.y = 1.1; g.add(kiosk);
+    mesh(new THREE.BoxGeometry(3.6, 2.8, 2.6), M(0x2F6B4F), 0, 1.4, 0, kiosk);
+    mesh(new THREE.ConeGeometry(2.9, 1.4, 4), M(0x24503B), 0, 3.5, 0, kiosk).rotation.y = Math.PI / 4;
+    for (let i = 0; i < 6; i++) mesh(new THREE.BoxGeometry(.5, .7, .05), M([0xF2F2F2, 0xFFD25A, 0xFF7AA8][i % 3]), -1.3 + i * .52, 1.6, 1.33, kiosk);
+    textPlane(kiosk, 3.2, .7, c => { c.fillStyle = '#F7F1E6'; c.fillRect(0, 0, 512, 112); c.fillStyle = '#24503B'; c.font = '800 60px Manrope, sans-serif'; c.textAlign = 'center'; c.fillText('PREMSA · PRENSA', 256, 78); }, 0, 2.55, 1.32);
+    const SPOTS = {
+      balcon: { pos: new THREE.Vector3(0, 0, -41), es: 'debajo del balcón del Ayuntamiento', en: 'under the town-hall balcony', rx: /balc[oó]n|ayuntamiento/ },
+      cartel: { pos: new THREE.Vector3(-29, 0, 33), es: 'al lado del cartel en valenciano', en: 'next to the sign in Valencian', rx: /cartel|letrero|se[nñ]al|valenciano/ },
+      bunyols: { pos: new THREE.Vector3(34, 0, 18), es: 'junto al puesto de buñuelos', en: 'by the buñuelos stand', rx: /puesto|bu[nñ]uelo|bunyol/ },
+      quiosco: { pos: new THREE.Vector3(-36, 0, -13), es: 'al lado del quiosco de periódicos', en: 'next to the newspaper kiosk', rx: /quiosco|kiosco|peri[oó]dico|prensa/ },
+    };
+    const hot = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+    const targets = Object.entries(SPOTS).map(([id, sp]) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 7, 16), hot); m.position.copy(sp.pos).add(new THREE.Vector3(0, 3.5, 0)); g.add(m); return { obj: m, id }; });
+    Object.values(SPOTS).forEach(sp => { for (let k = 0; k < 3; k++) { const d = person({}, .2); d.position.set(sp.pos.x + rnd(-3, 3), 0, sp.pos.z + rnd(-2.5, 2.5)); d.lookAt(0, 0, 0); g.add(d); } });
+    let cousins = null;
+    const placeCousins = id => {
+      if (cousins) g.remove(cousins); cousins = new THREE.Group(); const p = SPOTS[id].pos;
+      [false, true].forEach((sk, i) => { const c = person({ skirt: sk, pose: 'wave', hat: i ? null : 'cap', hatC: 0xFFD25A }, .22); c.position.set(p.x + (i ? 1.3 : -1.3), 0, p.z + 1); c.lookAt(0, 0, 0); cousins.add(c); });
+      g.add(cousins);
+    };
     let show = null;
-    const action = { label: '¡Que empiece la mascletà!', fn(btn) {
-      if (show) return; btn.disabled = true; btn.textContent = '¡Pum, pum, pum!';
-      say('Senyor pirotècnic, pot començar la mascletà!', 'The fallera mayor gives the signal from the balcony, in valenciano.', 'Fallera mayor');
-      show = { t: 0, i: 0, next: 1.2, btn };
-    } };
+    const startShow = onEnd => { if (show) return; show = { t: 0, i: 0, next: 1.2, onEnd }; };
     const step = (t, dt) => {
-      W.crowd.excite = show ? 1 : 0; fl.intensity *= .86;
+      W.crowd.excite = show && !show.ended ? 1 : 0; fl.intensity *= .86;
       if (!show) return; show.t += dt; const n = crackers.length;
       while (show.t > show.next && show.i < n) {
         const c = crackers[show.i++], p = show.i / n; c.visible = false;
@@ -139,16 +162,12 @@ defineScene('plaza', {
         show.next += Math.max(.035, .32 * Math.pow(1 - p, 1.6));
       }
       if (show.i >= n && !show.ended) {
-        show.ended = true;
-        for (let k = 0; k < 26; k++) setTimeout(() => { const a = Math.random() * 6.28, r = rnd(4, 22); puff(g, Math.cos(a) * r, .8, Math.sin(a) * r + 6, 1.8); flash(g, Math.cos(a) * r, 1, Math.sin(a) * r + 6); bang(.8, true); shake = 1.1; fl.intensity = 10; }, k * 70);
-        setTimeout(() => {
-          say('¡Qué fuerte! Mañana a las dos volveremos a la plaza, ¿vale?', 'Nerea: "That was intense! Tomorrow at two we\'ll come back to the square, OK?"');
-          show.btn.textContent = 'Otra vez'; show.btn.disabled = false;
-          show.btn.onclick = () => { crackers.forEach(c => c.visible = true); show = null; show = null; enterScene('plaza'); };
-        }, 3600);
+        show.ended = true; const done = show.onEnd;
+        for (let k = 0; k < 26; k++) setTimeout(() => { const a = Math.random() * 6.28, r = rnd(4, 22); puff(g, Math.cos(a) * r, .8, Math.sin(a) * r + 6, 1.8); flash(g, Math.cos(a) * r, 1, Math.sin(a) * r + 6); bang(.8, true); shake = 1.1; fl.intensity = 10; }, k * 70 * (window.__testSpeed || 1));
+        setTimeout(() => done && done(), 3000 * (window.__testSpeed || 1));
       }
     };
-    return { anims: [...W.anims, ...F.anims, step], action, onExit() { crackers.forEach(c => c.visible = true); show = null; },
+    return { anims: [...W.anims, ...F.anims, step], api: { SPOTS, targets, placeCousins, startShow },
       gems: [
         { id: 'mascleta', pos: new THREE.Vector3(0, 12.5, -47.5), es: 'Del 1 al 19 de marzo, a las dos de la tarde, hay una mascletà en esta plaza. Desde el balcón, la fallera mayor dice: «Senyor pirotècnic, pot començar la mascletà!».', en: 'Every day from 1 to 19 March at 2 p.m. there is a mascletà here: a daytime show judged by rhythm and noise, not light. The fallera mayor starts it from the town-hall balcony, in valenciano.' },
         { id: 'valenciano', pos: new THREE.Vector3(-31.5, 6, 30.5), es: 'En Valencia se hablan dos idiomas: castellano y valenciano. «Plaça de l\'Ajuntament» significa «Plaza del Ayuntamiento».', en: 'Valencia has two official languages, Spanish and Valencian. Street signs are often in valenciano.' },
@@ -175,7 +194,17 @@ defineScene('calle', {
     // corner buildings close the little square
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) { block(g, sx * 28, sz * 33, 22, 18, rnd(18, 24), sz < 0 ? 0 : Math.PI, true); }
     // the neighbourhood falla in the crossing, and the children's falla down the street
-    const F = buildFalla(g, STATE.street, { scale: .44 });
+    const PROPS_ES = { phone: ['un móvil', /m[oó]vil|tel[eé]fono/], selfie: ['un palo de selfi', /selfi/], paella: ['una paella', /paella/], book: ['un libro', /libro/], firework: ['un cohete', /cohete|petardo/], bouquet: ['un ramo de flores', /ramo|flores/], orange: ['una naranja', /naranja/], plant: ['una planta', /planta/], mic: ['un micrófono', /micr[oó]fono/], tray: ['una bandeja', /bandeja/] };
+    const COLS = [['#D8323C', 'roja', 'rojo'], ['#2A6FDB', 'azul', 'azul'], ['#3E8E5E', 'verde', 'verde'], ['#FFD25A', 'amarilla', 'amarillo'], ['#7A4FD6', 'morada', 'morado'], ['#FF7AA8', 'rosa', 'rosa'], ['#FF8A1E', 'naranja', 'naranja']];
+    const pool = shuffle(ESCENAS.filter(e => PROPS_ES[e.propR] && !e.hair));
+    const cols = shuffle(COLS), skirt = Math.random() < .5;
+    const mk = (e, col, sk) => randSpec(Object.assign({}, e, { pattern: null, topC: col[0], skirt: sk, hair: sk ? pick(['long', 'bun', 'curly']) : pick(['short', 'curly', 'bald']), lashes: sk }));
+    const tSpec = mk(pool[0], cols[0], skirt), dSpec = mk(pool[0], cols[1], skirt);
+    const others = pool.slice(1, 6).map((e, i) => mk(e, cols[(i + 2) % cols.length], Math.random() < .5));
+    const specs = shuffle([tSpec, dSpec, ...others]);
+    const garment = skirt ? `un vestido ${cols[0][2]}` : `una camiseta ${cols[0][1]}`;
+    const vote = { idx: specs.indexOf(tSpec), desc: `tiene ${PROPS_ES[pool[0].propR][0]} y lleva ${garment}`, short: `${PROPS_ES[pool[0].propR][0]}, ${garment}`, rx: PROPS_ES[pool[0].propR][1] };
+    const F = buildFalla(g, STATE.street, { scale: .44, escenas: specs });
     const FI = buildFalla(g, STATE.infantil, { scale: .2, small: true }); FI.group.position.set(-17, 0, -12);
     barrierRing(g, 7.2, 12); barrierRing(g, 4, 8, -17, -12);
     // light arches (luces): thousands of bulbs, animated in waves
@@ -210,7 +239,8 @@ defineScene('calle', {
     const ppl = [];
     for (let i = 0; i < 16; i++) { const p = person({}, .2); const a = rnd(0, 6.28), r = rnd(9, 20); p.position.set(Math.cos(a) * r, 0, Math.sin(a) * r * .9); p.lookAt(0, 0, 0); g.add(p); ppl.push(p); }
     const cr = crowd(g, 220, () => { const a = Math.random() * 6.28, r = rnd(8.5, 24), x = Math.cos(a) * r, z = Math.sin(a) * r; if (Math.hypot(x + 17, z + 12) < 5 || Math.hypot(x - 18, z + 15) < 8) return null; return [x, z]; });
-    return { anims: [...F.anims, ...FI.anims, lights, t => { cr.update(t); glowL.forEach((l, i) => l.intensity = .7 + Math.sin(t * 3 + i) * .2); }],
+    const voteTargets = F.escenas.map((e, i) => ({ obj: e.group, id: i }));
+    return { api: { vote, targets: voteTargets }, anims: [...F.anims, ...FI.anims, lights, t => { cr.update(t); glowL.forEach((l, i) => l.intensity = .7 + Math.sin(t * 3 + i) * .2); }],
       gems: [{ id: 'ninots', pos: F.spots.giantFace.clone().add(new THREE.Vector3(0, 2, 0)), es: 'Los ninots son de cartón, madera y corcho. Muchos son caricaturas. Cada año, la gente vota para salvar un ninot del fuego: el ninot indultat.', en: 'Ninots are made of cardboard, wood and cork, and many are satirical. Each year the public votes to save one from the fire, the ninot indultat, which goes to the Fallas Museum. Every neighbourhood builds its own falla, plus a smaller falla infantil for children.' }] };
   },
 });
@@ -287,14 +317,33 @@ defineScene('ofrenda', {
     const walkers = [];
     for (let i = 0; i < 22; i++) { const fem = i % 3 !== 2, w = person(fem ? { hair: 'fallera', skirt: true, pose: 'hold', propR: 'bouquet' } : { skirt: false, pattern: 'stripes', topC: '#2E2A45', patC: '#F1BF00', pose: 'hold', propR: 'bouquet', scarf: 0xC8102E }, .2); g.add(w); walkers.push({ w, z: 50 - i * 2.4, side: i % 2 ? 1 : -1 }); }
     barrierLine(g, [...Array(12)].flatMap((_, k) => [[-4.5, 48 - k * 4.4, Math.PI / 2], [4.5, 48 - k * 4.4, Math.PI / 2]]));
-    const cr = crowd(g, 260, () => { const s = Math.random() < .5 ? -1 : 1, x = s * rnd(5.5, 14), z = rnd(-2, 52); return [x, z]; });
+    const cr = crowd(g, 260, () => { const s = Math.random() < .5 ? -1 : 1, x = s * rnd(5.5, 14), z = rnd(-2, 52); return Math.hypot(x - 9, z - 16) < 6 ? null : [x, z]; });
     const deliver = () => { fill = Math.min(1, fill + .022); FL.count = Math.floor(fl.length * fill); for (let k = 0; k < 6; k++) ember(V, rnd(-1, 1), 3 + fill * 8, 4, new THREE.Vector3(rnd(-1.5, 1.5), rnd(1, 3), rnd(0, 2)), pick([0xFF4060, 0xFFFFFF]), 1.4, 3, .5); };
     const walk = (t, dt) => {
       walkers.forEach(o => { o.z -= dt * 1.6; if (o.z < 1.5) { o.z += 49.8; deliver(); }
         const [x] = path(o.z); o.w.position.set(x + o.side * .9, Math.abs(Math.sin(t * 5 + o.z)) * .06, o.z); o.w.rotation.y = Math.PI; });
       cr.update(t); head.rotation.y = Math.sin(t * .3) * .05;
     };
-    return { anims: [walk], action: { label: 'Entregar un ramo', fn() { deliver(); deliver(); say('¡Qué ramo tan bonito! Las flores rojas irán al manto.', 'Nerea: "What a lovely bouquet! The red flowers will go on the cloak."'); } },
+    const table = new THREE.Group(); table.position.set(9, 0, 16); table.rotation.y = -.35; g.add(table);
+    mesh(new THREE.BoxGeometry(7, .15, 2.4), M(0xF7F1E6), 0, 1.05, 0, table);
+    [[-3.3, -1], [3.3, -1], [-3.3, 1], [3.3, 1]].forEach(([x, z]) => mesh(new THREE.BoxGeometry(.12, 1, .12), M(0x9A6B3E), x, .5, z, table));
+    const FLW = [['rojos', 0xC8102E], ['blancos', 0xFFFFFF], ['rosas', 0xFF7AA8], ['amarillos', 0xFFD25A]];
+    const RIB = [['amarilla', 0xF1BF00], ['azul', 0x2A6FDB], ['verde', 0x3E8E5E], ['morada', 0x7A4FD6]];
+    const pairs = [[0, 1], [2, 1], [0, 3], [2, 3], [0, 2], [1, 3]];
+    const fp = shuffle(pairs), rb = shuffle([0, 1, 2, 3]);
+    const combos = [[fp[0], rb[0]], [fp[0], rb[1]], [fp[1], rb[0]], [fp[2], rb[2]]];
+    const order = shuffle([0, 1, 2, 3]), btargets = [];
+    combos.forEach(([pr, r], k) => {
+      const b = new THREE.Group(); b.position.set(-2.4 + order[k] * 1.6, 1.15, 0); b.scale.setScalar(1.5); table.add(b);
+      const wrap = mesh(new THREE.ConeGeometry(.42, 1.1, 14, 1, true), M(0xF4EFE6, { side: THREE.DoubleSide }), 0, .45, 0, b); wrap.rotation.x = Math.PI;
+      for (let i = 0; i < 9; i++) mesh(new THREE.SphereGeometry(.15, 8, 6), M(FLW[pr[i % 2]][1], { roughness: .9 }), rnd(-.28, .28), 1.05 + rnd(0, .25), rnd(-.28, .28), b);
+      mesh(new THREE.TorusGeometry(.2, .06, 8, 16), M(RIB[r][1]), 0, .5, 0, b).rotation.x = Math.PI / 2;
+      mesh(new THREE.BoxGeometry(.1, .5, .02), M(RIB[r][1]), .12, .25, .2, b).rotation.z = .3;
+      btargets.push({ obj: b, id: k });
+    });
+    const bouquet = { idx: 0, desc: `claveles ${FLW[combos[0][0][0]][0]} y ${FLW[combos[0][0][1]][0]}, con una cinta ${RIB[combos[0][1]][0]}`, rx: new RegExp(FLW[combos[0][0][0]][0].slice(0, 4) + '|' + RIB[combos[0][1]][0].slice(0, 4)) };
+    const focus = on => { if (on) { orbit.target.set(9, 2, 16); orbit.tR = 14; orbit.tPh = 1.15; orbit.tTh = .1; } else { orbit.target.set(0, 10, -10); orbit.tR = 46; orbit.tPh = 1.28; } };
+    return { anims: [walk], api: { deliver, bouquet, targets: btargets, focus },
       gems: [{ id: 'ofrenda', pos: new THREE.Vector3(3.2, 20.5, -8), es: 'El 17 y el 18 de marzo es la Ofrenda: miles de falleras y falleros llevan flores a la Virgen de los Desamparados. Con los claveles hacen un manto enorme.', en: 'On 17 and 18 March, during the Ofrenda, thousands of falleros carry bouquets to the Virgin of the Forsaken. Workers on ladders place the carnations on a wooden frame to form her giant cloak.' }] };
   },
 });
@@ -359,9 +408,11 @@ defineScene('bunyols', {
         ember(fry, rnd(-.5, .5), .58, rnd(-.5, .5), new THREE.Vector3(0, rnd(.3, .6), 0), 0xFFE7A8, .4, 0, .12); }
       warm.intensity = 1.3 + Math.sin(t * 8) * .05;
     };
-    return { anims: [anim], action: { label: 'Pedir buñuelos', fn() {
-      const b = bun(0xF0C27A); b.position.set(0, 1.4, 0); let k = 0; const drop = setInterval(() => { b.position.y -= .1; if (b.position.y <= .6) { clearInterval(drop); noiseHit({ gain: .2, freq: 4000, decay: 1.5, len: 1.2, type: 'highpass' }); for (let i = 0; i < 6; i++) puff(fry, rnd(-.3, .3), .7, rnd(-.3, .3), .2, 0xFFFFFF, .8); floating.push(b); } }, 40);
-      say('Seis buñuelos, ¿verdad? Son tres euros con cincuenta.', 'The vendor: "Six buñuelos, right? That\'s three fifty."', 'Vendedor'); } },
+    const drop = () => {
+      const b = bun(0xF0C27A); b.position.set(0, 1.4, 0); const iv = setInterval(() => { b.position.y -= .1; if (b.position.y <= .6) { clearInterval(iv); noiseHit({ gain: .2, freq: 4000, decay: 1.5, len: 1.2, type: 'highpass' }); for (let i = 0; i < 6; i++) puff(fry, rnd(-.3, .3), .7, rnd(-.3, .3), .2, 0xFFFFFF, .8); floating.push(b); } }, 40);
+    };
+    const MENU = { bunyols: ['seis buñuelos', 3.5, /bu[nñ]uelo|bunyol/], chocolate: ['un chocolate', 2.8, /chocolate/], horchata: ['una horchata', 3.0, /horchata|orxata/], fartons: ['tres fartons', 1.5, /farton/], churros: ['seis churros', 3.0, /churro/] };
+    return { anims: [anim], api: { drop, MENU },
       gems: [{ id: 'bunyols', pos: new THREE.Vector3(-2.2, 2.9, -4.7), es: 'En las Fallas se comen buñuelos de calabaza con chocolate. También se bebe horchata, hecha con chufa, con fartons para mojar.', en: 'The festival snacks: pumpkin fritters dipped in hot chocolate, and horchata, a cold drink made from tiger nuts (chufa), with long sweet fartons for dunking.' }] };
   },
 });
@@ -410,17 +461,15 @@ defineScene('crema', {
       const s = sprite(g, TEX.spark, 0xFFE7A8, x, y0, z, .9, true); whoosh();
       addPart(s, 1.2, (p, dt, f) => { s.position.y = y0 + (top - y0) * Math.sin(f * Math.PI / 2); if (p.life + dt >= p.max) { bang(.35); for (let k = 0; k < 40; k++) { const v = new THREE.Vector3(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).normalize().multiplyScalar(rnd(9, 14)); ember(g, s.position.x, s.position.y, s.position.z, v, c, 1.8, 4, .9); } } });
     };
-    const action = { label: '¡Que empiece la cremà!', fn(btn) {
-      if (phase !== 'idle') return; btn.disabled = true; btn.textContent = 'Fuegos artificiales…'; phase = 'fireworks'; T = 0;
-      say('¡Mira los fuegos! Después, la fallera mayor encenderá la traca.', 'Nerea: "Look at the fireworks! Afterwards, the fallera mayor will light the fuse."');
-    } };
+    let CB = {};
+    const start = cbs => { if (phase !== 'idle') return; CB = cbs || {}; phase = 'fireworks'; T = 0; };
     const step = (t, dt) => {
       W.anims.forEach(f => f(t)); beacon.material.color.setHex(Math.sin(t * 10) > 0 ? 0x3A7BFF : 0xFF2A2A);
       if (phase === 'idle') { F.anims.forEach(f => f(t)); return; }
       T += dt;
-      if (phase === 'fireworks') { if (Math.random() < dt * 3.5) rocket(); if (T > 6) { phase = 'fuse'; T = 0; fuse = { p: new THREE.Vector3(0, .3, 29) }; $('#goBtn').textContent = 'La traca…'; } }
+      if (phase === 'fireworks') { if (Math.random() < dt * 3.5) rocket(); if (T > 6) { phase = 'fuse'; T = 0; fuse = { p: new THREE.Vector3(0, .3, 29) }; CB.onFuse && CB.onFuse(); } }
       if (phase === 'fuse') { fuse.p.z -= dt * 7; fuse.p.x = Math.sin(fuse.p.z * .6) * 1.2; for (let k = 0; k < 3; k++) ember(g, fuse.p.x, fuse.p.y, fuse.p.z, new THREE.Vector3(rnd(-2, 2), rnd(2, 5), rnd(-2, 2)), 0xFFE7A8, .5, 9, .4); if (Math.random() < .5) crackle();
-        if (fuse.p.z < 12.5) { phase = 'burn'; T = 0; bang(.9, true); W.crowd.excite = 1; $('#goBtn').textContent = '¡La cremà!'; say('¡Ya arde! ¡Qué calor!', 'Nerea: "It\'s burning! It\'s so hot!"'); } }
+        if (fuse.p.z < 12.5) { phase = 'burn'; T = 0; bang(.9, true); W.crowd.excite = 1; CB.onBurn && CB.onBurn(); } }
       if (phase === 'burn' || phase === 'after') {
         let burning = 0;
         for (const p of parts) {
@@ -441,22 +490,14 @@ defineScene('crema', {
         if (Math.random() < .5) ember(g, rnd(-8, 8), rnd(4, 20), rnd(-8, 8), new THREE.Vector3(rnd(-2, 2), rnd(4, 9), rnd(-2, 2)), 0xFFA040, 2.5, -1, .35);
         if (Math.random() < live.length / 300) crackle();
         fire.intensity = (1.5 + frac * 7) * (0.85 + Math.random() * .3);
-        if (phase === 'burn' && T > 26 && burning < 4) { phase = 'after'; W.crowd.excite = 0; $('#goBtn').textContent = 'Fin de las Fallas'; say('¡Adiós, falla! El año que viene volveremos.', 'Nerea: "Goodbye, falla! Next year we\'ll come back."'); }
+        if (phase === 'burn' && T > 26 && burning < 4) { phase = 'after'; W.crowd.excite = 0; CB.onEnd && CB.onEnd(); }
         if (phase === 'after') { for (let k = 0; k < 2; k++) flame(g, rnd(-7, 7), 4.5, rnd(-7, 7), rnd(1.5, 3), 1.5); fire.intensity = 1.2 + Math.random() * .4; }
       }
       // bomberos keep the façades wet
       if (phase === 'burn' || phase === 'after') hoses.forEach(h => { if (Math.random() < .6) { const v = h.target.clone().sub(h.from).multiplyScalar(.9); v.y += 9; ember(g, h.from.x, h.from.y, h.from.z, v, 0xBFE6FF, 1.1, 9, .45); } });
     };
-    return { anims: [step], action, onExit() { if (phase !== 'idle') setTimeout(() => rebuild(['crema']), 0); },
+    return { anims: [step], api: { start }, onExit() { if (phase !== 'idle') setTimeout(() => rebuild(['crema']), 0); },
       gems: [{ id: 'crema', pos: F.spots.plinth.clone().add(new THREE.Vector3(0, 3, 0)), es: 'La noche del 19 de marzo es la cremà: queman casi todas las fallas. La falla de esta plaza se quema la última. Los bomberos mojan los edificios.', en: 'On the night of 19 March almost every falla is burned. The town-square falla goes last, around 1 a.m., while firefighters soak the nearby buildings.' }] };
   },
 });
 
-/* ---------- boot ---------- */
-document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => enterScene(b.dataset.k));
-$('#reroll').onclick = () => { drawThemes(); rebuild(['plaza', 'calle', 'crema']); enterScene(CURKEY); showTheme(); };
-function showTheme() { $('#themeName').textContent = `Falla de la plaza: «${THEMES[STATE.theme].es}» · Falla del barrio: «${THEMES[STATE.street].es}»`; }
-showTheme();
-enterScene('plaza');
-frame();
-window.__fallas = { enterScene, openGem, STATE, orbit, get CUR() { return CUR; }, BUILT };

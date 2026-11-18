@@ -1,40 +1,97 @@
 <div class="wrap fwrap">
   <header class="top">
-    <div class="eyebrow">Español 30-3Y · Juego 3 · Prototipo de «La semana»</div>
-    <h1>¡Fallas!</h1>
-    <p class="lede">Valencia, March. Drag to look around, scroll to zoom, and click the sparkles to find the six <i>Datos de Valencia</i>.</p>
+    <div>
+      <div class="eyebrow">Español 30-3Y · Juego 3 · Valencia</div>
+      <h1>¡Fallas!</h1>
+      <p class="lede">Plan a week at Valencia’s great festival with Nerea’s family, live it, then write about it. Audio first: listen carefully.</p>
+    </div>
+    <div class="toggles">
+      <button class="pill" id="settingsBtn" type="button">⚙ Ajustes</button>
+      <label class="switch sfx-switch"><input type="checkbox" id="sfxOn" checked> Sonido</label>
+    </div>
   </header>
-  <nav id="tabs" class="tabs">
-    <button data-k="plaza">La mascletà</button>
-    <button data-k="calle">La falla del barrio</button>
-    <button data-k="ofrenda">La ofrenda</button>
-    <button data-k="bunyols">Los buñuelos</button>
-    <button data-k="crema">La cremà</button>
-    <span class="sp"></span>
-    <button id="reroll" class="ghostbtn">🎲 Otras fallas</button>
-  </nav>
-  <div id="themeName" class="themename"></div>
-  <section class="stage3d">
+
+  <section class="stage3d" id="stage">
     <div class="stagehead">
       <div class="place" id="place"></div>
       <div class="gemtally">✦ Datos de Valencia <b id="gemCount">0/6</b></div>
     </div>
     <div id="view3d"></div>
-    <div class="linebar">
-      <div class="who" id="who">Nerea</div>
+    <div class="linebar" id="linebar">
+      <div class="who" id="who">Lucía</div>
       <div class="line"><div id="lineEs" class="es"></div><div id="lineEn" class="en"></div></div>
       <div class="audio">
-        <button class="btn small ghost" id="replay">▶ Otra vez</button>
-        <button class="btn small ghost" id="slow">🐢 Lento</button>
-        <label class="mini"><input type="checkbox" id="showText"> Mostrar texto</label>
+        <button class="btn small ghost tts-only" id="replay" type="button" title="Alt+R">⟲ Repetir</button>
+        <button class="btn small ghost tts-only" id="slow" type="button">🐢 Lento</button>
       </div>
-      <button class="btn primary" id="goBtn"></button>
+      <button class="btn primary" id="goBtn" type="button" hidden></button>
     </div>
     <div id="gemCard" class="gemcard" hidden>
       <div class="gh">✦ Dato de Valencia</div>
       <p id="gemEs" class="es"></p>
       <p id="gemEn" class="en2"></p>
-      <button class="btn small" id="gemClose">Cerrar</button>
+      <button class="btn small" id="gemClose" type="button">Cerrar</button>
+    </div>
+    <div class="titlecard" id="titleCard" hidden><p class="eyebrow" id="tcEyebrow"></p><h2 id="tcTitle"></h2><p id="tcSub"></p></div>
+    <div class="intro" id="intro">
+      <div class="box">
+        <div class="lucia-row"><div class="face" id="introFace"></div><div><p class="eyebrow">Con Lucía</p><h2>¡Fallas!</h2></div></div>
+        <p>It’s March in Valencia, Spain, and the city is celebrating <b>las Fallas</b>: giant sculptures, fireworks, flowers and fire. You’ll spend the week with the family of Lucía’s friend Nerea.</p>
+        <ul>
+          <li><b>El plan.</b> Listen to the family’s voice messages and plan the week so it works for everyone. Then tell them the plan in the <b>simple future</b>.</li>
+          <li><b>La semana.</b> Live each day in 3D: find people, vote for a ninot, carry your flowers, order food, and watch the cremà. Drag to look around; click the sparkles to find six <i>Datos de Valencia</i>.</li>
+          <li><b>El blog.</b> Write about your week in the <b>preterite</b>.</li>
+        </ul>
+        <p class="notice">Everything is spoken. Text is off: you can turn it on in <b>⚙ Ajustes</b>, and your report will say so.</p>
+        <p class="notice tts-only"><b>Headphones on?</b> <button class="btn ghost small" id="testVoice" type="button">▶ Test the voice</button></p>
+        <div><button class="btn primary" id="startBtn" type="button">Empezar la semana</button></div>
+      </div>
     </div>
   </section>
+
+  <div class="gamegrid">
+    <section class="card panel" id="taskCard">
+      <div class="panelhead"><h3 id="taskEyebrow">Ahora</h3></div>
+      <p class="task" id="task">Press <b>Empezar la semana</b> to begin.</p>
+      <div class="row ctrls"><button class="btn ghost small" id="helpBtn" type="button">💡 Ayuda</button></div>
+      <div id="ia"></div>
+      <div class="fbs" id="fbs" aria-live="polite"></div>
+    </section>
+    <aside class="sidecol">
+      <section class="card missions"><h3>Tu semana</h3><ol id="missionList"></ol></section>
+      <section class="card"><h3>Tu plan</h3><div id="planView"></div></section>
+      <section class="card libreta">
+        <div class="libtabs"><button type="button" class="on" data-pane="msgList">Mensajes</button><button type="button" data-pane="gemList">Datos</button></div>
+        <ul class="libpane" id="msgList"></ul>
+        <ul class="libpane" id="gemList" hidden></ul>
+      </section>
+    </aside>
+  </div>
+
+  <section class="card summary" id="summary" hidden></section>
+
+  <details class="teacher">
+    <summary>Para el profe</summary>
+    <ul>
+      <li><b>How it works.</b> Three parts. <i>El plan</i>: five family voice messages each give one rule (a busy afternoon, a fixed day for the ofrenda, buñuelos only in the afternoon…). Students place four activities in a 3-day grid; every activity also has a real-world rule (the mascletà is at 2 p.m., the Ofrenda is on 17–18 March, the lights are after dark). Then they write the plan to the family in the simple future. <i>La semana</i>: each planned activity becomes a 3D scene with a listening task: find the cousins from a spoken location, vote for the ninot the president describes (object + clothing colour, with a decoy that shares the object), pick the bouquet Amparo describes (flowers + ribbon, with decoys that share one feature), order buñuelos for three people with <i>usted</i> and pick the total the vendor says, and answer two questions about the cremà announcement. <i>El blog</i>: a preterite post about the week, checked against what actually happened in that playthrough.</li>
+      <li><b>Randomized every time.</b> The family’s rules (always solvable, 1–4 valid plans), so the plan differs by student; the falla themes (five themes, random riders and figures); the cousins’ meeting point; the ninot, its decoy and colours; the bouquets; the three food orders and so the total; the cremà instruction.</li>
+      <li><b>Grammar checked (LC–1.4 b, structured).</b> Simple future in the plan message: regular and irregular stems (haremos, saldremos, tendremos, podremos, vendremos, pondremos, diremos), with corrections for <i>haceremos, saliremos, teneremos…</i>; ir a + infinitive and the present are accepted but nudged toward the future. Preterite in the blog: regular, spelling-change (llegué, busqué, empecé), stem-change (pidió, durmió) and irregular forms (fuimos, hicimos, tuvimos, vimos), with corrections for <i>fuemos, hacimos, estuvemos…</i> and future forms used for past events. Days are checked against the student’s own week.</li>
+      <li><b>Modelled, never marked.</b> The future in every family message, the preterite in reactions, <i>usted</i> with the vendor (noted, not marked: LC–4.1 b), vosotros forms from a Spanish family, valenciano phrases (the mascletà signal, signs).</li>
+      <li><b>Stars.</b> Plan: by wrong checks. Message: all four activities with the right day and a future verb (3★ with 2+ different verbs and no slips). Week: by listening slips across all five scenes. Blog: 5+ preterite verbs (3+ different), 4+ events with the right days, five sentences (3★ with a personal detail and at most one slip).</li>
+      <li><b>Accuracy notes.</b> Mascletà daily 1–19 March at 2 p.m. in the Plaza del Ayuntamiento, started by the fallera mayor in valenciano; the Ofrenda on 17–18 March builds the Virgin’s cloak of carnations on a wooden frame in the Plaza de la Virgen; the cremà is the night of 19 March, the town-square falla last (about 1 a.m.); the ninot indultat is chosen by public vote. Fallas themes and the neighbourhood (“Falla Carrer del Sol”) are invented.</li>
+      <li><b>Text.</b> Audio-only by default. <code>?texto=1</code> turns text on for students who need it; the report says when text was used or when no Spanish voice was found.</li>
+      <li><b>3D.</b> three.js, about 1,000 draw calls per scene. Best on the lab machines with a graphics card.</li>
+      <li><b>Outcomes (30-3Y).</b> LC–1.3 a (celebrations, cultural) · LC–1.4 b (simple future, preterite) · LC–4.1 b · GC–1.5 a · A–3.2 a · A–4.3 a, b · A–4.4 a · LC–2.1 a · LC–2.3 a · LC–5.1 a · LC–5.2 a.</li>
+      <li>Audio uses this computer’s best Spanish voice: <b id="vozName">checking…</b>. Change it in ⚙ Ajustes.</li>
+    </ul>
+  </details>
 </div>
+
+<dialog id="settingsDlg">
+  <h2>Ajustes</h2>
+  <div class="setrow"><div><b>Mostrar texto</b><small>Subtitles and Spanish text. Off by default: try listening first.</small></div><label class="toggle"><input type="checkbox" id="optText"><span></span></label></div>
+  <div class="setrow tts-only"><div><b>Velocidad</b><small>How fast people speak.</small></div><div class="seg"><button type="button" data-speed="lento">Lento</button><button type="button" data-speed="normal">Normal</button><button type="button" data-speed="natural">Natural</button></div></div>
+  <div class="setrow tts-only"><div><b>Voz</b><small>Spanish voices on this computer.</small></div><select id="voiceSel"></select></div>
+  <div class="setrow"><div><b>Efectos de sonido</b><small>Chimes, bangs and crackles.</small></div><label class="toggle"><input type="checkbox" id="optSfx" checked><span></span></label></div>
+  <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn primary" id="closeSettings" type="button">Listo</button></div>
+</dialog>
