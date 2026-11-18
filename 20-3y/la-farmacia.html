@@ -1,0 +1,1952 @@
+<title>La farmacia de guardia</title>
+<meta name="sg-game" content="26">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap">
+<style>
+/* Atardecer: one deliberate dusk look (dark-first, single theme). Layout comment: skyline band on top, glass cards on a night ground. */
+:root {
+  color-scheme: dark;
+  --bg: #17122E; --bg-top: #2A2152;
+  --surface: #221B44; --surface-2: #2C2454; --ink: #F5F1FF; --muted: #BDB4DD; --line: #3E3570;
+  --accent: #5FE0C8; --accent-ink: #14102A; --accent-soft: rgba(95, 224, 200, .14);
+  --sun: #FFC27A; --sun-soft: rgba(255, 194, 122, .14);
+  --ok: #6FE8C9; --ok-soft: rgba(95, 224, 200, .13);
+  --warn: #FFD27A; --warn-soft: rgba(255, 210, 122, .12);
+  --err: #FF9AA5; --err-soft: rgba(255, 120, 135, .14);
+  --tile-bg: #2A2152; --tile-a: #FFC27A; --tile-b: #5FE0C8;
+  --ground: #1E1840; --street: #3A3168; --street-ink: #CFC6EC; --block: #2E2659; --block-line: #4B4185; --park: #22503F;
+  --grass: #22503F; --path: #6B5A45; --stone: #8A8295; --water: #4FA3C9; --led-bg: #0E0B1E; --led: #FFC27A;
+  --wall: #3A3068; --wall-2: #332A5E; --floor: #5E4A3A; --roof: #B85C38; --sky: #2A2152; --wood: #7A5236;
+  --font-display: "Unbounded", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Manrope", "Segoe UI", system-ui, sans-serif;
+}
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.tiles {
+  height: 28px; background-color: var(--tile-bg);
+  background-image:
+    radial-gradient(circle, var(--tile-a) 0 3.5px, transparent 4px),
+    radial-gradient(circle at 0 0, var(--tile-b) 0 8px, transparent 8.5px),
+    radial-gradient(circle at 100% 0, var(--tile-b) 0 8px, transparent 8.5px),
+    radial-gradient(circle at 0 100%, var(--tile-b) 0 8px, transparent 8.5px),
+    radial-gradient(circle at 100% 100%, var(--tile-b) 0 8px, transparent 8.5px);
+  background-size: 28px 28px;
+}
+.wrap {
+  max-width: 1240px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 48px;
+  display: flex; flex-direction: column; gap: 22px;
+}
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 4px; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(32px, 5vw, 48px); line-height: 1; margin: 0; letter-spacing: -.02em; text-wrap: balance; }
+.lede { margin: 8px 0 0; color: var(--muted); max-width: 62ch; }
+.toggles { display: flex; gap: 8px; flex-wrap: wrap; }
+.switch { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); cursor: pointer; font-size: 14px; user-select: none; }
+.switch input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.card h3, h3.lbl { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0; font-weight: 500; }
+.game { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 900px) { .game { grid-template-columns: 1fr; } }
+.side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.stage { overflow: hidden; }
+.stagehead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.stagehead .place { font-family: var(--font-mono); letter-spacing: .04em; text-transform: uppercase; font-size: 12px; color: var(--ink); }
+.viewport { position: relative; }
+.viewport > svg { display: block; width: 100%; height: auto; }
+svg .ico { font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
+svg .roomlbl { font-family: var(--font-mono); font-size: 12px; fill: var(--ink); opacity: .75; letter-spacing: .04em; }
+.nolabels .roomlbl, .nolabels .itemlbl { display: none; }
+
+.intro { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: color-mix(in srgb, var(--bg) 80%, transparent); }
+.intro .box { max-width: 470px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 12px 40px rgba(10, 20, 50, .18); }
+.intro h2 { font-family: var(--font-display); font-weight: 800; font-size: 28px; line-height: 1.05; margin: 0; }
+.intro p { margin: 0; color: var(--muted); }
+.intro ul { margin: 0; padding-left: 18px; font-size: 15px; display: flex; flex-direction: column; gap: 4px; }
+@media (max-width: 560px) { .intro { position: static; } .intro .box { box-shadow: none; } }
+
+.btn { border: 0; border-radius: 12px; padding: 0 16px; min-height: 44px; font-weight: 700; cursor: pointer; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; border: 1.5px solid var(--line); }
+.btn.ghost:hover { border-color: var(--sun); }
+.btn.small { min-height: 32px; padding: 0 12px; font-size: 13px; }
+.btn:disabled { opacity: .45; cursor: default; }
+.choices { display: flex; flex-direction: column; gap: 8px; }
+.choice { text-align: left; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface-2); cursor: pointer; font-size: 16px; }
+.choice:hover { border-color: var(--accent); }
+.choice:disabled { opacity: .5; cursor: default; }
+
+.panel { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.panelhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.task { margin: 0; font-size: 15px; }
+
+.fbs { display: flex; flex-direction: column; gap: 6px; }
+.chip { display: flex; flex-direction: column; gap: 2px; font-size: 14px; padding: 8px 12px; border-radius: 10px; }
+.chip b { font-weight: 700; }
+.chip .en { font-size: 13px; opacity: .85; color: var(--ink); }
+.chip.ok { background: var(--ok-soft); color: var(--ok); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.err { background: var(--err-soft); color: var(--err); }
+.chip.info { background: var(--accent-soft); color: var(--accent); }
+.chip .fix s { opacity: .75; }
+.appear { animation: appear .25s ease-out both; }
+@keyframes appear { from { transform: translateY(6px); opacity: .4; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .appear { animation: none; } }
+
+/* message feed */
+.feedcard { display: flex; flex-direction: column; }
+.feedhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.mini-switch { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); cursor: pointer; }
+.mini-switch input { accent-color: var(--accent); margin: 0; }
+.feed { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; max-height: 360px; min-height: 120px; overflow-y: auto; }
+.feed .empty { margin: 0; color: var(--muted); font-size: 14px; }
+.msg { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; }
+.msg .av { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: #15203b; background: var(--sun); }
+.mhead { display: flex; gap: 8px; align-items: baseline; font-size: 14px; }
+.mhead .time { color: var(--muted); font-size: 12px; font-family: var(--font-mono); }
+.mtext { margin: 2px 0 6px; font-size: 16px; overflow-wrap: anywhere; }
+.mtext.masked { color: var(--muted); font-style: italic; }
+.mctl { display: flex; gap: 6px; flex-wrap: wrap; }
+.mctl button { font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); cursor: pointer; }
+.mctl button:hover { border-color: var(--accent); }
+.mctl .play { color: var(--accent); font-weight: 700; }
+.msg.me { grid-template-columns: minmax(0, 1fr); justify-items: end; }
+.msg.me .bubble { background: var(--accent); color: var(--accent-ink); padding: 8px 12px; border-radius: 14px 14px 4px 14px; max-width: 90%; overflow-wrap: anywhere; }
+.msg.me .fbrow { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; margin-top: 6px; max-width: 95%; }
+.typing { color: var(--muted); font-size: 13px; font-style: italic; margin: 0; }
+.no-tts .play, .no-tts .slow, .no-tts .tts-only { display: none !important; }
+
+/* typing input with accent bar */
+.composer { display: flex; flex-direction: column; gap: 8px; }
+.accentbar { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.accentbar button { min-width: 34px; height: 34px; padding: 0 6px; border-radius: 8px; border: 1px solid var(--line); border-bottom-width: 3px; background: var(--surface-2); font-size: 17px; cursor: pointer; transition: background .2s, border-color .2s; }
+.accentbar button:hover { border-color: var(--accent); }
+.accentbar button.flash { background: var(--sun); border-color: var(--sun); color: #15203b; }
+.accentbar .caps { font-size: 12px; color: var(--muted); margin-left: 4px; }
+.inputrow { display: flex; gap: 8px; }
+.inputrow input, .inputrow textarea { flex: 1; min-width: 0; font-size: 17px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface-2); resize: vertical; }
+.inputrow input:focus, .inputrow textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+@media (max-width: 480px) { .inputrow { flex-wrap: wrap; } .inputrow input, .inputrow textarea { flex-basis: 100%; } .inputrow .btn { flex: 1; } }
+.keyhelp { margin: 0; font-size: 12px; color: var(--muted); }
+kbd { font-family: var(--font-mono); font-size: 12px; padding: 0 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; background: var(--surface-2); color: var(--ink); }
+
+/* mission list */
+.missions { padding: 14px 16px; }
+.missions ol { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; }
+.missions li { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 8px; color: var(--muted); font-size: 14px; min-width: 0; }
+.missions li .n { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-mono); font-size: 12px; border: 1.5px solid var(--line); }
+.missions li .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.missions li .stars { margin-left: auto; color: var(--sun); font-size: 13px; flex: none; }
+.missions li.current { background: var(--accent-soft); color: var(--ink); font-weight: 700; }
+.missions li.current .n { border-color: var(--accent); color: var(--accent); }
+.missions li.done { color: var(--ink); }
+.missions li.done .n { background: var(--ok); border-color: var(--ok); color: var(--surface); }
+
+/* summary */
+.summary { padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+.summary h2 { font-family: var(--font-display); font-weight: 800; font-size: 30px; margin: 0; }
+.summary h3 { margin-bottom: 8px; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 560px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.stat { padding: 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }
+.stat .v { font-family: var(--font-display); font-weight: 800; font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat .k { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge { padding: 6px 12px; border-radius: 999px; font-size: 14px; font-weight: 700; background: var(--sun-soft); color: var(--warn); border: 1px solid var(--sun); }
+.badge.off { background: transparent; color: var(--muted); border: 1px dashed var(--line); font-weight: 400; }
+.mrows { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 640px) { .mrows { grid-template-columns: 1fr; } }
+.mrow { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); font-size: 14px; }
+.mrow .stars { color: var(--sun); }
+.transcript { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; max-width: 80ch; }
+.transcript b { font-weight: 700; }
+.outcomes { font-size: 14px; color: var(--muted); margin: 0; }
+details.teacher { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; }
+details.teacher summary { cursor: pointer; font-weight: 700; }
+details.teacher ul { margin: 12px 0 4px; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; max-width: 80ch; }
+
+/* ---- scene ---- */
+/* Layout: the pharmacy (shelves to click, Doña Fefi behind the counter, the patient, the Caribbean through the window) or the beach for the safety talk; the patient file and the advice list sit under it. Missions, the conversation and the composer are on the right. */
+.trato { font-weight: 800; font-size: 13px; padding: 3px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(95, 224, 200, .4); }
+.trato:empty { display: none; }
+.scene { background: #1A1436; }
+#sceneSvg { width: 100%; height: auto; display: block; }
+#sceneSvg .prod { cursor: default; }
+#sceneSvg.shop .prod { cursor: pointer; }
+#sceneSvg .prod .pr { fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0; transition: opacity .15s; }
+#sceneSvg.shop .prod:hover .pr, #sceneSvg.shop .prod:focus .pr { opacity: 1; }
+#sceneSvg .prod.chosen .pr { opacity: 1; stroke: var(--sun); }
+#sceneSvg .plabel { font-family: var(--font-body); font-size: 9.5px; font-weight: 800; fill: #2A2340; }
+#sceneSvg .poster { font-family: var(--font-body); font-size: 11px; font-weight: 800; fill: #2A2340; }
+#sceneSvg .posterh { font-family: var(--font-display); font-size: 14px; fill: #E8505B; }
+#sceneSvg .people, #sceneSvg .deco { pointer-events: none; }
+#sceneSvg .wave { animation: wave 5s ease-in-out infinite; }
+@keyframes wave { 50% { transform: translateX(-10px); } }
+#sceneSvg .sway { animation: sway 4s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 0; }
+@keyframes sway { 50% { transform: rotate(3deg); } }
+.gem { cursor: pointer; }
+.gem .ring { pointer-events: all; fill: none; stroke: #FFE7A8; stroke-width: 2; stroke-dasharray: 3 4; opacity: 0; transition: opacity .2s; }
+.gem:hover .ring, .gem:focus .ring { opacity: .9; }
+.gem .spark { fill: #FFE7A8; animation: twinkle 2.4s ease-in-out infinite; }
+.gem.found .spark { display: none; }
+@keyframes twinkle { 0%, 100% { opacity: .15; } 50% { opacity: .95; } }
+@media (prefers-reduced-motion: reduce) { #sceneSvg .wave, #sceneSvg .sway, .gem .spark { animation: none; } }
+.gemcard { position: absolute; left: 0; right: 0; margin: 0 auto; top: 12px; width: min(420px, calc(100% - 24px)); z-index: 5; background: rgba(34, 27, 68, .96); border: 1px solid var(--sun); border-radius: 18px; padding: 14px 16px; box-shadow: 0 16px 40px rgba(6, 4, 18, .55); }
+.gemcard p { margin: 0; }
+.gemcard .gtitle { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--sun); margin-bottom: 6px; }
+.gemcard .gen { color: var(--muted); font-size: 14px; margin-top: 6px; }
+.gemcard button { margin-top: 10px; }
+
+.boardrow { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 14px; padding: 14px 16px 16px; border-top: 1px solid rgba(255, 255, 255, .08); }
+@media (max-width: 640px) { .boardrow { grid-template-columns: 1fr; } }
+.ficha { background: #EEF4F2; color: #1E2A2A; border-radius: 12px; padding: 10px 14px 12px; border-top: 10px solid #9AA8B4; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); }
+.ficha h3.lbl { color: #2F6F7A; }
+.ficha dl { margin: 8px 0 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 12px; font-size: 14px; }
+.ficha dt { font-weight: 800; color: #4A5A66; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; padding-top: 2px; }
+.ficha dd { margin: 0; min-width: 0; border-bottom: 1px dashed rgba(30, 42, 42, .2); min-height: 22px; font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", var(--font-body); }
+.ficha dd.empty { color: #9AA8B4; }
+.consejos ul { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.consejos li { display: flex; gap: 8px; align-items: baseline; color: var(--ink); }
+.consejos li .m { flex: none; width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 11px; font-weight: 800; transform: translateY(3px); }
+.consejos li.good .m { background: var(--ok); color: #14102A; }
+.consejos li.bad .m { background: var(--err); color: #14102A; }
+.consejos li.prod .m { background: var(--sun); color: #14102A; }
+.consejos li.empty { color: var(--muted); }
+.missions .gems { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+.missions .gems b { color: var(--sun); }
+.missions ol { grid-template-columns: 1fr; }
+.missions li .t { white-space: normal; }
+.summary .mrows { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 640px) { .summary .mrows { grid-template-columns: 1fr; } }
+#writeForm .btn, #talkForm .btn { align-self: flex-end; min-height: 44px; }
+
+
+/* ---- Atardecer theme layer ---- */
+body { background: linear-gradient(180deg, var(--bg-top) 0, var(--bg) 560px) no-repeat, var(--bg); color: var(--ink); font-family: var(--font-body); }
+.tiles { display: none; }
+.dusk-band { position: relative; height: 112px; overflow: hidden; }
+.dusk-band svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+h1 { font-family: var(--font-display); font-weight: 700; letter-spacing: -.01em; }
+.eyebrow { font-family: var(--font-body); font-weight: 800; letter-spacing: .16em; color: var(--accent); }
+.lede { color: var(--muted); }
+.card { background: rgba(34, 27, 68, .84); border: 1px solid rgba(255, 255, 255, .1); border-radius: 22px; box-shadow: 0 14px 40px rgba(6, 4, 18, .35); }
+.card h3, h3.lbl, .missions h3, .help h3 { font-family: var(--font-body); font-weight: 800; letter-spacing: .14em; color: var(--muted); }
+.switch { background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .16); color: var(--ink); }
+.switch:hover { border-color: rgba(255, 255, 255, .34); }
+.btn { border-radius: 999px; font-family: var(--font-body); font-weight: 800; }
+.btn.primary { background: var(--sun); color: #17122E; box-shadow: 0 0 22px rgba(255, 194, 122, .35); }
+.btn.primary:hover { box-shadow: 0 0 32px rgba(255, 194, 122, .6); }
+.btn.ghost { border: 1px solid rgba(255, 255, 255, .24); color: var(--ink); }
+.choice { background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .16); border-radius: 16px; color: var(--ink); transition: border-color .15s, background .15s, transform .1s; }
+.choice:hover { border-color: var(--accent); background: rgba(95, 224, 200, .08); }
+.choice:active { transform: scale(.99); }
+input[type="text"] { background: rgba(255, 255, 255, .07) !important; border: 1px solid rgba(255, 255, 255, .24) !important; color: var(--ink); border-radius: 999px !important; padding-inline: 20px !important; }
+input[type="text"]:focus { border-color: var(--accent) !important; box-shadow: 0 0 0 3px var(--accent-soft) !important; outline: none; }
+input[type="text"]::placeholder { color: #8F86B5; }
+.accentbar button { background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .2); border-radius: 10px; color: var(--ink); }
+.accentbar button.flash { background: var(--sun); border-color: var(--sun); color: #17122E; }
+.chip { border-radius: 14px; }
+.stat { background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); border-radius: 16px; }
+.stat .v, .summary h2, .intro h2, .lucia h2 { font-family: var(--font-display); font-weight: 700; }
+.badge { background: var(--sun-soft); color: var(--sun); border-color: rgba(255, 194, 122, .6); }
+.badge.off { color: var(--muted); border-color: rgba(255, 255, 255, .18); }
+.intro { background: rgba(23, 18, 46, .6); backdrop-filter: blur(4px); display: flex; overflow-y: auto; }
+.intro { z-index: 6; }
+.intro .box { margin: auto; }
+.intro .box { background: rgba(34, 27, 68, .94); border: 1px solid rgba(255, 255, 255, .14); box-shadow: 0 20px 60px rgba(6, 4, 18, .5); }
+details.teacher { background: rgba(34, 27, 68, .6); border: 1px solid rgba(255, 255, 255, .1); }
+kbd { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .2); color: var(--ink); }
+.av.portrait, .mini, .lucia svg { background: radial-gradient(circle at 50% 38%, #7B4A80, #2A2152); overflow: hidden; }
+.av.portrait { padding: 0; }
+.av.portrait svg { width: 100%; height: 100%; display: block; }
+.lucia svg { border-radius: 50%; box-shadow: 0 0 0 3px rgba(255, 194, 122, .35); }
+.missions li.done .n { color: #14102A; }
+.sfx-switch svg { width: 16px; height: 16px; }
+@keyframes pop { 0% { transform: scale(.7); opacity: 0 } 60% { transform: scale(1.06); opacity: 1 } 100% { transform: scale(1) } }
+.chip.ok { animation: pop .35s cubic-bezier(.2, .9, .3, 1.3) both; }
+.badge:not(.off) { animation: pop .45s cubic-bezier(.2, .9, .3, 1.3) both; }
+.badge:not(.off):nth-child(2) { animation-delay: .1s } .badge:not(.off):nth-child(3) { animation-delay: .2s }
+.badge:not(.off):nth-child(4) { animation-delay: .3s } .badge:not(.off):nth-child(5) { animation-delay: .4s } .badge:not(.off):nth-child(6) { animation-delay: .5s }
+@media (prefers-reduced-motion: reduce) { .chip.ok, .badge:not(.off) { animation: none; } }
+</style>
+
+<div class="dusk-band" aria-hidden="true"><svg viewBox="0 0 1440 112" preserveAspectRatio="xMidYMax slice"><defs><linearGradient id="bandSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#241D4D"/><stop offset=".55" stop-color="#6A3F7E"/><stop offset="1" stop-color="#E7896A"/></linearGradient><radialGradient id="bandSun"><stop offset="0" stop-color="#FFE3A3"/><stop offset=".45" stop-color="#FFC27A" stop-opacity=".75"/><stop offset="1" stop-color="#FFC27A" stop-opacity="0"/></radialGradient><radialGradient id="bandBulb"><stop offset="0" stop-color="#FFE7A8"/><stop offset="1" stop-color="#FFC75F" stop-opacity="0"/></radialGradient></defs><rect width="1440" height="112" fill="url(#bandSky)"/><circle cx="1080" cy="100" r="78" fill="url(#bandSun)"/><path d="M0 112 V66 H80 V58 H140 V70 H220 V52 H300 V64 H380 V56 H460 V68 H540 V54 H620 V62 H700 V50 H780 V60 H860 V54 H940 V64 H1200 V56 H1280 V66 H1360 V52 H1440 V112 Z" fill="#4A3170" opacity=".85"/><path d="M0 112 V78 H60 V70 H110 V84 H150 V64 H210 V74 H260 V60 H300 V80 H360 V68 H420 V76 H470 V58 H520 V72 H580 V66 H640 V80 H700 V62 H760 V74 H820 V68 H880 V78 H930 V60 H990 V70 H1000 V40 L1012 10 L1024 40 V56 H1060 V48 A16 16 0 0 1 1092 48 V56 H1120 V40 L1132 10 L1144 40 V70 H1190 V64 H1250 V76 H1300 V62 H1360 V74 H1440 V112 Z" fill="#2A2152"/><g fill="#1F1840"><rect x="180" y="58" width="16" height="10" rx="3"/><rect x="560" y="60" width="14" height="10" rx="3"/><rect x="1270" y="56" width="16" height="10" rx="3"/></g><g fill="#FFC27A" opacity=".55"><rect x="120" y="90" width="6" height="8"/><rect x="330" y="88" width="6" height="8"/><rect x="610" y="92" width="6" height="8"/><rect x="900" y="90" width="6" height="8"/><rect x="1072" y="70" width="6" height="9"/><rect x="1330" y="90" width="6" height="8"/></g><path d="M-10 18 Q 720 70 1450 22" stroke="#14102A" stroke-width="1.5" fill="none"/><g><circle cx="112" cy="29" r="10" fill="url(#bandBulb)"/><circle cx="112" cy="29" r="2.6" fill="#FFE7A8"/><circle cx="233" cy="36" r="10" fill="url(#bandBulb)"/><circle cx="233" cy="36" r="2.6" fill="#FFE7A8"/><circle cx="355" cy="41" r="10" fill="url(#bandBulb)"/><circle cx="355" cy="41" r="2.6" fill="#FFE7A8"/><circle cx="477" cy="45" r="10" fill="url(#bandBulb)"/><circle cx="477" cy="45" r="2.6" fill="#FFE7A8"/><circle cx="598" cy="47" r="10" fill="url(#bandBulb)"/><circle cx="598" cy="47" r="2.6" fill="#FFE7A8"/><circle cx="720" cy="48" r="10" fill="url(#bandBulb)"/><circle cx="720" cy="48" r="2.6" fill="#FFE7A8"/><circle cx="842" cy="48" r="10" fill="url(#bandBulb)"/><circle cx="842" cy="48" r="2.6" fill="#FFE7A8"/><circle cx="963" cy="46" r="10" fill="url(#bandBulb)"/><circle cx="963" cy="46" r="2.6" fill="#FFE7A8"/><circle cx="1085" cy="43" r="10" fill="url(#bandBulb)"/><circle cx="1085" cy="43" r="2.6" fill="#FFE7A8"/><circle cx="1207" cy="38" r="10" fill="url(#bandBulb)"/><circle cx="1207" cy="38" r="2.6" fill="#FFE7A8"/><circle cx="1328" cy="32" r="10" fill="url(#bandBulb)"/><circle cx="1328" cy="32" r="2.6" fill="#FFE7A8"/></g></svg></div>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Español 20-3Y · Escena 6 · Costa Rica</p>
+      <h1>La farmacia de guardia</h1>
+      <p class="lede">Sixth stop: Puerto Viejo, on Costa Rica’s Caribbean coast. You’re volunteering at Doña Fefi’s pharmacy, the one that stays open late. Locals and tourists come in with sunburns, sprains and bites. Find out what’s wrong, give good advice, and know when someone needs a doctor. Then help the lifeguard with a safety talk.</p>
+    </div>
+    <div class="toggles">
+      <label class="switch sfx-switch"><input type="checkbox" id="sfxOn" checked> Efectos de sonido</label>
+      <label class="switch tts-only"><input type="checkbox" id="challenge"> Desafío: solo audio</label>
+      <button class="switch" id="restart" type="button">Empezar de nuevo</button>
+    </div>
+  </header>
+
+  <div class="game">
+    <section class="card stage" aria-label="La farmacia">
+      <div class="stagehead">
+        <span class="place" id="placeName">Farmacia Doña Fefi · Puerto Viejo de Talamanca</span>
+        <span class="trato" id="trato"></span>
+      </div>
+      <div class="viewport scene" id="viewport">
+        <svg id="sceneSvg" viewBox="0 0 760 300" role="group" aria-label="La farmacia"></svg>
+        <div class="intro" id="intro">
+          <div class="box">
+            <p class="eyebrow">Escena 6 · Costa Rica</p>
+            <h2>La farmacia de guardia</h2>
+            <p>Every playthrough brings different patients and problems.</p>
+            <ul>
+              <li><b>Pregunta:</b> what’s wrong, where it hurts, since when, what happened. Adults: <i>usted</i> (<i>¿Qué le pasa? ¿Le duele…?</i>). Teens: <i>tú</i> (<i>¿Qué te pasa? ¿Te duele…?</i>).</li>
+              <li><b>Aconseja:</b> give at least two pieces of advice with <i>tener que</i> (<i>Tiene que descansar. Tienes que beber agua.</i>) and recommend something from the shelf (click it).</li>
+              <li>One patient needs a doctor, not the pharmacy. Spot them!</li>
+              <li><b>La charla:</b> tell a group of kids the beach rules with <i>ustedes</i> commands (<i>Pónganse bloqueador.</i>).</li>
+              <li>Click the sparkles for <b>Datos de Costa Rica</b>.</li>
+            </ul>
+            <div><button class="btn primary" id="startBtn" type="button">Empezar</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="boardrow">
+        <div class="ficha">
+          <h3 class="lbl" id="fichaTitle">Ficha del paciente</h3>
+          <dl id="ficha"></dl>
+        </div>
+        <div class="consejos">
+          <h3 class="lbl" id="adviceTitle">Tus consejos</h3>
+          <ul id="advice"></ul>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="card missions"><h3>La guardia</h3><ol id="missionList"></ol><p class="gems" id="gemCount"></p></div>
+      <div class="card feedcard">
+        <div class="feedhead"><h3>Conversación</h3><label class="mini-switch tts-only"><input type="checkbox" id="autoplay" checked> Audio automático</label></div>
+        <div class="feed" id="feed" aria-live="polite"></div>
+      </div>
+      <div class="card panel">
+        <div class="panelhead"><h3>Tu tarea</h3><button class="btn ghost small" id="hintBtn" type="button">Pista</button></div>
+        <p class="task" id="task">Press Empezar to begin.</p>
+        <div class="composer" id="talkBox" hidden>
+          <div class="accentbar" id="accentBar"></div>
+          <form class="inputrow" id="talkForm" autocomplete="off">
+            <input type="text" id="talk" placeholder="¿Qué le pasa?" aria-label="What you say" spellcheck="false">
+            <button class="btn primary" type="submit">Decir</button>
+          </form>
+        </div>
+        <div class="composer" id="writeBox" hidden>
+          <div class="accentbar" id="accentBar2"></div>
+          <form class="inputrow" id="writeForm" autocomplete="off">
+            <textarea id="write" rows="5" placeholder="¡Hola, chicos! Pónganse bloqueador…" aria-label="Your safety talk" spellcheck="false"></textarea>
+            <button class="btn primary" type="submit">Enviar</button>
+          </form>
+        </div>
+        <div class="fbs" id="fbs" aria-live="polite"></div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="card summary" id="summary" hidden></section>
+
+  <details class="teacher">
+    <summary>Para el profe: how this scene works</summary>
+    <ul>
+      <li><b>Los pacientes:</b> four per playthrough (two adults, two teens), drawn from seven everyday problems (sunburn, sprained ankle, cold, coral cut, mosquito bites, upset stomach, too much sun) plus one case that needs a doctor (high fever for three days, a badly swollen ankle after a fall, or a deep cut that won’t stop bleeding). Patients only say what they’re asked: what’s wrong (<i>¿Qué le pasa?</i>), where it hurts (<i>¿Dónde le duele? ¿Le duele la cabeza?</i>), since when (<i>¿Desde cuándo?</i>, answered with <i>hace dos días</i>, modelled), what happened (answered in the preterite, modelled), fever and other symptoms. Answers fill in the patient file.</li>
+      <li><b>Advice:</b> at least two good pieces of advice, with <i>tener que</i> + infinitive (<i>Tiene que ponerse crema de aloe. Tienes que descansar.</i>); for teens, affirmative tú commands also count (<i>¡Bebe agua!</i>). Plus one suitable product from the shelf (click to insert <i>Le/Te recomiendo…</i>). Bad advice (<i>tomar sol</i> with a sunburn, <i>correr</i> with a sprain, <i>rascarse</i> with bites) is caught, with negation understood (<i>no tomar sol</i> is good advice). For the serious case, the right answer is <i>Tiene que ir al médico / al EBAIS</i>; selling a product instead gets corrected by Doña Fefi.</li>
+      <li><b>Checked forms:</b> register (usted with adults, tú with teens) in questions and advice; <i>tener que</i> + infinitive (<i>tienes que bebe → tienes que beber</i>; <i>tiene que ponerte → ponerse</i>); <i>doler</i> agreement (<i>¿Le duelen la cabeza? → ¿Le duele…?</i>, <i>¿Te duele los pies? → ¿Te duelen…?</i>).</li>
+      <li><b>La charla de seguridad:</b> the lifeguard asks for the beach rules for a group of kids, from a poster of pictures (sun cream, water, cap, red flag, lifeguard, rip current, never alone). At least four affirmative <i>ustedes</i> commands, three of them about the poster (<i>Pónganse bloqueador. Beban agua. Naden cerca del salvavidas. Si hay corriente, naden paralelo a la playa.</i>). Tú commands to a group (<i>ponte → pónganse</i>), statements (<i>usan → usen</i>), infinitives (<i>usar → usen</i>) and usted forms (<i>use → usen</i>) are corrected; written accents on <i>pónganse, quédense</i> are noted. The rip-current advice (swim parallel to the shore) is real Costa Rican beach safety.</li>
+      <li><b>Hidden gems:</b> six <i>Datos de Costa Rica</i>: <i>¡pura vida!</i>, the sloth, the howler monkey (<i>mono congo</i>), sea turtles, the Caribbean <i>patí</i> (with Limón’s Afro-Caribbean heritage) and the <i>EBAIS</i> clinic. Costa Rican usage: <i>zancudos</i> (mosquitoes), <i>mae, diay, tuanis, upe, ¡qué chiva!</i>, and Doña Fefi’s note on <i>ustedeo</i> (many Costa Ricans use usted even with friends and family).</li>
+      <li>Outcomes practised (20-3Y): LC–1.3 a (health and safety: physical states, a visit to the doctor) · LC–1.4 b (tener que + infinitive; affirmative tú and ustedes commands; reflexive verbs) · LC–1.4 a (preterite, hace + time, modelled) · LC–1.4 c (ser, estar, tener) · A–3.1 a, d, e (requests, encouraging or discouraging a course of action, instructions) · A–1.1 a · A–2.2 a (inquire about and respond to feelings) · A–4.3 a–b (recognize a problem and solve it) · LC–2.1 a · LC–3.1 a · LC–3.2 a · LC–3.3 a (the poster) · LC–4.1 a–b · LC–4.4 a · GC–1.2 b · GC–1.4 a · GC–2.2 a.</li>
+      <li>This is a language game, not first-aid training: the advice is simple and general, and the serious cases always go to a doctor.</li>
+      <li>Audio uses one Spanish voice from this computer: <b id="vozName">checking…</b>. If it says “none found”, the audio buttons are hidden and the scene works with text only.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+(() => {
+'use strict';
+/* ===================== Sound design (Web Audio, no files) =====================
+   Warm marimba-and-chime palette that matches the dusk look. Every sound is quiet,
+   short and tonal; mistakes get a soft low "bonk", never a buzzer. */
+const SFX = (() => {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  let ctx = null, out = null, muted = false, last = { t: 0, p: -1 }, holdUntil = 0, noiseBuf = null;
+  try { muted = localStorage.getItem('juego-sfx-off') === '1'; } catch (e) {}
+  const N = m => 440 * Math.pow(2, (m - 69) / 12);
+  function init() {
+    if (!AC) return null;
+    if (!ctx) {
+      try {
+        ctx = new AC();
+        const comp = ctx.createDynamicsCompressor();
+        comp.threshold.value = -18; comp.ratio.value = 4;
+        out = ctx.createGain(); out.gain.value = 0.42;
+        out.connect(comp); comp.connect(ctx.destination);
+      } catch (e) { ctx = null; return null; }
+    }
+    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+    return ctx;
+  }
+  function env(g, t, a, peak, d) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + d); }
+  function tone(f, t, { type = 'sine', a = 0.006, d = 0.3, v = 0.2, to = 0, pan = 0 } = {}) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    if (to) o.frequency.exponentialRampToValueAtTime(to, t + a + d);
+    env(g, t, a, v, d);
+    let node = g;
+    if (pan && ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; g.connect(p); node = p; }
+    o.connect(g); node.connect(out); o.start(t); o.stop(t + a + d + 0.05);
+  }
+  function mallet(f, t, v = 0.2, d = 0.45, pan = 0) {
+    tone(f, t, { v, d, pan });
+    tone(f * 4, t, { v: v * 0.16, d: d * 0.22, pan });
+    tone(f * 2.01, t, { type: 'triangle', v: v * 0.1, d: d * 0.5, pan });
+  }
+  function sparkle(t, n = 5, base = 88) {
+    const steps = [0, 4, 7, 12, 16, 19, 24];
+    for (let k = 0; k < n; k++) tone(N(base + steps[k % 7]), t + k * 0.045, { v: 0.05, d: 0.28, pan: k % 2 ? 0.45 : -0.45 });
+  }
+  function noise(t, { d = 0.3, v = 0.12, type = 'bandpass', f = 1200, to = 0, q = 0.8 } = {}) {
+    if (!noiseBuf) {
+      noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+      const ch = noiseBuf.getChannelData(0);
+      for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+    }
+    const s = ctx.createBufferSource(), fl = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noiseBuf; fl.type = type; fl.frequency.setValueAtTime(f, t);
+    if (to) fl.frequency.exponentialRampToValueAtTime(to, t + d);
+    fl.Q.value = q; env(g, t, 0.01, v, d);
+    s.connect(fl); fl.connect(g); g.connect(out); s.start(t); s.stop(t + d + 0.05);
+  }
+  // [priority, play(t)]: a louder event within 0.22 s wins over a quieter one
+  const SOUNDS = {
+    tap: [0, t => tone(1320, t, { v: 0.04, d: 0.035 })],
+    soft: [1, t => mallet(N(76), t, 0.07, 0.2)],
+    message: [1, t => { tone(N(81), t, { v: 0.08, d: 0.12 }); tone(N(88), t + 0.07, { v: 0.07, d: 0.2 }); }],
+    step: [0, t => { noise(t, { d: 0.05, v: 0.07, type: 'lowpass', f: 520 }); noise(t + 0.17, { d: 0.05, v: 0.05, type: 'lowpass', f: 460 }); }],
+    turn: [0, t => noise(t, { d: 0.12, v: 0.035, f: 900, to: 1800, q: 1.2 })],
+    whoosh: [1, t => noise(t, { d: 0.5, v: 0.08, f: 300, to: 2600, q: 0.9 })],
+    hint: [2, t => { mallet(N(79), t, 0.09, 0.5); mallet(N(86), t + 0.12, 0.07, 0.6); }],
+    wrong: [2, t => { tone(N(57), t, { type: 'triangle', v: 0.13, d: 0.2, to: N(53) }); tone(N(53), t + 0.11, { type: 'triangle', v: 0.09, d: 0.28, to: N(48) }); }],
+    correct: [3, t => { mallet(N(76), t, 0.17); mallet(N(83), t + 0.09, 0.17, 0.6); }],
+    perfect: [4, t => { mallet(N(76), t, 0.15); mallet(N(79), t + 0.08, 0.15); mallet(N(84), t + 0.16, 0.17, 0.7); sparkle(t + 0.24, 4, 91); }],
+    star: [4, t => sparkle(t, 6, 88)],
+    door: [3, t => { noise(t, { d: 0.45, v: 0.08, type: 'highpass', f: 2600 }); mallet(N(76), t + 0.08, 0.11, 0.5); mallet(N(72), t + 0.34, 0.11, 0.7); }],
+    bell: [3, t => { [79, 76, 72, 79].forEach((m, k) => mallet(N(m), t + k * 0.26, 0.14, 0.8)); }],
+    mission: [5, t => {
+      [72, 76, 79, 84].forEach((m, k) => mallet(N(m), t + k * 0.085, 0.16, 0.6, (k - 1.5) * 0.2));
+      [60, 67, 76].forEach(m => tone(N(m), t + 0.34, { type: 'triangle', v: 0.045, a: 0.08, d: 0.9 }));
+      sparkle(t + 0.38, 5, 96);
+    }],
+    fanfare: [6, t => {
+      [[67, 0, .14], [72, .14, .14], [76, .28, .14], [79, .42, .28], [76, .7, .14], [79, .84, .5]].forEach(([m, dt, d]) => {
+        mallet(N(m), t + dt, 0.17, d + 0.4);
+        tone(N(m), t + dt, { type: 'triangle', v: 0.045, d: d + 0.2 });
+      });
+      [48, 55, 64, 67, 72].forEach(m => tone(N(m), t + 0.84, { type: 'triangle', v: 0.04, a: 0.1, d: 1.6 }));
+      sparkle(t + 1.0, 7, 96);
+    }],
+    badge: [5, t => { mallet(N(91), t, 0.09, 0.4); sparkle(t + 0.05, 3, 96); }]
+  };
+  function play(name, { delay = 0, force = false } = {}) {
+    if (muted) return;
+    const s = SOUNDS[name];
+    if (!s || !init()) return;
+    const now = ctx.currentTime, [p, fn] = s;
+    if (!force && now < holdUntil) return;
+    if (!force && now - last.t < 0.22 && p < last.p) return;
+    last = { t: now, p };
+    try { fn(now + 0.01 + delay); } catch (e) {}
+  }
+  const later = (ms, f) => setTimeout(() => { if (!muted && init()) { try { f(ctx.currentTime + 0.01); } catch (e) {} } }, ms);
+  return {
+    play,
+    hold(ms) { if (init()) holdUntil = ctx.currentTime + ms / 1000; },
+    // a finished mission: rising arpeggio, then one rising ping per star earned
+    mission(stars = 0, delayMs = 0) {
+      later(delayMs, t => { last = { t, p: 5 }; SOUNDS.mission[1](t); });
+      for (let k = 0; k < stars; k++) later(delayMs + 560 + k * 170, t => { mallet(N(88 + k * 4), t, 0.1, 0.5); sparkle(t, 2, 96 + k * 3); });
+    },
+    // end of a scene: short fanfare, then a sparkle for every badge that pops in
+    celebrate(badges = 0) {
+      later(0, t => { last = { t, p: 6 }; SOUNDS.fanfare[1](t); });
+      for (let k = 0; k < Math.min(badges, 6); k++) later(1700 + k * 260, t => SOUNDS.badge[1](t));
+    },
+    muted: () => muted,
+    setMuted(m) { muted = m; try { localStorage.setItem('juego-sfx-off', m ? '1' : '0'); } catch (e) {} }
+  };
+})();
+
+/* ===================== Cast portraits (dusk style) ===================== */
+const PORTRAIT_BG = '<rect x="45" y="25" width="210" height="235" fill="#4A3170"/><circle cx="150" cy="140" r="98" fill="#6A3F7E" opacity=".6"/>';
+const LUCIA_MOUTH = { neutral: 'M134 194 Q150 206 166 194', happy: 'M128 188 Q150 216 172 188', think: 'M136 198 H164' };
+function luciaSVG(mood = 'happy', bg = true) {
+  return `<svg viewBox="45 25 210 235" aria-hidden="true">${bg ? PORTRAIT_BG : ''}`
+    + '<path d="M70 150 C 60 70 110 40 150 40 C 200 40 240 70 232 150 C 232 190 220 210 210 215 L 92 215 C 80 205 70 190 70 150 Z" fill="#24182E"/>'
+    + '<rect x="132" y="212" width="36" height="54" rx="14" fill="#8E5A48"/>'
+    + '<path d="M58 420 C 58 312 95 258 150 258 C 205 258 242 312 242 420 Z" fill="#2F6F7A"/>'
+    + '<path d="M126 260 Q150 292 174 260 Z" fill="#8E5A48"/>'
+    + '<g fill="#5FE0C8" opacity=".85"><circle cx="112" cy="286" r="5"/><circle cx="188" cy="286" r="5"/></g>'
+    + '<circle cx="72" cy="156" r="13" fill="#9C6650"/><circle cx="228" cy="156" r="13" fill="#A86E56"/>'
+    + '<circle cx="150" cy="150" r="80" fill="#B0745A"/>'
+    + '<path d="M196 86 C 226 108 236 150 224 190 C 214 214 196 226 176 230" stroke="#FFB27A" stroke-width="4" fill="none" stroke-linecap="round" opacity=".9"/>'
+    + '<path d="M71 142 C 78 82 128 60 160 70 C 192 62 230 92 230 142 C 206 122 186 106 160 103 C 140 122 106 134 71 142 Z" fill="#24182E"/>'
+    + '<g transform="translate(204 86)"><ellipse cx="-17" cy="12" rx="11" ry="5" fill="#3E8E7E" transform="rotate(28 -17 12)"/><ellipse cx="16" cy="17" rx="11" ry="5" fill="#3E8E7E" transform="rotate(-38 16 17)"/>'
+    + '<g fill="#F06C8E"><ellipse cx="0" cy="-12" rx="9" ry="12"/><ellipse cx="0" cy="-12" rx="9" ry="12" transform="rotate(72)"/><ellipse cx="0" cy="-12" rx="9" ry="12" transform="rotate(144)"/><ellipse cx="0" cy="-12" rx="9" ry="12" transform="rotate(216)"/><ellipse cx="0" cy="-12" rx="9" ry="12" transform="rotate(288)"/></g>'
+    + '<g fill="#FF9DB6"><ellipse cx="0" cy="-7" rx="5" ry="7" transform="rotate(36)"/><ellipse cx="0" cy="-7" rx="5" ry="7" transform="rotate(108)"/><ellipse cx="0" cy="-7" rx="5" ry="7" transform="rotate(180)"/><ellipse cx="0" cy="-7" rx="5" ry="7" transform="rotate(252)"/><ellipse cx="0" cy="-7" rx="5" ry="7" transform="rotate(324)"/></g>'
+    + '<circle r="6" fill="#FFC27A"/><circle r="2.5" fill="#E8955A"/></g>'
+    + '<circle cx="72" cy="178" r="5" fill="#FFC27A"/><circle cx="228" cy="178" r="5" fill="#FFC27A"/>'
+    + '<path d="M108 138 q14 -7 28 0" stroke="#24182E" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M164 138 q14 -7 28 0" stroke="#24182E" stroke-width="5" fill="none" stroke-linecap="round"/>'
+    + '<ellipse cx="122" cy="161" rx="8" ry="10" fill="#1C1733"/><ellipse cx="178" cy="161" rx="8" ry="10" fill="#1C1733"/>'
+    + '<circle cx="125" cy="157" r="2.6" fill="#FFE7A8"/><circle cx="181" cy="157" r="2.6" fill="#FFE7A8"/>'
+    + '<circle cx="106" cy="186" r="12" fill="#E06F7A" opacity=".35"/><circle cx="194" cy="186" r="12" fill="#E06F7A" opacity=".35"/>'
+    + `<path d="${LUCIA_MOUTH[mood] || LUCIA_MOUTH.happy}" stroke="#3A1626" stroke-width="5" fill="${mood === 'happy' ? '#5A2030' : 'none'}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+const CAST = {
+  lucia: luciaSVG('happy'),
+  abuela: `<svg viewBox="45 25 210 235" aria-hidden="true">${PORTRAIT_BG}`
+    + '<circle cx="150" cy="64" r="30" fill="#D7D0E3"/><rect x="132" y="200" width="36" height="40" rx="12" fill="#A06A54"/>'
+    + '<path d="M50 260 C 52 222 95 214 150 214 C 205 214 248 222 250 260 Z" fill="#9B4F7E"/><path d="M92 236 L150 262 L208 236" stroke="#E7A8C8" stroke-width="5" fill="none"/>'
+    + '<circle cx="76" cy="150" r="12" fill="#A06A54"/><circle cx="224" cy="150" r="12" fill="#A06A54"/><circle cx="150" cy="145" r="74" fill="#B98068"/>'
+    + '<path d="M78 140 C 80 92 114 72 150 72 C 186 72 220 92 222 140 C 206 114 182 102 150 102 C 118 102 94 114 78 140 Z" fill="#D7D0E3"/>'
+    + '<g fill="none" stroke="#2A1F4A" stroke-width="4.5"><circle cx="124" cy="150" r="16"/><circle cx="176" cy="150" r="16"/><path d="M140 149 h20"/></g>'
+    + '<circle cx="124" cy="151" r="5" fill="#1C1733"/><circle cx="176" cy="151" r="5" fill="#1C1733"/>'
+    + '<circle cx="104" cy="182" r="11" fill="#E07A8A" opacity=".35"/><circle cx="196" cy="182" r="11" fill="#E07A8A" opacity=".35"/>'
+    + '<path d="M132 190 Q150 206 168 190" stroke="#4A2030" stroke-width="5" fill="none" stroke-linecap="round"/>'
+    + '<circle cx="76" cy="168" r="5" fill="#FFC27A"/><circle cx="224" cy="168" r="5" fill="#FFC27A"/>'
+    + '<path d="M190 72 C 214 86 226 110 226 140" stroke="#FFB27A" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".85"/></svg>',
+  senor: `<svg viewBox="45 25 210 235" aria-hidden="true">${PORTRAIT_BG}`
+    + '<rect x="132" y="200" width="36" height="40" rx="12" fill="#8E5A44"/>'
+    + '<path d="M50 260 C 52 222 95 214 150 214 C 205 214 248 222 250 260 Z" fill="#3E6E9E"/><path d="M124 216 L150 242 L176 216 Z" fill="#2E5480"/>'
+    + '<circle cx="76" cy="150" r="12" fill="#94603F"/><circle cx="224" cy="150" r="12" fill="#94603F"/><circle cx="150" cy="148" r="72" fill="#A46B50"/>'
+    + '<path d="M80 152 C 78 124 88 108 102 102 L 104 146 Z" fill="#8F8A9E"/><path d="M220 152 C 222 124 212 108 198 102 L 196 146 Z" fill="#8F8A9E"/>'
+    + '<ellipse cx="150" cy="94" rx="100" ry="18" fill="#D9B36A"/><path d="M98 94 C 100 54 122 40 150 40 C 178 40 200 54 202 94 Z" fill="#E6C37A"/><rect x="99" y="78" width="102" height="10" fill="#7A3B2A"/>'
+    + '<path d="M110 136 q14 -6 28 0" stroke="#2A1F1A" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M162 136 q14 -6 28 0" stroke="#2A1F1A" stroke-width="6" fill="none" stroke-linecap="round"/>'
+    + '<circle cx="124" cy="152" r="5.5" fill="#1C1733"/><circle cx="176" cy="152" r="5.5" fill="#1C1733"/>'
+    + '<path d="M118 182 C 128 170 145 172 150 178 C 155 172 172 170 182 182 C 170 188 158 186 150 184 C 142 186 130 188 118 182 Z" fill="#3A2A26"/>'
+    + '<path d="M136 196 Q150 204 164 196" stroke="#4A2030" stroke-width="4" fill="none" stroke-linecap="round"/>'
+    + '<path d="M196 112 C 214 126 222 148 220 172" stroke="#FFB27A" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".85"/></svg>'
+};
+const portraitHTML = who => CAST[who] || '';
+
+/* sound toggle in the header */
+function wireSfxToggle() {
+  window.__sfx = SFX;
+  const tog = document.getElementById('sfxOn');
+  if (!tog) return;
+  tog.checked = !SFX.muted();
+  tog.addEventListener('change', () => { SFX.setMuted(!tog.checked); if (tog.checked) SFX.play('correct', { force: true }); });
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('button, .choice, .opt, [role="button"]');
+    if (b && !b.disabled) SFX.play('tap');
+  }, true);
+  const sb = document.getElementById('startBtn');
+  if (sb) sb.addEventListener('click', () => SFX.play('whoosh', { force: true }));
+}
+
+/* ===================== Shared engine (Español 10-3Y scenes) ===================== */
+const $ = id => document.getElementById(id);
+const SPEED = window.__testSpeed || 1;
+const sleep = ms => new Promise(r => setTimeout(r, ms * SPEED));
+const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+const rand = n => Math.floor(Math.random() * n);
+const pick = a => a[rand(a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const capFirst = s => s.charAt(0).toUpperCase() + s.slice(1);
+const stars = n => '★'.repeat(n) + '☆'.repeat(3 - n);
+
+/* ---- text ---- */
+const stripMarks = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '');
+const norm = s => stripMarks(s.toLowerCase()).replace(/[¿?¡!.,;:"“”«»()\-]/g, ' ').replace(/\s+/g, ' ').trim();
+const words = s => s.match(/[A-Za-zÀ-ÖØ-öø-ÿ]+/g) || [];
+const keyOf = w => stripMarks(w.toLowerCase());
+const ENGLISH = new Set(['my', 'name', 'is', 'i', 'am', 'im', 'years', 'old', 'hello', 'from', 'the', 'what', 'how', 'you', 'are', 'and', 'goodbye', 'do', 'like', 'your', 'good', 'thanks', 'where', 'who', 'ate', 'cake', 'did', 'have', 'wearing', 'because', 'favorite', 'favourite', 'class', 'going', 'to', 'tomorrow', 'wear']);
+const looksEnglish = n => n.split(' ').filter(w => ENGLISH.has(w)).length >= 2;
+const NUMWORDS = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve', 'veinte', 'veintiuno', 'veintidós', 'veintitrés', 'veinticuatro', 'veinticinco', 'veintiséis', 'veintisiete', 'veintiocho', 'veintinueve'];
+const TENS = { 3: 'treinta', 4: 'cuarenta', 5: 'cincuenta', 6: 'sesenta', 7: 'setenta', 8: 'ochenta', 9: 'noventa' };
+function numWord(n) {
+  if (n < 30) return NUMWORDS[n];
+  if (n === 100) return 'cien';
+  const t = Math.floor(n / 10), u = n % 10;
+  return u ? `${TENS[t]} y ${NUMWORDS[u]}` : TENS[t];
+}
+
+/* ---- speech: one Spanish voice for the whole game, never an English one ---- */
+const tts = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+if (!tts) document.body.classList.add('no-tts');
+let VOZ = null;
+function rankVoice(v) {
+  const l = (v.lang || '').replace('_', '-');
+  if (!/^es(-|$)/i.test(l)) return -1;
+  let s = 0;
+  if (/natural|online|neural/i.test(v.name)) s += 40;
+  if (/google/i.test(v.name)) s += 25;
+  if (/es-MX/i.test(l)) s += 20; else if (/es-US/i.test(l)) s += 15; else if (/es-419/i.test(l)) s += 12; else if (/es-ES/i.test(l)) s += 8;
+  if (/dalia|jorge|paulina|sabina|elvira|alvaro/i.test(v.name)) s += 3;
+  return s;
+}
+function pickVoice() {
+  try {
+    const best = speechSynthesis.getVoices().map(v => [rankVoice(v), v]).filter(x => x[0] >= 0).sort((a, b) => b[0] - a[0])[0];
+    VOZ = best ? best[1] : null;
+  } catch (e) { VOZ = null; }
+  document.body.classList.toggle('no-tts', !VOZ);
+  if (!VOZ) { const c = document.getElementById('challenge'); if (c) c.checked = false; }
+  const el = document.getElementById('vozName');
+  if (el) el.textContent = VOZ ? `${VOZ.name} (${VOZ.lang})` : 'none found';
+  return VOZ;
+}
+if (tts) { pickVoice(); try { speechSynthesis.addEventListener('voiceschanged', pickVoice); } catch (e) {} }
+function speak(text, who, slow = false) {
+  if (!tts || (!VOZ && !pickVoice())) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.voice = VOZ; u.lang = VOZ.lang; u.pitch = 1; u.rate = slow ? 0.75 : 0.95;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+/* ---- feedback chips ---- */
+function chipEl(kind, es, en) {
+  const c = document.createElement('div');
+  c.className = 'chip appear ' + kind;
+  c.innerHTML = `<b>${es}</b>${en ? `<span class="en">${en}</span>` : ''}`;
+  return c;
+}
+function fb(kind, es, en, append = false, box = $('fbs')) {
+  const c = chipEl(kind, es, en);
+  if (append) box.appendChild(c); else box.replaceChildren(c);
+}
+const clearFb = (box = $('fbs')) => box.replaceChildren();
+
+/* ---- accent input: accent bar + typing shortcuts (a' → á, n~ → ñ, u: → ü, ? first → ¿) ---- */
+const VOWEL = { a: 'á', e: 'é', i: 'í', o: 'ó', u: 'ú', A: 'Á', E: 'É', I: 'Í', O: 'Ó', U: 'Ú' };
+const ACCENT_BAR = '<button type="button" data-ch="á">á</button><button type="button" data-ch="é">é</button><button type="button" data-ch="í">í</button><button type="button" data-ch="ó">ó</button><button type="button" data-ch="ú">ú</button><button type="button" data-ch="ñ">ñ</button><button type="button" data-ch="ü">ü</button><button type="button" data-ch="¿">¿</button><button type="button" data-ch="¡">¡</button><span class="caps">Atajos: a+\' = á · n+~ = ñ · ? = ¿</span>';
+function attachAccentInput(inputs, bar) {
+  inputs = [].concat(inputs);
+  if (!bar.children.length) bar.innerHTML = ACCENT_BAR;
+  bar._target = bar._target || inputs[0];
+  const flash = ch => {
+    const b = bar.querySelector(`[data-ch="${ch.toLowerCase()}"]`);
+    if (!b) return;
+    b.classList.add('flash');
+    setTimeout(() => b.classList.remove('flash'), 350);
+  };
+  inputs.forEach(input => {
+    input.addEventListener('focus', () => { bar._target = input; });
+    input.addEventListener('input', e => {
+      if (!e.inputType || !e.inputType.startsWith('insertText')) return;
+      const pos = input.selectionStart, v = input.value;
+      const last = v[pos - 1], prev = v[pos - 2];
+      let rep = null;
+      if ((last === "'" || last === '´' || last === '’') && prev && VOWEL[prev]) rep = VOWEL[prev];
+      else if (last === '~' && (prev === 'n' || prev === 'N')) rep = prev === 'n' ? 'ñ' : 'Ñ';
+      else if (last === ':' && (prev === 'u' || prev === 'U')) rep = prev === 'u' ? 'ü' : 'Ü';
+      if (rep) {
+        input.value = v.slice(0, pos - 2) + rep + v.slice(pos);
+        input.setSelectionRange(pos - 1, pos - 1);
+        flash(rep);
+        return;
+      }
+      const atStart = pos === 1 || (prev === ' ' && /[.!?]/.test(v[pos - 3] || ''));
+      if ((last === '?' || last === '!') && atStart) {
+        const inv = last === '?' ? '¿' : '¡';
+        input.value = v.slice(0, pos - 1) + inv + v.slice(pos);
+        input.setSelectionRange(pos, pos);
+        flash(inv);
+      }
+    });
+  });
+  if (bar._wired) return;
+  bar._wired = true;
+  bar.querySelectorAll('button').forEach(b => {
+    b.addEventListener('pointerdown', e => e.preventDefault());
+    b.addEventListener('click', e => {
+      const input = bar._target;
+      const ch = e.shiftKey ? b.dataset.ch.toUpperCase() : b.dataset.ch;
+      const s = input.selectionStart ?? input.value.length, en = input.selectionEnd ?? s;
+      input.value = input.value.slice(0, s) + ch + input.value.slice(en);
+      input.focus();
+      input.setSelectionRange(s + ch.length, s + ch.length);
+    });
+  });
+}
+
+/* ---- accent review: never blocks, just points out slips ---- */
+const ACCENT_WORDS = {
+  tambien: 'también', senor: 'señor', senora: 'señora', anos: 'años', ano: 'año', dias: 'días', adios: 'adiós',
+  mexico: 'México', canada: 'Canadá', espanol: 'español', espana: 'España', ingles: 'inglés', peru: 'Perú',
+  dieciseis: 'dieciséis', veintidos: 'veintidós', veintitres: 'veintitrés', veintiseis: 'veintiséis',
+  musica: 'música', futbol: 'fútbol', matematicas: 'matemáticas', fisica: 'física', educacion: 'educación',
+  aqui: 'aquí', alli: 'allí', manana: 'mañana', ademas: 'además', facil: 'fácil', dificil: 'difícil', despues: 'después',
+  papa: 'papá', mama: 'mamá', nino: 'niño', nina: 'niña', lucia: 'Lucía', tomas: 'Tomás', sofia: 'Sofía', ramon: 'Ramón',
+  jardin: 'jardín', bano: 'baño', sofa: 'sofá', cafe: 'café', limon: 'limón', sueter: 'suéter', arbol: 'árbol',
+  lapiz: 'lápiz', pagina: 'página', telefono: 'teléfono', television: 'televisión', habitacion: 'habitación',
+  comio: 'comió', comi: 'comí', cesped: 'césped', jamon: 'jamón', sabado: 'sábado', miercoles: 'miércoles',
+  ultimo: 'último', rapido: 'rápido', bogota: 'Bogotá', panaderia: 'panadería', cafeteria: 'cafetería', biologia: 'biología',
+  quimica: 'química', geografia: 'geografía', artistico: 'artístico', simpatico: 'simpático', simpatica: 'simpática', comoda: 'cómoda', comodo: 'cómodo'
+};
+const QUESTION_WORDS = { como: 'cómo', que: 'qué', donde: 'dónde', cuantos: 'cuántos', cuantas: 'cuántas', cual: 'cuál', quien: 'quién', quienes: 'quiénes', cuando: 'cuándo', estas: 'estás', adonde: 'adónde' };
+const ACCENT_NOTES = {
+  anos: 'años = years. Without the ñ it is a very different word!',
+  papa: 'papá = dad, papa = potato.', tu: 'tú = you, tu = your.', si: 'sí = yes, si = if.', mas: 'más = more.'
+};
+function reviewAccents(raw) {
+  const issues = []; let correct = 0;
+  const isQ = /[?¿]/.test(raw);
+  const toks = words(raw);
+  toks.forEach((w, i) => {
+    const k = keyOf(w), lw = w.toLowerCase();
+    let target = ACCENT_WORDS[k];
+    if (!target && isQ && QUESTION_WORDS[k]) target = QUESTION_WORDS[k];
+    if (k === 'tu' && i > 0 && keyOf(toks[i - 1]) === 'y' && i === toks.length - 1) target = 'tú';
+    if (k === 'mas' && keyOf(toks[i + 1] || '') === 'o') target = 'más';
+    if (k === 'si' && i === 0 && /^\s*¡?s[ií]\s*([,.!]|$)/i.test(raw)) target = 'sí';
+    if (!target) return;
+    if (lw === target.toLowerCase()) { correct++; return; }
+    const fix = (w[0] !== w[0].toLowerCase() || target[0] !== target[0].toLowerCase()) ? capFirst(target) : target;
+    const note = ACCENT_NOTES[k] || (QUESTION_WORDS[k] && isQ ? 'Question words carry an accent.' : '');
+    if (!issues.some(x => x.fix === fix)) issues.push({ wrote: w, fix, note });
+  });
+  if (raw.includes('?') && !raw.includes('¿')) issues.push({ wrote: '?', fix: '¿…?', note: 'Questions open with ¿. Type ? first to get one.', punct: true });
+  return { issues, correct };
+}
+function accentChips(acc) {
+  return acc.issues.map(is => chipEl('warn', is.punct ? is.fix : `<span class="fix"><s>${esc(is.wrote)}</s> → ${esc(is.fix)}</span>`, is.note));
+}
+
+/* ---- message feed ---- */
+function makeFeed({ feed, people, clock, challenge, autoplay, onReveal, onMessage }) {
+  let token = 0;
+  const api = {
+    reset() { token++; feed.innerHTML = '<p class="empty">Messages will appear here.</p>'; },
+    get token() { return token; },
+    me(text) {
+      feed.querySelector('.empty')?.remove();
+      const d = document.createElement('div');
+      d.className = 'msg me appear';
+      d.innerHTML = '<div class="bubble"></div><div class="fbrow"></div>';
+      d.querySelector('.bubble').textContent = text;
+      feed.appendChild(d); feed.scrollTop = feed.scrollHeight;
+      onMessage && onMessage('Tú', text);
+      return d.querySelector('.fbrow');
+    },
+    async say(who, text, opts = {}) {
+      const tok = token;
+      feed.querySelector('.empty')?.remove();
+      const p = people[who] || { voice: 'f' };
+      const name = opts.name || p.name || who;
+      const typing = document.createElement('p');
+      typing.className = 'typing';
+      typing.textContent = `${name} está escribiendo…`;
+      feed.appendChild(typing); feed.scrollTop = feed.scrollHeight;
+      await sleep(opts.fast ? 250 : 700);
+      typing.remove();
+      if (tok !== token) return false;
+      const voice = opts.voice || p.voice || 'f';
+      const masked = tts && challenge && challenge.checked && !opts.alwaysText;
+      const d = document.createElement('div');
+      d.className = 'msg appear';
+      d.innerHTML = `<div class="av${CAST[who] ? ' portrait' : ''}" style="background:${p.color || 'var(--sun)'}">${CAST[who] || esc(opts.ini || p.ini || name.charAt(0))}</div><div><div class="mhead"><b>${esc(name)}</b>${clock ? `<span class="time">${esc(clock())}</span>` : ''}</div>`
+        + `<p class="mtext${masked ? ' masked' : ''}"></p><div class="mctl"><button class="play" type="button">▶ Escuchar</button><button class="slow" type="button">Lento</button>${masked ? '<button class="reveal" type="button">Ver texto</button>' : ''}</div></div>`;
+      const pt = d.querySelector('.mtext');
+      pt.textContent = masked ? 'Escucha el mensaje.' : text;
+      d.querySelector('.play').addEventListener('click', () => speak(text, voice));
+      d.querySelector('.slow').addEventListener('click', () => speak(text, voice, true));
+      const rev = d.querySelector('.reveal');
+      if (rev) rev.addEventListener('click', () => { pt.textContent = text; pt.classList.remove('masked'); rev.remove(); onReveal && onReveal(); });
+      feed.appendChild(d); feed.scrollTop = feed.scrollHeight;
+      onMessage && onMessage(name, text);
+      SFX.play('message');
+      if (!autoplay || autoplay.checked) speak(text, voice);
+      return true;
+    }
+  };
+  return api;
+}
+
+/* ---- summary ---- */
+function renderSummary(el, { eyebrow, title, stats, rows, badges, listTitle, list, outcomes, onAgain }) {
+  el.innerHTML = `
+    <div><p class="eyebrow">${eyebrow}</p><h2>${title}</h2></div>
+    <div class="stats">${stats.map(([v, k]) => `<div class="stat"><div class="v">${v}</div><div class="k">${k}</div></div>`).join('')}</div>
+    ${rows && rows.length ? `<div class="mrows">${rows.map(([l, s]) => `<div class="mrow"><span>${l}</span><span class="stars">${stars(s)}</span></div>`).join('')}</div>` : ''}
+    <div><h3 class="lbl">Logros</h3><div class="badges" style="margin-top:8px">${badges.map(([n, d, on]) => `<span class="badge${on ? '' : ' off'}" title="${esc(d)}">${on ? '★ ' : ''}${n}</span>`).join('')}</div></div>
+    ${list && list.length ? `<div><h3 class="lbl">${listTitle}</h3><ol class="transcript" style="margin-top:8px">${list.map(t => `<li>${t}</li>`).join('')}</ol></div>` : ''}
+    <p class="outcomes">${outcomes}</p>
+    <div><button class="btn primary" type="button" data-again>Jugar otra vez</button></div>`;
+  el.hidden = false;
+  el.querySelector('[data-again]').addEventListener('click', () => { onAgain(); window.scrollTo({ top: 0, behavior: reduced() ? 'auto' : 'smooth' }); });
+  if (el.scrollIntoView) el.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
+}
+
+/* ---- house drawing shared by scenes 3 and 4 ---- */
+const HOUSE_W = 740, HOUSE_H = 470;
+const ROOMS = {
+  dormitorio: { x: 40, y: 120, w: 240, h: 140, name: 'el dormitorio' },
+  bano: { x: 280, y: 120, w: 220, h: 140, name: 'el baño' },
+  sala: { x: 40, y: 260, w: 160, h: 150, name: 'la sala' },
+  comedor: { x: 200, y: 260, w: 150, h: 150, name: 'el comedor' },
+  cocina: { x: 350, y: 260, w: 150, h: 150, name: 'la cocina' },
+  jardin: { x: 515, y: 120, w: 205, h: 290, name: 'el jardín' }
+};
+function houseSVG(roomFurniture = {}) {
+  let s = `<rect width="${HOUSE_W}" height="${HOUSE_H}" fill="var(--sky)"/>`;
+  s += `<rect x="0" y="410" width="${HOUSE_W}" height="60" fill="var(--grass)"/>`;
+  s += `<rect x="${ROOMS.jardin.x}" y="${ROOMS.jardin.y}" width="${ROOMS.jardin.w}" height="${ROOMS.jardin.h}" rx="14" fill="var(--grass)"/>`;
+  s += `<polygon points="24,124 270,30 516,124" fill="var(--roof)"/>`;
+  for (const [id, r] of Object.entries(ROOMS)) {
+    if (id === 'jardin') continue;
+    s += `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${id === 'bano' || id === 'cocina' ? 'var(--wall-2)' : 'var(--wall)'}" stroke="var(--wood)" stroke-width="4"/>`;
+    s += `<rect x="${r.x + 2}" y="${r.y + r.h - 12}" width="${r.w - 4}" height="10" fill="var(--floor)"/>`;
+  }
+  for (const [id, r] of Object.entries(ROOMS)) {
+    s += `<text x="${r.x + 10}" y="${r.y + 18}" class="roomlbl">${r.name.split(' ')[1].toUpperCase()}</text>`;
+    (roomFurniture[id] || []).forEach(([dx, dy, ico, size]) => {
+      s += `<text x="${r.x + dx}" y="${r.y + dy}" class="ico" font-size="${size || 30}" text-anchor="middle" dominant-baseline="central" opacity=".9">${ico}</text>`;
+    });
+  }
+  return s;
+}
+const roomCenter = id => { const r = ROOMS[id]; return [r.x + r.w / 2, r.y + r.h - 40]; };
+
+/* ---- simple person portrait ---- */
+function personSVG({ skin = '#c98b5e', hair = '#3b2419', hairStyle = 'short', glasses = false, shirt = '#3a6fd8', beard = false }, scale = 1) {
+  const longHair = hairStyle === 'long' ? `<path d="M-15 -26 q-5 24 3 36 h24 q8 -12 3 -36 z" fill="${hair}"/>` : '';
+  const topHair = hairStyle === 'bald' ? `<path d="M-14 -30 q-2 -4 2 -6 M14 -30 q2 -4 -2 -6" stroke="${hair}" stroke-width="4" fill="none"/>`
+    : hairStyle === 'curly' ? `<g fill="${hair}"><circle cx="-10" cy="-38" r="7"/><circle cx="0" cy="-41" r="7"/><circle cx="10" cy="-38" r="7"/><circle cx="-14" cy="-30" r="5"/><circle cx="14" cy="-30" r="5"/></g>`
+    : `<path d="M-15 -28 a15 14 0 0 1 30 0 q-6 -6 -15 -6 q-9 0 -15 6 z" fill="${hair}"/>`;
+  return `<g transform="scale(${scale})">${longHair}`
+    + `<rect x="-20" y="-6" width="40" height="34" rx="12" fill="${shirt}" stroke="rgba(0,0,0,.2)"/>`
+    + `<circle cx="0" cy="-26" r="15" fill="${skin}"/>${topHair}`
+    + (beard ? `<path d="M-11 -22 q11 16 22 0 q-2 10 -11 11 q-9 -1 -11 -11z" fill="${hair}"/>` : '')
+    + `<circle cx="-5" cy="-26" r="1.9" fill="#1d1410"/><circle cx="5" cy="-26" r="1.9" fill="#1d1410"/>`
+    + (glasses ? `<g fill="none" stroke="#15203b" stroke-width="1.6"><circle cx="-5.5" cy="-26" r="4.6"/><circle cx="5.5" cy="-26" r="4.6"/><path d="M-1 -26 h2"/></g>` : '')
+    + `<path d="M-4.5 -19 q4.5 3.5 9 0" stroke="#7a3b2a" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>`;
+}
+
+
+/* ===================== Scene ===================== */
+/* ---------- shared full-body figures (feet at y = 34) ---------- */
+function shade(hex, f) {
+  const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255];
+  return '#' + c.map(v => Math.max(0, Math.min(255, Math.round(f < 0 ? v * (1 + f) : v + (255 - v) * f))).toString(16).padStart(2, '0')).join('');
+}
+/* family member, feet at y = 34 */
+function famSVG(p, sc = 1) {
+  const skin = p.skin, hair = p.hairC || HAIR[p.hair], shirt = p.shirtC || SHIRT[p.shirt], kid = p.age < 15, fem = !!p.fem;
+  const k = sc * (kid ? 0.84 : 1), skinD = shade(skin, -0.16), shirtD = shade(shirt, -0.25), hairD = shade(hair, -0.28);
+  const pants = p.pantsC || (fem ? '#2F3A6B' : kid ? '#3B5B8C' : '#2E2A45');
+  let s = '';
+  if (p.style === 'long') s += `<path d="M-15 -30 C-19 -12 -17 0 -12 6 L12 6 C17 0 19 -12 15 -30 Z" fill="${hairD}"/>`;
+  if (fem && !kid) {
+    s += `<rect x="-8" y="16" width="5.5" height="16" rx="2.5" fill="${skinD}"/><rect x="2.5" y="16" width="5.5" height="16" rx="2.5" fill="${skinD}"/>`;
+    s += `<path d="M-13 8 L13 8 L16.5 23 Q0 26 -16.5 23 Z" fill="${pants}"/>`;
+  } else {
+    s += `<rect x="-9" y="9" width="7.5" height="23" rx="3" fill="${pants}"/><rect x="1.5" y="9" width="7.5" height="23" rx="3" fill="${pants}"/>`;
+  }
+  s += `<ellipse cx="-5.5" cy="32.5" rx="5.5" ry="2.8" fill="#2A1D17"/><ellipse cx="5.5" cy="32.5" rx="5.5" ry="2.8" fill="#2A1D17"/>`;
+  s += `<rect x="-19" y="-6" width="6.5" height="21" rx="3.2" fill="${skin}"/><rect x="12.5" y="-6" width="6.5" height="21" rx="3.2" fill="${skin}"/>`;
+  s += `<path d="M-13 -8 Q0 -12 13 -8 L14 14 Q0 16.5 -14 14 Z" fill="${shirt}" stroke="${shirtD}" stroke-width="1.2"/>`;
+  s += `<path d="M-13 -8 L-20 -3 L-19.5 5 L-13 5 Z M13 -8 L20 -3 L19.5 5 L13 5 Z" fill="${shirt}" stroke="${shirtD}" stroke-width="1.2" stroke-linejoin="round"/>`;
+  s += `<rect x="-3.5" y="-14" width="7" height="6" fill="${skinD}"/><path d="M-4.5 -9.6 L0 -4.5 L4.5 -9.6 Z" fill="${skinD}"/>`;
+  s += `<circle cx="-12.6" cy="-25" r="3" fill="${skinD}"/><circle cx="12.6" cy="-25" r="3" fill="${skinD}"/>`;
+  s += `<ellipse cx="0" cy="-26" rx="12.5" ry="13.5" fill="${skin}"/>`;
+  if (p.style === 'short') s += `<path d="M-13 -24 C-15.5 -43 15.5 -43 13 -24 C11 -32 6 -35 -1 -33 C-6 -35 -11 -31 -13 -24 Z" fill="${hair}"/>`;
+  else if (p.style === 'long') s += `<path d="M-13.8 -20 C-17 -45 17 -45 13.8 -20 C12.5 -30 8 -34 3 -35.5 C-2 -31 -8 -31 -13.8 -20 Z" fill="${hair}"/>`;
+  else if (p.style === 'curly') s += `<g fill="${hair}">` + [[-11, -34, 6], [-4, -39, 6.5], [4, -39, 6.5], [11, -34, 6], [-14, -27, 4.5], [14, -27, 4.5], [0, -35, 6]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join('') + `</g>`;
+  else s += `<path d="M-13.4 -21 Q-14.5 -30 -10 -33 L-9 -24 Z M13.4 -21 Q14.5 -30 10 -33 L9 -24 Z" fill="${hair}"/><ellipse cx="-4" cy="-35" rx="4.5" ry="2" fill="#fff" opacity=".28"/>`;
+  s += `<path d="M-8 -30.8 q3 -2 6 0 M2 -30.8 q3 -2 6 0" stroke="${p.style === 'bald' ? hair : hairD}" stroke-width="1.7" fill="none" stroke-linecap="round"/>`;
+  s += `<ellipse cx="-5" cy="-25.5" rx="1.9" ry="2.3" fill="#1D1410"/><ellipse cx="5" cy="-25.5" rx="1.9" ry="2.3" fill="#1D1410"/><circle cx="-4.4" cy="-26.4" r=".7" fill="#fff"/><circle cx="5.6" cy="-26.4" r=".7" fill="#fff"/>`;
+  s += `<circle cx="-8.6" cy="-20.5" r="2.6" fill="#E0705E" opacity=".35"/><circle cx="8.6" cy="-20.5" r="2.6" fill="#E0705E" opacity=".35"/>`;
+  if (p.beard) s += `<path d="M-12.4 -25 Q-12.5 -10 0 -9 Q12.5 -10 12.4 -25 Q10 -16 5 -16.5 Q0 -18.5 -5 -16.5 Q-10 -16 -12.4 -25 Z" fill="${hair}"/>`;
+  s += `<path d="M-3.6 -18.6 q3.6 3 7.2 0" stroke="${p.beard ? '#F2D9C4' : '#7A3B2A'}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
+  if (p.glasses) s += `<g stroke="#17132B" stroke-width="2"><circle cx="-5.3" cy="-25.5" r="4.7" fill="rgba(255,255,255,.2)"/><circle cx="5.3" cy="-25.5" r="4.7" fill="rgba(255,255,255,.2)"/><path d="M-.7 -26 h1.4 M-10 -26.6 L-12.6 -27.6 M10 -26.6 L12.6 -27.6" fill="none"/></g>`;
+  if (p.flower) s += `<g transform="translate(9 -37)"><g fill="#F06C8E">${[0, 72, 144, 216, 288].map(r => `<ellipse cx="0" cy="-3.2" rx="2.6" ry="3.4" transform="rotate(${r})"/>`).join('')}</g><circle r="1.8" fill="#FFC27A"/></g>`;
+  if (p.party) s += `<path d="M-6 -38 L0 -56 L6 -38 Z" fill="${p.party}" stroke="#17122E" stroke-width=".8"/><circle cx="0" cy="-56" r="2.2" fill="#FFC27A"/>`;
+  return `<g transform="translate(0 34) scale(${k}) translate(0 -34)">${s}</g>`;
+}
+
+
+/* ===== Español 20-3Y · Escena 6: La farmacia de guardia (Puerto Viejo, Costa Rica) ===== */
+/* 1. Four patients: ask what's wrong (usted with adults, tú with teens), give advice with tener que,
+      recommend something from the shelf, and send the serious case to the doctor.
+   2. La charla de seguridad: beach rules for a group of kids with ustedes commands. */
+
+const S = { started: false };
+
+/* ---------- people ---------- */
+const PEOPLE = {
+  fefi: { name: 'Doña Fefi', color: '#5FE0C8', p: { skin: '#6E4630', hairC: '#C9C2D8', style: 'curly', glasses: true, shirtC: '#F4F4F4', fem: true, age: 64 } },
+  wendell: { name: 'Wendell (el salvavidas)', color: '#E8505B', p: { skin: '#5A3A28', hairC: '#1F1712', style: 'short', shirtC: '#E8505B', pantsC: '#F2C230', age: 28 } },
+  lucia: { name: 'Lucía', color: 'var(--sun)' },
+  kids: { name: 'Los chiquitos', color: '#7ED3B2', p: { skin: '#5A3A28', hairC: '#1F1712', style: 'curly', shirtC: '#F08A3C', fem: true, age: 10 } }
+};
+const PATIENTS = [
+  { id: 'elena', name: 'Doña Elena', adult: true, g: 'f', p: { skin: '#B98068', hairC: '#8A8295', style: 'curly', shirtC: '#5FA8D3', fem: true, age: 62 } },
+  { id: 'carlos', name: 'Don Carlos', adult: true, g: 'm', p: { skin: '#C08A66', hairC: '#4A4048', style: 'short', glasses: true, shirtC: '#2FAE6A', age: 55 } },
+  { id: 'hannah', name: 'Hannah', adult: true, g: 'f', p: { skin: '#F0C8A8', hairC: '#D8B25A', style: 'long', shirtC: '#F08A3C', fem: true, age: 30 } },
+  { id: 'rafa', name: 'Don Rafa', adult: true, g: 'm', p: { skin: '#6E4630', hairC: '#2A1D17', style: 'bald', beard: true, shirtC: '#3A7BD5', age: 60 } },
+  { id: 'kevin', name: 'Kevin', adult: false, g: 'm', p: { skin: '#5A3A28', hairC: '#1F1712', style: 'curly', shirtC: '#F2C230', age: 16 } },
+  { id: 'valeria', name: 'Valeria', adult: false, g: 'f', p: { skin: '#C98B5E', hairC: '#2A1A12', style: 'long', shirtC: '#8B5CC7', fem: true, age: 15 } },
+  { id: 'marcus', name: 'Marcus', adult: false, g: 'm', p: { skin: '#4A2E20', hairC: '#1F1712', style: 'short', shirtC: '#2FAE6A', age: 17 } },
+  { id: 'sofia', name: 'Sofía', adult: false, g: 'f', p: { skin: '#D9A07E', hairC: '#6B4428', style: 'curly', shirtC: '#E86F9A', fem: true, age: 16 } }
+];
+function headPortrait(p) { const k = p.age < 15 ? 0.84 : 1, cy = 34 - 60 * k, r = 21 * k; return `<svg viewBox="${-r} ${cy - r} ${2 * r} ${2 * r}" aria-hidden="true">${famSVG(p)}</svg>`; }
+Object.entries(PEOPLE).forEach(([k, v]) => { if (v.p) CAST[k] = headPortrait(v.p); });
+PATIENTS.forEach(x => { PEOPLE[x.id] = { name: x.name, color: '#FFC27A' }; CAST[x.id] = headPortrait(x.p); });
+
+/* ---------- advice the game understands ---------- */
+const KEYS = {
+  aloe: { label: 'crema de aloe', re: /\b(aloe|sabila|crema)\b/ },
+  agua: { label: 'beber agua', re: /\b(agua|liquidos|hidratarse|hidratarte|hidratate|suero)\b/ },
+  sombra: { label: 'evitar el sol', re: /\b(sombra|evitar el sol|quedarse en casa|quedarte en casa|fuera del sol)\b|\bno (tomar|tome|tomes|estar|ir|vaya|vayas|volver|vuelva|vuelvas) (el |al |a la )?(sol|playa)\b/ },
+  bloqueador: { label: 'usar bloqueador', re: /\b(bloqueador|protector)\b/ },
+  hielo: { label: 'ponerse hielo', re: /\b(hielo|compresa|frio)\b/ },
+  venda: { label: 'una venda', re: /\b(venda|vendar|vendarse|vendarte|vendaje)\b/ },
+  descansar: { label: 'descansar', re: /\b(descansar|descansa|descanse|reposo|dormir|duerme|duerma|no caminar|no camine|no camines|no correr|no jugar|sentarse|sentarte|quedarse en casa|quedarte en casa)\b/ },
+  levantar: { label: 'levantar el pie', re: /\b(levantar|subir|elevar|levanta|sube|levante|suba) (el pie|la pierna|el tobillo)\b/ },
+  liquidos: { label: 'beber líquidos', re: /\b(agua|liquidos|sopa|caldo|jugo|te caliente|te de manzanilla|te con miel|un te|tecito)\b/ },
+  jarabe: { label: 'jarabe para la tos', re: /\bjarabe\b/ },
+  panuelos: { label: 'pañuelos', re: /\b(panuelos?|kleenex)\b/ },
+  lavar: { label: 'lavar la cortada', re: /\b(lavar|lava|lave|lavarse|lavarte|limpiar|limpia|limpie|jabon)\b/ },
+  desinf: { label: 'desinfectar', re: /\b(desinfectante|desinfectar|antiseptico)\b/ },
+  curita: { label: 'una curita', re: /\b(curitas?|venditas?|tiritas?)\b/ },
+  mar: { label: 'no meterse al mar', re: /\bno (meterse|meterte|nadar|entrar|ir|te metas|se meta|nades|nade|entres|entre) (al|en el)? ?mar\b|\bno nadar\b|\bno nades\b|\bno nade\b/ },
+  crema: { label: 'una crema', re: /\b(crema|pomada|locion)\b/ },
+  repelente: { label: 'usar repelente', re: /\brepelente\b/ },
+  rascar: { label: 'no rascarse', re: /\bno (rascarse|rascarte|rascar|te rasques|se rasque|rasques|rasque)\b/ },
+  ropa: { label: 'ropa larga', re: /\b(manga larga|ropa larga|pantalon(es)? largos?|mosquitero|toldo)\b/ },
+  suero: { label: 'tomar suero', re: /\bsuero\b/ },
+  comida: { label: 'comida suave', re: /\b(arroz|comida suave|sopa|caldo|comer poco|galletas|tostadas)\b|\bno comer (mucho|mariscos|picante|ceviche)\b/ },
+  gorra: { label: 'una gorra', re: /\b(gorra|sombrero|cachucha)\b/ },
+  medico: { label: 'ir al médico', re: /\b(medico|medica|doctor|doctora|clinica|hospital|ebais|emergencias|urgencias)\b/ },
+  presion: { label: 'apretar la herida', re: /\b(apretar|aprieta|apriete|presion|presionar|presiona|presione)\b/ }
+};
+const PRODS = {
+  aloe: { es: 'la crema de aloe', label: 'aloe', kw: /\b(aloe|sabila)\b/, color: '#7FC241', shape: 'tube' },
+  bloqueador: { es: 'el bloqueador', label: 'bloqueador', kw: /\b(bloqueador|protector solar)\b/, color: '#F2C230', shape: 'bottle' },
+  repelente: { es: 'el repelente', label: 'repelente', kw: /\brepelente\b/, color: '#3A7BD5', shape: 'spray' },
+  picaduras: { es: 'la crema para las picaduras', label: 'picaduras', kw: /\bpicaduras?\b/, color: '#E86F9A', shape: 'tube' },
+  curitas: { es: 'las curitas', label: 'curitas', kw: /\b(curitas?|venditas?|tiritas?)\b/, color: '#F08A3C', shape: 'box' },
+  desinfectante: { es: 'el desinfectante', label: 'desinfectante', kw: /\b(desinfectante|antiseptico)\b/, color: '#5FE0C8', shape: 'bottle' },
+  venda: { es: 'la venda', label: 'venda', kw: /\b(venda|vendaje)\b/, color: '#F4F1EA', shape: 'roll' },
+  hielo: { es: 'la compresa fría', label: 'compresa fría', kw: /\b(compresa|hielo)\b/, color: '#9EC6D8', shape: 'pack' },
+  suero: { es: 'el suero oral', label: 'suero oral', kw: /\bsuero\b/, color: '#E8505B', shape: 'sachet' },
+  jarabe: { es: 'el jarabe para la tos', label: 'jarabe', kw: /\bjarabe\b/, color: '#8B5CC7', shape: 'bottle' },
+  panuelos: { es: 'los pañuelos', label: 'pañuelos', kw: /\b(panuelos?|kleenex)\b/, color: '#F4F1EA', shape: 'box' },
+  termometro: { es: 'el termómetro', label: 'termómetro', kw: /\btermometro\b/, color: '#C9CDD8', shape: 'thermo' }
+};
+
+/* ---------- the cases ({o} → o/a, {mire} → mire/mira) ---------- */
+const CASES = {
+  quemadura: {
+    sintoma: 'Me quemé con el sol. ¡Me duele mucho la espalda!', donde: 'Me duelen la espalda y los hombros. ¡Están muy rojos!', parts: ['espalda', 'hombros', 'hombro'],
+    desde: 'Desde ayer en la tarde.', causa: 'Ayer pasé cinco horas en la playa y no me puse bloqueador.', fiebre: 'No, fiebre no. Pero tengo mucho calor.', otros: 'Tengo mucha sed, nada más.',
+    ficha: { sintoma: 'quemadura de sol', donde: 'la espalda y los hombros', desde: 'ayer', causa: '5 horas en la playa sin bloqueador', fiebre: 'no', otros: 'mucha sed' },
+    keys: ['aloe', 'agua', 'sombra', 'bloqueador'], bad: [[/\b(tomar|tome|tomes|toma) (el )?sol\b|\bbroncearse\b|\bbroncearte\b/, 'Más sol, no: ¡la piel está quemada!']],
+    products: ['aloe', 'bloqueador'], model: ['ponerse crema de aloe', 'beber mucha agua', 'aloe'], cue: 'sunburn'
+  },
+  torcedura: {
+    sintoma: 'Me torcí el tobillo. ¡Ay, me duele mucho!', donde: 'Me duele el tobillo derecho. Está un poco hinchado.', parts: ['tobillo', 'pie'],
+    desde: 'Desde esta mañana.', causa: 'Estaba jugando fútbol en la playa y me caí.', fiebre: 'No, no tengo fiebre.', otros: 'No, solo el tobillo. Puedo caminar, pero me duele.',
+    ficha: { sintoma: 'torcedura de tobillo', donde: 'el tobillo derecho (un poco hinchado)', desde: 'esta mañana', causa: 'se cayó jugando fútbol', fiebre: 'no', otros: 'puede caminar' },
+    keys: ['hielo', 'venda', 'descansar', 'levantar'], bad: [[/\b(correr|corre|corra|jugar|juega|juegue|caminar mucho|hacer ejercicio)\b/, '¿Correr o jugar con un tobillo torcido? ¡Mejor descansar!']],
+    products: ['hielo', 'venda'], model: ['ponerse hielo', 'descansar', 'hielo'], cue: 'ankle'
+  },
+  resfriado: {
+    sintoma: 'Creo que tengo gripe. Estoy muy cansad{o} y tengo tos.', donde: 'Me duele la garganta y un poco la cabeza.', parts: ['garganta', 'cabeza'],
+    desde: 'Desde hace dos días.', causa: 'No sé… mi hermanito también está enfermo.', fiebre: 'Un poquito: treinta y siete y medio.', otros: 'Sí, tengo mocos y estornudo mucho.',
+    ficha: { sintoma: 'gripe: tos, cansancio', donde: 'la garganta y un poco la cabeza', desde: 'hace dos días', causa: 'su hermanito también está enfermo', fiebre: 'un poquito (37,5)', otros: 'mocos, estornudos' },
+    keys: ['descansar', 'liquidos', 'jarabe', 'panuelos'], bad: [[/\b(nadar|helados?|ir a la playa|hacer ejercicio|surfear)\b/, 'Con gripe, mejor descansar en casa.']],
+    products: ['jarabe', 'panuelos'], model: ['descansar', 'beber mucha agua', 'jarabe'], cue: 'cold'
+  },
+  cortada: {
+    sintoma: 'Me corté el pie en el mar. ¡Me arde!', donde: 'Aquí, en el pie. Es una cortada pequeña.', parts: ['pie'],
+    desde: 'Hace una hora, más o menos.', causa: 'Estaba nadando cerca de las rocas y me corté con el coral.', fiebre: 'No, fiebre no.', otros: 'No, solo me arde un poco.',
+    ficha: { sintoma: 'una cortada pequeña', donde: 'el pie', desde: 'hace una hora', causa: 'se cortó con el coral', fiebre: 'no', otros: 'le arde un poco' },
+    keys: ['lavar', 'desinf', 'curita', 'mar'], bad: [],
+    products: ['desinfectante', 'curitas'], model: ['lavar la cortada con agua y jabón', 'ponerse una curita', 'desinfectante'], cue: 'cut'
+  },
+  picaduras: {
+    sintoma: '¡Me pica todo! Tengo ronchas por todas partes.', donde: 'Me pican los brazos y las piernas. ¡{Mire}, {mire}!', parts: ['brazos', 'piernas', 'brazo', 'pierna'],
+    desde: 'Desde anoche.', causa: 'Anoche estuve en la playa sin repelente y había muchísimos zancudos.', fiebre: 'No, no tengo fiebre.', otros: 'No puedo dormir porque me pica muchísimo.',
+    ficha: { sintoma: 'picaduras de zancudo (ronchas)', donde: 'los brazos y las piernas', desde: 'anoche', causa: 'en la playa sin repelente', fiebre: 'no', otros: 'no puede dormir' },
+    keys: ['crema', 'repelente', 'rascar', 'ropa'], bad: [[/\b(rascarse|rascarte|rascate|rasquese|rascar)\b/, '¡Rascarse es peor! Se puede infectar.']],
+    products: ['picaduras', 'repelente'], model: ['ponerse crema para las picaduras', 'usar repelente', 'picaduras'], cue: 'bites'
+  },
+  estomago: {
+    sintoma: 'Me duele el estómago. Me siento muy mal.', donde: 'Aquí, el estómago.', parts: ['estomago', 'barriga', 'panza'],
+    desde: 'Desde anoche.', causa: 'Anoche comí ceviche en un restaurante y creo que me cayó mal.', fiebre: 'No, fiebre no.', otros: 'Estoy un poco mared{o} y no tengo hambre.',
+    ficha: { sintoma: 'dolor de estómago', donde: 'el estómago', desde: 'anoche', causa: 'comió ceviche', fiebre: 'no', otros: 'mareo, no tiene hambre' },
+    keys: ['suero', 'liquidos', 'descansar', 'comida'], bad: [[/\b(mariscos|picante|ceviche|comer mucho|chile)\b/, '¿Más mariscos o picante? ¡Mejor comida suave!']],
+    products: ['suero'], model: ['tomar suero oral', 'comer comida suave, como arroz', 'suero'], cue: 'stomach'
+  },
+  insolacion: {
+    sintoma: 'Me duele mucho la cabeza y estoy mared{o}.', donde: 'La cabeza. Me duele muchísimo.', parts: ['cabeza'],
+    desde: 'Desde el mediodía.', causa: 'Caminé tres horas por la playa a pleno sol, sin gorra y sin agua.', fiebre: 'No sé… tengo muchísimo calor.', otros: 'Tengo mucha sed.',
+    ficha: { sintoma: 'dolor de cabeza y mareo', donde: 'la cabeza', desde: 'el mediodía', causa: '3 horas al sol sin gorra ni agua', fiebre: 'no sabe; mucho calor', otros: 'mucha sed' },
+    keys: ['agua', 'descansar', 'sombra', 'gorra'], bad: [[/\b(caminar|camina|camine|correr|corre|corra|tomar (el )?sol)\b/, '¿Más sol? ¡No! Sombra, descanso y agua.']],
+    products: ['suero'], model: ['beber mucha agua', 'descansar en la sombra', 'suero'], cue: 'sun'
+  },
+  fiebre: {
+    refer: true, sintoma: 'Tengo mucha fiebre y me duele todo el cuerpo.', donde: 'Me duelen la cabeza, los ojos y los huesos. Todo.', parts: ['cabeza', 'ojos', 'huesos', 'cuerpo'],
+    desde: 'Desde hace tres días.', causa: 'No sé. Hay muchos zancudos por aquí…', fiebre: 'Sí, mucha: treinta y nueve y medio.', otros: 'Tengo unas manchas rojas en la piel y estoy muy cansad{o}.',
+    ficha: { sintoma: 'fiebre alta, dolor de cuerpo', donde: 'la cabeza, los ojos, los huesos', desde: 'hace tres días', causa: 'no sabe (hay zancudos)', fiebre: 'sí, 39,5', otros: 'manchas rojas, cansancio' },
+    keys: ['medico', 'descansar', 'agua'], bad: [], products: [], model: ['ir al EBAIS hoy mismo', 'beber mucha agua'], cue: 'fever',
+    fefi: 'Muy bien. Fiebre alta por tres días, con manchas en la piel: eso tiene que verlo un médico. Aquí a veces hay dengue.'
+  },
+  quebrado: {
+    refer: true, sintoma: 'Me caí de la bici. ¡No puedo caminar!', donde: 'El tobillo. Está muy hinchado y morado.', parts: ['tobillo', 'pie'],
+    desde: 'Hace media hora.', causa: 'Me caí de la bicicleta en la calle y escuché un ¡crac!', fiebre: 'No, fiebre no.', otros: 'No puedo poner el pie en el suelo. Me duele muchísimo.',
+    ficha: { sintoma: 'no puede caminar', donde: 'el tobillo (muy hinchado, morado)', desde: 'hace media hora', causa: 'se cayó de la bici; escuchó un crac', fiebre: 'no', otros: 'no puede apoyar el pie' },
+    keys: ['medico', 'hielo', 'descansar'], bad: [], products: [], model: ['ir a la clínica ya', 'ponerse hielo'], cue: 'broken',
+    fefi: 'Exacto. Si no puede apoyar el pie y escuchó un crac, puede estar quebrado. Eso es para la clínica.'
+  },
+  profunda: {
+    refer: true, sintoma: 'Me corté la mano con un cuchillo. ¡Sale mucha sangre!', donde: 'La mano. Es una cortada grande y profunda.', parts: ['mano'],
+    desde: 'Hace diez minutos.', causa: 'Estaba abriendo un pipa (un coco) con un cuchillo.', fiebre: 'No.', otros: 'La sangre no para.',
+    ficha: { sintoma: 'cortada grande y profunda', donde: 'la mano', desde: 'hace diez minutos', causa: 'abriendo un coco con un cuchillo', fiebre: 'no', otros: 'la sangre no para' },
+    keys: ['medico', 'presion'], bad: [], products: [], model: ['ir al EBAIS ya', 'apretar la herida con una toalla'], cue: 'deepcut',
+    fefi: 'Muy bien. Una cortada profunda que no para de sangrar necesita puntos. ¡Al EBAIS!'
+  }
+};
+const REGULAR = ['quemadura', 'torcedura', 'resfriado', 'cortada', 'picaduras', 'estomago', 'insolacion'];
+const REFER = ['fiebre', 'quebrado', 'profunda'];
+const PARTS = { cabeza: 'la cabeza', espalda: 'la espalda', hombro: 'el hombro', hombros: 'los hombros', brazo: 'el brazo', brazos: 'los brazos', pierna: 'la pierna', piernas: 'las piernas', pie: 'el pie', pies: 'los pies', tobillo: 'el tobillo', rodilla: 'la rodilla', garganta: 'la garganta', estomago: 'el estómago', barriga: 'la barriga', panza: 'la panza', ojos: 'los ojos', oido: 'el oído', oidos: 'los oídos', mano: 'la mano', manos: 'las manos', cuello: 'el cuello', muela: 'la muela', pecho: 'el pecho', huesos: 'los huesos', cuerpo: 'el cuerpo' };
+const forTu = (t, tu) => tu ? t.replace(/\b([a-z]+[aei]r)se\b/g, '$1te') : t;
+const fill = (t, pat) => t.replace(/\{o\}/g, pat.g === 'f' ? 'a' : 'o').replace(/\{Mire\}/g, pat.adult ? 'Mire' : 'Mira').replace(/\{mire\}/g, pat.adult ? 'mire' : 'mira');
+
+/* ---------- a new shift ---------- */
+function newShift() {
+  const adults = shuffle(PATIENTS.filter(p => p.adult)).slice(0, 2), teens = shuffle(PATIENTS.filter(p => !p.adult)).slice(0, 2);
+  const pats = shuffle([...adults, ...teens]);
+  const cases = shuffle(REGULAR).slice(0, 3);
+  cases.splice(1 + rand(3), 0, pick(REFER));
+  return pats.map((pat, i) => ({ pat, k: cases[i] }));
+}
+
+/* ---------- reading the student ---------- */
+const Q = {
+  sintoma: /\b(que (le|te) pasa|que tiene|que tienes|como (se siente|te sientes|esta|estas)|en que (le|te) (puedo ayudar|ayudo)|que necesita|que necesitas|que (le|te) sucede|cual es el problema|que (le|te) trae)\b/,
+  donde: /\b(duele|duelen|donde|pica|pican|arde|arden)\b/,
+  desde: /\b(desde cuando|cuando|hace cuanto|cuantos dias|cuanto tiempo)\b/,
+  causa: /\b(que paso|que (le|te) paso|como paso|como fue|que hizo|que hiciste|por que|que comio|que comiste|como se (lastimo|corto|quemo|cayo)|como te (lastimaste|cortaste|quemaste|caiste)|que estaba haciendo|que estabas haciendo)\b/,
+  fiebre: /\b(fiebre|temperatura|calentura)\b/,
+  otros: /\b(algo mas|otros? sintomas?|mareado|mareada|nauseas|vomit\w*|tos|cansado|cansada|sed|otra cosa|mas sintomas)\b/
+};
+const QLABEL = { sintoma: 'Síntoma', donde: 'Dónde', desde: 'Desde', causa: 'Causa', fiebre: 'Fiebre', otros: 'Otros' };
+const ADVICE_RE = /\b(tiene que|tienes que|debe|debes|deberia|deberias|necesita|necesitas|le recomiendo|te recomiendo|recomiendo|hay que|es mejor|mejor|le aconsejo|te aconsejo)\b/;
+const CMD_TU = /\b(bebe|toma|descansa|ponte|usa|lava|limpia|quedate|duerme|come|ve|vete|llama|compra|levanta|sube|evita|aprieta)\b/;
+const CMD_UD = /\b(beba|tome|descanse|pongase|use|lave|limpie|quedese|duerma|coma|vaya|llame|compre|levante|suba|evite|apriete)\b/;
+const TU_R = /\b(te|tienes|estas|quieres|puedes|debes|necesitas|hiciste|comiste|tu|bebe|descansa|ponte|quedate|duerme|sientes|ve|vete|lastimaste|cortaste|quemaste|caiste|estabas)\b/;
+const UD_R = /\b(le|tiene|quiere|puede|debe|necesita|hizo|comio|usted|siente|beba|descanse|pongase|quedese|duerma|tome|vaya|lastimo|corto|quemo|cayo|estaba)\b/;
+const INF_GUESS = { bebe: 'beber', bebes: 'beber', toma: 'tomar', tomas: 'tomar', descansa: 'descansar', descansas: 'descansar', usa: 'usar', usas: 'usar', pone: 'poner', pones: 'poner', ponga: 'poner', lava: 'lavar', come: 'comer', comes: 'comer', duerme: 'dormir', duermes: 'dormir', va: 'ir', vas: 'ir', ve: 'ir', vaya: 'ir', beba: 'beber', tome: 'tomar', descanse: 'descansar', use: 'usar', queda: 'quedarse', quedas: 'quedarse', compra: 'comprar', compras: 'comprar', llama: 'llamar', llamas: 'llamar', levanta: 'levantar', levantas: 'levantar', lavas: 'lavar', limpia: 'limpiar', limpias: 'limpiar', evita: 'evitar', evitas: 'evitar', sube: 'subir', subes: 'subir', bebo: 'beber', tomo: 'tomar', descanso: 'descansar', usa: 'usar', vaya: 'ir', vayas: 'ir', descanses: 'descansar', bebas: 'beber', tomes: 'tomar', uses: 'usar', pongas: 'poner', pongase: 'ponerse', ponte: 'ponerte', duerma: 'dormir', duermas: 'dormir', coma: 'comer', comas: 'comer' };
+function negated(n, idx) { const before = n.slice(Math.max(0, idx - 22), idx).split(' ').slice(-4); return before.includes('no') || before.includes('nunca') || before.includes('sin'); }
+function tenerSlips(n, tu) {
+  const out = [], re = /\b(tiene|tienes|tengo|tienen) que (\w+)/g;
+  let m;
+  while ((m = re.exec(n))) {
+    const w = m[2];
+    if (/^[a-z]+(ar|er|ir)(se|te|le|lo|la|me|nos|les|los|las)?$/.test(w)) {
+      const cl = w.match(/(ar|er|ir)(se|te)$/);
+      if (cl && tu && cl[2] === 'se') out.push([`${m[1]} que ${w}`, `${m[1]} que ${w.slice(0, -2)}te`, 'Talking to a teen (tú): ponerte, quedarte, lavarte.']);
+      if (cl && !tu && cl[2] === 'te') out.push([`${m[1]} que ${w}`, `${m[1]} que ${w.slice(0, -2)}se`, 'Talking to an adult (usted): ponerse, quedarse, lavarse.']);
+      continue;
+    }
+    const inf = INF_GUESS[w];
+    if (inf) out.push([`${m[1]} que ${w}`, `${m[1]} que ${inf}`, 'Tener que + infinitive: tiene que beber, tienes que descansar.']);
+  }
+  return out;
+}
+const DVERB = { duele: 'sg', duelen: 'pl', pica: 'sg', pican: 'pl' };
+function numberAfter(T, i) {
+  const skip = new Set(['mucho', 'mucha', 'muchisimo', 'mas', 'tambien', 'un', 'poco', 'todavia', 'ahora']);
+  let j = i;
+  while (j < T.length && skip.has(T[j]) && !(T[j] === 'un' && T[j + 1] !== 'poco')) j++;
+  const w = T[j];
+  if (!w) return null;
+  if (T.slice(j + 1, j + 4).includes('y') && T.slice(j + 1, j + 5).some(x => ['el', 'la', 'los', 'las'].includes(x))) return 'any';
+  if (['los', 'las', 'mis', 'tus', 'sus'].includes(w)) return 'pl';
+  if (['el', 'la', 'mi', 'tu', 'su'].includes(w)) return 'sg';
+  if (['que', 'y', 'cuando', 'donde', 'aqui', 'algo', 'si', 'no', 'a', 'de', 'en', 'desde', 'hace', 'nada', 'todo', 'mucho'].includes(w)) return null;
+  return w.endsWith('s') ? 'pl' : 'sg';
+}
+function dolerSlips(n) {
+  const T = n.split(' '), out = [];
+  for (let i = 0; i < T.length; i++) {
+    const v = T[i];
+    if (!DVERB[v]) continue;
+    const num = numberAfter(T, i + 1);
+    if (num && num !== 'any' && num !== DVERB[v]) {
+      const pron = ['me', 'te', 'le', 'les', 'nos'].includes(T[i - 1]) ? T[i - 1] + ' ' : '', nx = T.slice(i + 1, i + 3).join(' ');
+      const right = v.startsWith('pic') ? (num === 'pl' ? 'pican' : 'pica') : (num === 'pl' ? 'duelen' : 'duele');
+      out.push([`${pron}${v} ${nx}`, `${pron}${right} ${nx}`, num === 'pl' ? 'Doler works like gustar: more than one thing → duelen.' : 'Doler works like gustar: one thing → duele.']);
+    }
+  }
+  if (/\b(tu|usted) duele\b/.test(n)) out.push([n.match(/\b(tu|usted) duele\b/)[0], n.includes('usted duele') ? 'le duele' : 'te duele', 'Doler works like gustar: ¿Le duele…? ¿Te duele…?']);
+  return out;
+}
+
+/* ---------- the patient at the counter ---------- */
+const cur = () => S.cur;
+function setFicha() {
+  const c = S.cur;
+  if (!c) { $('ficha').innerHTML = ''; return; }
+  const C = CASES[c.k];
+  const rows = [['Paciente', `${c.pat.name} · ${c.pat.adult ? 'usted' : 'tú'}`, true], ...Object.keys(QLABEL).map(k => [QLABEL[k], C.ficha[k], c.asked.has(k)])];
+  $('ficha').innerHTML = rows.map(([t, v, show]) => `<dt>${t}</dt><dd class="${show ? '' : 'empty'}">${show ? esc(v) : '…'}</dd>`).join('');
+  $('fichaTitle').textContent = 'Ficha del paciente';
+  $('trato').textContent = c.pat.adult ? 'Trato: usted' : 'Trato: tú';
+}
+function setAdvice() {
+  const c = S.cur;
+  $('adviceTitle').textContent = 'Tus consejos';
+  if (!c) { $('advice').innerHTML = ''; return; }
+  const items = [...c.good].map(k => `<li class="good"><span class="m">✓</span>${esc(KEYS[k].label)}</li>`)
+    .concat(c.bad.map(b => `<li class="bad"><span class="m">✗</span>${esc(b)}</li>`))
+    .concat([...c.prods].map(k => `<li class="prod"><span class="m">★</span>${esc(PRODS[k].es)}</li>`));
+  $('advice').innerHTML = items.length ? items.join('') : '<li class="empty">Primero pregunta. Después, da consejos con «tener que» y recomienda algo del estante.</li>';
+}
+async function nextPatient() {
+  if (S.pi >= S.shift.length) return startCharla();
+  const { pat, k } = S.shift[S.pi];
+  S.cur = { pat, k, asked: new Set(), good: new Set(), bad: [], prods: new Set(), wrongProd: false, refProd: false, tries: 0, regSlips: 0, qBefore: 0, advised: false, done: false, modeled: false, log: [] };
+  S.phase = 'patient';
+  drawScene(); setFicha(); setAdvice(); renderMissions();
+  $('talk').placeholder = pat.adult ? '¿Qué le pasa?' : '¿Qué te pasa?';
+  setTask(`<b>${pat.name}</b> is here. Use <b>${pat.adult ? 'usted' : 'tú'}</b>. Ask what’s wrong, where it hurts, since when and what happened. Then give at least two pieces of advice with <i>${pat.adult ? 'Tiene que…' : 'Tienes que…'}</i> and recommend something from the shelf (click it). Or, if it’s serious: the doctor.`);
+  SFX.play('door');
+  await say(pat.id, pat.adult ? pick(['Buenas tardes. Disculpe, no me siento muy bien…', 'Buenas. ¿Me puede ayudar? No me siento bien.']) : pick(['¡Upe! Hola… diay, no me siento nada bien.', 'Hola, mae… ¿me ayuda? Me siento mal.']));
+}
+async function toPatient(raw) {
+  const c = S.cur, C = CASES[c.k], pat = c.pat, n = norm(raw), tu = !pat.adult;
+  // register
+  const usesTu = TU_R.test(n) || CMD_TU.test(n), usesUd = UD_R.test(n) || CMD_UD.test(n);
+  if (pat.adult && usesTu && !usesUd) { c.regSlips++; S.regSlips++; fb('warn', `Con ${pat.name}, usted.`, '¿Qué le pasa? ¿Le duele…? Tiene que… (le / tiene / usted, not te / tienes / tú)', true); }
+  else if (tu && usesUd && !usesTu) { c.regSlips++; S.regSlips++; fb('warn', `Con ${pat.name}, tú.`, `${pat.name} is a teenager: ¿Qué te pasa? ¿Te duele…? Tienes que…`, true); }
+  dolerSlips(n).forEach(s => { S.dolerSlips++; fb('warn', `<span class="fix"><s>${esc(s[0])}</s> → ${esc(s[1])}</span>`, s[2], true); });
+  const ts = tenerSlips(n, tu);
+  ts.forEach(s => { S.tenerSlips++; fb('warn', `<span class="fix"><s>${esc(s[0])}</s> → ${esc(s[1])}</span>`, s[2], true); });
+  if (/\b(tiene|tienes) que [a-z]+(ar|er|ir)/.test(n) && !ts.length) S.tenerRight++;
+  // questions
+  const isQ = /[?¿]/.test(raw);
+  const topics = Object.keys(Q).filter(k => Q[k].test(n));
+  const strongAdvice = ADVICE_RE.test(n);
+  const adviceish = strongAdvice || ((CMD_TU.test(n) || CMD_UD.test(n) || Object.values(PRODS).some(P => P.kw.test(n)) || KEYS.medico.re.test(n)) && !isQ);
+  const replies = [];
+  if (topics.length && (isQ || !adviceish)) {
+    for (const t of topics) {
+      if (t === 'donde') {
+        const part = Object.keys(PARTS).find(p => new RegExp(`\\b${p}\\b`).test(n));
+        if (part) replies.push(C.parts.includes(part) ? `Sí. ${fill(C.donde, pat)}` : `No, ${PARTS[part]} no. ${fill(C.donde, pat)}`);
+        else replies.push(fill(C.donde, pat));
+      } else replies.push(fill(C[t], pat));
+      if (!c.asked.has(t)) { c.asked.add(t); if (!c.advised) c.qBefore++; }
+    }
+    S.questions += topics.length;
+  }
+  if (replies.length) await say(pat.id, [...new Set(replies)].join(' '));
+  setFicha();
+  if (adviceish) return evaluateAdvice(n, raw);
+  if (!replies.length) {
+    if (/^(hola|buenas|buenos dias|buenas tardes|upe|pura vida)\b/.test(n)) await say(pat.id, pat.adult ? 'Buenas. Gracias por atenderme.' : '¡Pura vida! Gracias, mae.');
+    else {
+      await say(pat.id, pat.adult ? '¿Perdón? No le entendí.' : 'Diay… ¿cómo? No te entendí.');
+      fb('info', looksEnglish(n) ? 'En español, por favor.' : 'Pregunta o aconseja.', pat.adult ? '¿Qué le pasa? ¿Dónde le duele? ¿Desde cuándo? ¿Qué pasó? · Tiene que…' : '¿Qué te pasa? ¿Dónde te duele? ¿Desde cuándo? ¿Qué pasó? · Tienes que…', true);
+    }
+  }
+}
+async function evaluateAdvice(n, raw) {
+  const c = S.cur, C = CASES[c.k], pat = c.pat;
+  if (!c.advised) { c.advised = true; if (c.qBefore === 0) fb('info', 'Primero pregunta, después aconseja.', 'A good pharmacist asks before giving advice.', true); }
+  c.tries++; c.log.push(raw);
+  const newGood = C.keys.filter(k => KEYS[k].re.test(n) && !c.good.has(k));
+  newGood.forEach(k => c.good.add(k));
+  const newBad = [];
+  C.bad.forEach(([re, why]) => { const m = n.match(re); if (m && !negated(n, m.index)) { newBad.push(why); c.bad.push(m[0]); } });
+  const prods = Object.keys(PRODS).filter(k => PRODS[k].kw.test(n) && !c.prods.has(k));
+  prods.forEach(k => c.prods.add(k));
+  setAdvice();
+  if (newBad.length) { S.badAdvice++; await say(pat.id, pat.adult ? '¿Está seguro? No sé…' : '¿En serio, mae? No sé…'); fb('err', newBad[0], 'That advice could make it worse.', true); }
+  // the serious case
+  if (C.refer) {
+    if (c.good.has('medico')) {
+      await say(pat.id, pat.adult ? 'Tiene razón. Voy ya mismo al EBAIS. ¡Muchas gracias!' : '¡Diay, sí! Voy ya al EBAIS. ¡Gracias, mae!');
+      await say('fefi', C.fefi);
+      return patientDone();
+    }
+    if (prods.length) {
+      c.refProd = true;
+      await say('fefi', `Espere, mi amor. ${capFirst(C.ficha.sintoma)}, ${C.ficha.otros}… ¿Eso es para la farmacia?`);
+      fb('warn', '¿Es algo serio?', 'Read the patient file again. Some problems need a doctor: Tiene que ir al médico / al EBAIS.', true);
+    } else if (!newBad.length) {
+      await say(pat.id, pat.adult ? '¿Y eso me va a ayudar? Me siento muy mal…' : '¿Y eso me va a servir? Me siento muy mal, mae…');
+      fb('info', 'Lee la ficha otra vez.', 'Is this a problem for the pharmacy, or for a doctor?', true);
+    }
+    return maybeModel();
+  }
+  // a wrong product
+  const wrong = prods.filter(k => !C.products.includes(k) && k !== 'termometro');
+  if (wrong.length) { c.wrongProd = true; await say(pat.id, `¿${capFirst(PRODS[wrong[0]].es)}? No creo que me sirva para esto.`); fb('warn', 'Ese producto no sirve para este problema.', 'Look at the shelf again.', true); }
+  const goodProd = [...c.prods].some(k => C.products.includes(k));
+  if (c.good.size >= 2 && goodProd) {
+    await say(pat.id, pat.adult ? '¡Muchas gracias! Ya me siento mejor. ¡Pura vida!' : '¡Tuanis, mae! ¡Muchas gracias! ¡Pura vida!');
+    return patientDone();
+  }
+  if (!wrong.length && !newBad.length) {
+    if (c.good.size >= 2) { await say(pat.id, pat.adult ? 'Muy bien. ¿Y qué me recomienda comprar?' : '¡Listo! ¿Y qué me recomiendas comprar?'); fb('info', 'Recomienda un producto.', 'Click something on the shelf, or say it: Le recomiendo… / Te recomiendo…', true); }
+    else if (newGood.length || goodProd) { await say(pat.id, pat.adult ? 'Bueno. ¿Y qué más tengo que hacer?' : 'Bueno. ¿Y qué más tengo que hacer?'); fb('info', `${c.good.size} consejo${c.good.size === 1 ? '' : 's'}. Necesitas dos.`, 'Give one more piece of advice.', true); }
+    else { await say(pat.id, pat.adult ? '¿Y eso para qué?' : '¿Y eso para qué, mae?'); fb('info', 'Ese consejo no sirve para este problema.', 'Look at the patient file: what would help?', true); }
+  }
+  return maybeModel();
+}
+async function maybeModel() {
+  const c = S.cur;
+  if (c.tries < 4 || c.done) return;
+  const C = CASES[c.k], tu = !c.pat.adult, [a1, a2, p] = C.model.map(x => forTu(x, tu)), tq = tu ? 'Tienes que' : 'Tiene que';
+  c.modeled = true;
+  await say('fefi', C.refer ? `A ver, yo le ayudo. ${tq} ${a1}. Y mientras, ${tu ? 'tienes' : 'tiene'} que ${a2}.` : `A ver, mi amor, yo le ayudo. ${tq} ${a1} y ${tu ? 'tienes' : 'tiene'} que ${a2}. ${tu ? 'Te' : 'Le'} recomiendo ${PRODS[p].es}.`);
+  return patientDone();
+}
+async function patientDone() {
+  const c = S.cur;
+  c.done = true; S.phase = 'between';
+  let st = 3;
+  if (c.qBefore < 2) st--;
+  if (c.regSlips) st--;
+  if (c.bad.length || c.wrongProd || c.refProd) st--;
+  if (c.modeled) st = 1;
+  st = Math.max(1, st);
+  S.stars['p' + S.pi] = st;
+  S.results.push({ name: c.pat.name, k: c.k, st, qb: c.qBefore, log: c.log.slice(), refer: !!CASES[c.k].refer, ok: !c.modeled });
+  SFX.mission(st, 150);
+  renderMissions();
+  await sleep(900);
+  S.pi++;
+  S.cur = null;
+  drawScene();
+  if (S.pi < S.shift.length) await say('fefi', pick(['¡Muy bien! Siguiente…', '¡Qué bien lo hace! Ahí viene alguien más.', 'Perfecto. ¡Upe, otro paciente!']));
+  return nextPatient();
+}
+
+/* ---------- la charla de seguridad ---------- */
+const RULES = [
+  { id: 'sol', label: 'bloqueador', re: /\b(bloqueador|protector)\b/ },
+  { id: 'agua', label: 'agua', re: /\b(agua|hidrat\w*)\b/ },
+  { id: 'gorra', label: 'gorra y camiseta', re: /\b(gorra|sombrero|camiseta|cachucha)\b/ },
+  { id: 'bandera', label: 'bandera roja', re: /\bbandera\b/ },
+  { id: 'salvavidas', label: 'salvavidas', re: /\b(salvavidas|orilla|cerca)\b/ },
+  { id: 'corriente', label: 'corriente', re: /\b(corriente|paralel\w*)\b/ },
+  { id: 'solos', label: 'nunca solos', re: /\b(solos?|solas?|juntos|juntas|pareja|parejas|grupo|amigos?|amigas?|companer\w*)\b/ }
+];
+const UCMD = { ponganse: 'ponerse', pongan: 'poner', usen: 'usar', beban: 'beber', tomen: 'tomar', naden: 'nadar', escuchen: 'escuchar', lleven: 'llevar', descansen: 'descansar', vengan: 'venir', salgan: 'salir', coman: 'comer', busquen: 'buscar', tengan: 'tener', miren: 'mirar', jueguen: 'jugar', quedense: 'quedarse', vayan: 'ir', esten: 'estar', hagan: 'hacer', pregunten: 'preguntar', llamen: 'llamar', avisen: 'avisar', regresen: 'regresar', caminen: 'caminar', corran: 'correr', laven: 'lavar', lavense: 'lavarse', protejanse: 'protegerse', cubranse: 'cubrirse', sigan: 'seguir', respeten: 'respetar', entren: 'entrar', metanse: 'meterse', apliquense: 'aplicarse', apliquen: 'aplicar', pidan: 'pedir', griten: 'gritar', levanten: 'levantar', mantenganse: 'mantenerse', alejense: 'alejarse', obedezcan: 'obedecer', sean: 'ser', traigan: 'traer', cuiden: 'cuidar', cuidense: 'cuidarse', hidratense: 'hidratarse', salganse: 'salirse', toquen: 'tocar' };
+const UACC = { ponganse: 'pónganse', quedense: 'quédense', lavense: 'lávense', protejanse: 'protéjanse', cubranse: 'cúbranse', metanse: 'métanse', apliquense: 'aplíquense', mantenganse: 'manténganse', alejense: 'aléjense', cuidense: 'cuídense', hidratense: 'hidrátense', salganse: 'sálganse' };
+const TU2U = { ponte: 'pónganse', pon: 'pongan', usa: 'usen', bebe: 'beban', toma: 'tomen', escucha: 'escuchen', lleva: 'lleven', descansa: 'descansen', ven: 'vengan', sal: 'salgan', come: 'coman', busca: 'busquen', ten: 'tengan', mira: 'miren', juega: 'jueguen', quedate: 'quédense', ve: 'vayan', haz: 'hagan', llama: 'llamen', avisa: 'avisen', regresa: 'regresen', camina: 'caminen', corre: 'corran', lavate: 'lávense', protegete: 'protéjanse', sigue: 'sigan', respeta: 'respeten', mantente: 'manténganse', alejate: 'aléjense', cuidate: 'cuídense', hidratate: 'hidrátense' };
+const IND2U = { usan: 'usen', toman: 'tomen', nadan: 'naden', escuchan: 'escuchen', llevan: 'lleven', descansan: 'descansen', beben: 'beban', comen: 'coman', salen: 'salgan', vienen: 'vengan', juegan: 'jueguen', miran: 'miren', buscan: 'busquen', caminan: 'caminen', corren: 'corran', llaman: 'llamen', regresan: 'regresen', siguen: 'sigan', respetan: 'respeten', ponen: 'pongan', hacen: 'hagan' };
+const UD2U = { use: 'usen', beba: 'beban', tome: 'tomen', nade: 'naden', escuche: 'escuchen', lleve: 'lleven', descanse: 'descansen', pongase: 'pónganse', quedese: 'quédense', vaya: 'vayan', venga: 'vengan', camine: 'caminen', juegue: 'jueguen', respete: 'respeten', siga: 'sigan', mantengase: 'manténganse', cuidese: 'cuídense' };
+const INF2U = Object.fromEntries(Object.entries(UCMD).map(([u, inf]) => [inf, UACC[u] || u]));
+function checkTalk(raw) {
+  const sentences = raw.split(/[.!¡?¿;\n]+/).map(x => x.trim()).filter(Boolean);
+  let cmds = 0; const rules = new Set(), slips = [], seen = new Set();
+  sentences.forEach(sen => {
+    let senHas = false;
+    sen.split(/,|\s+y\s+|\s+e\s+/i).map(x => x.trim()).filter(Boolean).forEach(cl => {
+      const toks = (cl.toLowerCase().match(/[a-záéíóúñü]+/g) || []), T = toks.map(keyOf);
+      let has = false;
+      T.forEach((w, i) => {
+        if (!UCMD[w]) return;
+        has = true;
+        if (UACC[w] && toks[i] !== UACC[w] && !seen.has(w)) { seen.add(w); slips.push(['acc', toks[i], UACC[w], 'This command needs a written accent.']); }
+      });
+      if (has) { cmds++; senHas = true; return; }
+      const j = T[0] === 'no' ? 1 : 0, first = T[j], firstRaw = toks[j];
+      if (!first) return;
+      if (T[j] === 'se' && T[j + 1] === 'ponen') slips.push(['ind', 'se ponen', 'pónganse', 'Command with the pronoun on the end: pónganse.']);
+      else if (IND2U[first]) slips.push(['ind', firstRaw, IND2U[first], 'That describes what they do. For a command: -ar verbs → -en, -er/-ir verbs → -an.']);
+      else if (first === 'tienen' && T[j + 1] !== 'que') slips.push(['ind', firstRaw, 'tengan', 'Command: tengan (cuidado).']);
+      else if (TU2U[first] && !(first === 've' && T.length < 2)) slips.push(['tu', firstRaw, TU2U[first], 'You’re talking to a group: use the ustedes command.']);
+      else if (first === 'nada' && /^(cerca|con|paralel|en)/.test(T[j + 1] || '')) slips.push(['tu', 'nada', 'naden', 'You’re talking to a group: naden.']);
+      else if (UD2U[first]) slips.push(['ud', firstRaw, UD2U[first], 'That’s for one person (usted). For a group: add -n.']);
+      else if (INF2U[first]) slips.push(['inf', firstRaw, INF2U[first], 'That’s the infinitive. Turn it into a command for the group.']);
+    });
+    if (senHas) { const n = sen.toLowerCase().match(/[a-záéíóúñü]+/g).map(keyOf).join(' '); RULES.forEach(r => { if (r.re.test(n)) rules.add(r.id); }); }
+  });
+  return { cmds, rules: [...rules], slips };
+}
+async function startCharla() {
+  S.phase = 'charla';
+  S.cur = null; drawScene(); renderMissions();
+  $('trato').textContent = 'Trato: ustedes';
+  $('placeName').textContent = 'Playa Cocles · Puerto Viejo';
+  $('fichaTitle').textContent = 'El cartel de la playa';
+  $('ficha').innerHTML = RULES.map(r => `<dt>✓</dt><dd>${esc(r.label)}</dd>`).join('');
+  $('adviceTitle').textContent = 'Tu charla';
+  $('advice').innerHTML = '<li class="empty">Tus mandatos aparecen aquí.</li>';
+  $('talkBox').hidden = true; $('writeBox').hidden = false;
+  setTask('Give the kids the beach rules from the poster. Write at least <b>four ustedes commands</b>, three of them about the poster: <i>Pónganse bloqueador. Beban mucha agua. Naden cerca del salvavidas.</i> Tip for rip currents: <i>naden paralelo a la playa</i>.');
+  await say('fefi', '¡Qué buena guardia! Ya terminamos aquí. Ahora vaya a la playa: Wendell, el salvavidas, necesita ayuda.');
+  await say('wendell', '¡Upe! Usted es quien ayuda donde Doña Fefi, ¿verdad? Tengo un grupo de chiquitos del campamento y necesito que les explique las reglas de la playa. Mire el cartel. Hábleles a todos juntos: ¡ustedes!');
+  $('write').focus();
+}
+async function submitTalkWrite(raw) {
+  raw = (raw || '').trim();
+  if (!raw || S.phase !== 'charla' || S.busy) return;
+  S.busy = true; S.writeTries++;
+  const r = checkTalk(raw);
+  clearFb();
+  const enough = r.cmds >= 4 && r.rules.length >= 3;
+  const show = () => {
+    r.slips.forEach(s => fb(s[0] === 'acc' ? 'warn' : 'warn', `<span class="fix"><s>${esc(s[1])}</s> → ${esc(s[2])}</span>`, s[3], true));
+    accentChips(reviewAccents(raw)).forEach(c => $('fbs').appendChild(c));
+    $('advice').innerHTML = `<li class="${r.cmds >= 4 ? 'good' : 'empty'}"><span class="m">${r.cmds}</span>mandatos con ustedes</li>` + RULES.map(x => `<li class="${r.rules.includes(x.id) ? 'good' : 'empty'}"><span class="m">${r.rules.includes(x.id) ? '✓' : ''}</span>${esc(x.label)}</li>`).join('');
+  };
+  if (looksEnglish(norm(raw)) && r.cmds < 2) { fb('info', 'En español, por favor.', 'Pónganse bloqueador. Beban agua…'); S.busy = false; return; }
+  if (!enough && S.writeTries < 3) {
+    if (r.cmds < 4) fb('warn', `${r.cmds} mandato${r.cmds === 1 ? '' : 's'} con ustedes. ¡Necesitas cuatro!`, 'Pónganse…, Usen…, Beban…, Naden…, Escuchen…', true);
+    if (r.rules.length < 3) fb('warn', `${r.rules.length} regla${r.rules.length === 1 ? '' : 's'} del cartel. ¡Necesitas tres!`, 'Bloqueador, agua, gorra, bandera roja, salvavidas, corriente, nunca solos.', true);
+    show();
+    S.busy = false; return;
+  }
+  feed.me(raw);
+  S.talk = raw; S.talkCmds = r.cmds; S.talkRules = r.rules.length; S.talkSlips = r.slips.length;
+  fb('ok', `¡Muy bien! ${r.cmds} mandatos y ${r.rules.length} reglas del cartel.`, '');
+  show();
+  $('writeBox').hidden = true;
+  S.stars.charla = r.cmds >= 6 && r.rules.length >= 4 && !r.slips.length ? 3 : enough ? 2 : 1;
+  SFX.mission(S.stars.charla, 150);
+  S.phase = 'done'; renderMissions();
+  await say('wendell', `¡Tuanis! ${r.rules.includes('corriente') ? 'Y lo de la corriente es muy importante: aquí en el Caribe hay corrientes fuertes. ' : ''}¿Oyeron, chiquitos?`);
+  await say('kids', '¡Sííí! ¡Pura vida!');
+  await say('lucia', '¡Sexta parada, completa! ¡Pura vida, Costa Rica! La próxima ciudad: Lima, en Perú.');
+  S.busy = false;
+  finish();
+}
+
+/* ---------- drawing ---------- */
+function prodIcon(P) {
+  const c = P.color, d = shade(c, -0.3);
+  switch (P.shape) {
+    case 'tube': return `<path d="M-8 0 h16 l-2 -26 h-12 z" fill="${c}" stroke="${d}"/><rect x="-4" y="-31" width="8" height="5" rx="1" fill="${d}"/>`;
+    case 'bottle': return `<rect x="-9" y="-24" width="18" height="24" rx="4" fill="${c}" stroke="${d}"/><rect x="-4" y="-30" width="8" height="6" fill="${d}"/><rect x="-7" y="-16" width="14" height="8" rx="1" fill="#fff" opacity=".7"/>`;
+    case 'spray': return `<rect x="-7" y="-26" width="14" height="26" rx="3" fill="${c}" stroke="${d}"/><rect x="-4" y="-32" width="8" height="6" fill="#C9CDD8"/><rect x="3" y="-31" width="6" height="2" fill="#C9CDD8"/>`;
+    case 'box': return `<rect x="-12" y="-18" width="24" height="18" rx="2" fill="${c}" stroke="${d}"/><path d="M-12 -12 h24" stroke="${d}"/>`;
+    case 'roll': return `<rect x="-10" y="-20" width="20" height="20" rx="3" fill="${c}" stroke="#B9A98A"/><circle cx="0" cy="-10" r="4" fill="#E8DCC0"/>`;
+    case 'pack': return `<rect x="-12" y="-16" width="24" height="16" rx="4" fill="${c}" stroke="${d}"/><path d="M-6 -10 l3 3 l3 -3 l3 3 l3 -3" stroke="#fff" fill="none"/>`;
+    case 'sachet': return `<path d="M-9 0 v-22 h18 v22 z" fill="${c}" stroke="${d}"/><path d="M-9 -22 l3 -3 h12 l3 3" fill="${d}"/><path d="M-3 -12 h6 M0 -15 v6" stroke="#fff" stroke-width="2"/>`;
+    case 'thermo': return `<rect x="-2.5" y="-28" width="5" height="24" rx="2.5" fill="${c}" stroke="${d}"/><circle cx="0" cy="-3" r="4" fill="#E8505B"/>`;
+  }
+  return '';
+}
+const wildGems = {
+  perezoso: (x, y) => `<g class="gem" data-gem="perezoso" tabindex="0" role="button" aria-label="Un perezoso"><circle class="ring" cx="${x}" cy="${y + 6}" r="18"/><path d="M${x - 16} ${y - 8} H${x + 20}" stroke="#5E3B27" stroke-width="5" stroke-linecap="round"/><ellipse cx="${x}" cy="${y + 8}" rx="11" ry="9" fill="#9A8466"/><circle cx="${x + 7}" cy="${y + 4}" r="5.5" fill="#B8A27A"/><ellipse cx="${x + 7}" cy="${y + 4}" rx="4" ry="2" fill="#5E4A32"/><path d="M${x - 8} ${y + 2} L${x - 10} ${y - 8} M${x + 2} ${y + 2} L${x + 4} ${y - 8}" stroke="#9A8466" stroke-width="3"/><circle class="spark" cx="${x + 20}" cy="${y - 10}" r="2.4"/></g>`,
+  congo: (x, y) => `<g class="gem" data-gem="congo" tabindex="0" role="button" aria-label="Un mono congo"><circle class="ring" cx="${x}" cy="${y}" r="18"/><ellipse cx="${x}" cy="${y + 4}" rx="9" ry="10" fill="#2A1D17"/><circle cx="${x}" cy="${y - 8}" r="6" fill="#2A1D17"/><ellipse cx="${x}" cy="${y - 6}" rx="3.5" ry="3" fill="#5E4A3A"/><path d="M${x + 8} ${y + 8} q12 4 8 -12" stroke="#2A1D17" stroke-width="2.5" fill="none"/><circle class="spark" cx="${x + 18}" cy="${y - 14}" r="2.4"/></g>`,
+  tortuga: (x, y) => `<g class="gem" data-gem="tortuga" tabindex="0" role="button" aria-label="Una tortuga"><circle class="ring" cx="${x}" cy="${y}" r="18"/><ellipse cx="${x}" cy="${y}" rx="13" ry="8" fill="#4E6A3A" stroke="#2E4A22"/><path d="M${x - 6} ${y - 5} l3 5 l-3 5 M${x + 4} ${y - 6} l-2 6 l2 6" stroke="#2E4A22" fill="none"/><ellipse cx="${x + 16}" cy="${y - 1}" rx="5" ry="3.5" fill="#6E8A52"/><path d="M${x - 10} ${y + 6} l-5 4 M${x + 9} ${y + 6} l5 4 M${x - 10} ${y - 6} l-5 -4 M${x + 9} ${y - 6} l5 -4" stroke="#6E8A52" stroke-width="3" stroke-linecap="round"/><circle class="spark" cx="${x + 20}" cy="${y - 12}" r="2.4"/></g>`
+};
+function cueOverlay(cue) {
+  switch (cue) {
+    case 'sunburn': return '<g opacity=".45" fill="#FF3B3B"><ellipse cx="0" cy="-24" rx="11" ry="10"/><rect x="-19" y="-6" width="6.5" height="21" rx="3"/><rect x="12.5" y="-6" width="6.5" height="21" rx="3"/></g>';
+    case 'ankle': return '<ellipse cx="5.5" cy="30" rx="6" ry="3.5" fill="#FF6B6B" opacity=".7"/>';
+    case 'broken': return '<ellipse cx="5.5" cy="29" rx="8" ry="5" fill="#8B5CC7" opacity=".85"/>';
+    case 'cold': return '<circle cx="0" cy="-21.5" r="2.4" fill="#E8505B"/><rect x="13" y="10" width="9" height="7" rx="1.5" fill="#fff"/>';
+    case 'cut': return '<path d="M2 32 l6 -2" stroke="#E8505B" stroke-width="2"/>';
+    case 'bites': return '<g fill="#E8505B">' + [[-16, -2], [-15, 6], [-17, 11], [15, 0], [16, 8], [-5, 18], [5, 22], [-6, 26], [6, 14]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.4"/>`).join('') + '</g>';
+    case 'stomach': return '<rect x="-8" y="2" width="16" height="7" rx="3" fill="#C98B5E" opacity=".9"/><path d="M-6 -20 q6 3 12 0" stroke="#3A2A20" stroke-width="1.2" fill="none"/>';
+    case 'sun': return '<path d="M-14 -36 q-2 4 0 6 q2 -2 0 -6z M14 -34 q-2 4 0 6 q2 -2 0 -6z" fill="#9EC6D8"/>';
+    case 'fever': return '<g opacity=".5" fill="#FF3B3B"><circle cx="-8" cy="-21" r="4"/><circle cx="8" cy="-21" r="4"/></g><path d="M-14 -36 q-2 4 0 6 q2 -2 0 -6z" fill="#9EC6D8"/>';
+    case 'deepcut': return '<rect x="12" y="11" width="9" height="8" rx="3" fill="#fff"/><circle cx="17" cy="15" r="2.6" fill="#E8505B"/>';
+  }
+  return '';
+}
+function pharmacySVG() {
+  let s = '<defs><linearGradient id="sky6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3B4E9A"/><stop offset=".6" stop-color="#E7896A"/><stop offset="1" stop-color="#FFC27A"/></linearGradient></defs>';
+  s += '<rect width="760" height="300" fill="#2F6F7A"/><rect width="760" height="300" fill="#1E3E4A" opacity=".55"/><rect y="262" width="760" height="38" fill="#6B4A36"/>';
+  // window onto the Caribbean
+  s += '<rect x="408" y="14" width="340" height="166" rx="6" fill="#F4F1EA"/><g><rect x="416" y="22" width="324" height="150" fill="url(#sky6)"/><circle cx="700" cy="104" r="22" fill="#FFE3A3" opacity=".8"/>';
+  s += '<rect x="416" y="108" width="324" height="30" fill="#2E8FA8"/><path class="wave deco" d="M416 116 q20 -5 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" stroke="#BDEBDF" stroke-width="2" fill="none" opacity=".7"/>';
+  s += '<rect x="416" y="138" width="324" height="34" fill="#E9D7A8"/>';
+  s += '<path d="M446 172 Q440 100 452 44" stroke="#6B4A36" stroke-width="7" fill="none"/><g class="deco sway"><path d="M452 44 q-30 -6 -40 14 M452 44 q24 -14 44 0 M452 44 q-14 -22 -30 -22 M452 44 q10 -22 32 -22" stroke="#2F8F4E" stroke-width="7" fill="none" stroke-linecap="round"/></g>';
+  s += '<path d="M726 172 Q732 110 718 60" stroke="#6B4A36" stroke-width="7" fill="none"/><g class="deco"><path d="M718 60 q-26 -8 -36 10 M718 60 q22 -12 30 4 M718 60 q-8 -22 -24 -24" stroke="#2F8F4E" stroke-width="7" fill="none" stroke-linecap="round"/></g>';
+  s += `<g class="gem" data-gem="ebais" tabindex="0" role="button" aria-label="El EBAIS"><circle class="ring" cx="508" cy="128" r="30"/><rect x="480" y="114" width="56" height="34" fill="#F4F1EA" stroke="#9AA8B4"/><path d="M476 116 L508 98 L540 116 Z" fill="#3A7BD5"/><rect x="486" y="120" width="44" height="10" fill="#2F6F7A"/><text x="508" y="128" text-anchor="middle" font-size="8" font-weight="800" fill="#fff" font-family="Manrope, sans-serif">EBAIS</text><rect x="502" y="134" width="12" height="14" fill="#5E3B27"/><path d="M522 136 h6 M525 133 v6" stroke="#E8505B" stroke-width="2"/><circle class="spark" cx="540" cy="100" r="2.4"/></g>`;
+  s += '</g>' + wildGems.perezoso(476, 72) + wildGems.congo(708, 52) + wildGems.tortuga(674, 158);
+  s += '<path d="M408 97 h340 M578 14 v166" stroke="#F4F1EA" stroke-width="4"/>';
+  // shelves
+  s += '<rect x="98" y="8" width="300" height="164" rx="4" fill="#5E3B27"/><rect x="104" y="14" width="288" height="152" fill="#E8EEF0"/>';
+  const keys = Object.keys(PRODS), planks = [56, 104, 152];
+  planks.forEach(y => { s += `<rect x="104" y="${y}" width="288" height="6" fill="#B9A98A"/>`; });
+  keys.forEach((k, i) => {
+    const r = Math.floor(i / 4), cidx = i % 4, x = 140 + cidx * 72, y = planks[r];
+    const chosen = S.cur && S.cur.prods.has(k) ? ' chosen' : '';
+    s += `<g class="prod${chosen}" data-prod="${k}" role="button" tabindex="0" aria-label="${esc(PRODS[k].es)}"><rect class="pr" x="${x - 32}" y="${y - 36}" width="64" height="50" rx="6"/><g transform="translate(${x} ${y})">${prodIcon(PRODS[k])}</g><text x="${x}" y="${y + 13}" text-anchor="middle" class="plabel">${esc(PRODS[k].label)}</text></g>`;
+  });
+  // Doña Fefi behind the counter
+  s += `<g class="people"><g transform="translate(56 158) scale(1.5)">${famSVG(PEOPLE.fefi.p)}</g></g>`;
+  s += '<rect x="14" y="192" width="390" height="10" rx="2" fill="#C89A5E"/><rect x="20" y="202" width="378" height="60" fill="#8A5A3C"/><path d="M20 232 h378" stroke="#6B4A36" stroke-width="2"/>';
+  s += `<g class="gem" data-gem="puravida" tabindex="0" role="button" aria-label="Pura vida"><circle class="ring" cx="214" cy="232" r="30"/><rect x="170" y="216" width="88" height="30" rx="6" fill="#F2C230" stroke="#B5302A" stroke-width="2"/><text x="214" y="236" text-anchor="middle" font-size="13" font-weight="800" fill="#B5302A" font-family="Unbounded, Manrope, sans-serif">¡Pura vida!</text><circle class="spark" cx="262" cy="212" r="2.4"/></g>`;
+  s += `<g class="gem" data-gem="pati" tabindex="0" role="button" aria-label="Los patís"><circle class="ring" cx="340" cy="182" r="18"/><rect x="314" y="174" width="52" height="18" rx="3" fill="#BDEBDF" opacity=".55" stroke="#F4F1EA"/>${[324, 340, 356].map(x => `<path d="M${x - 7} 189 q7 -11 14 0 z" fill="#E0A848" stroke="#B07A2A"/>`).join('')}<circle class="spark" cx="370" cy="172" r="2.2"/></g>`;
+  // the patient
+  if (S.cur) {
+    const P = S.cur.pat, sc = 1.85;
+    s += `<g class="people"><g transform="translate(588 ${294 - 34 * sc}) scale(${sc})">${famSVG(P.p)}${cueOverlay(CASES[S.cur.k].cue)}</g></g>`;
+  }
+  return s;
+}
+function beachSVG() {
+  let s = '<defs><linearGradient id="sky6b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3B4E9A"/><stop offset=".7" stop-color="#E7896A"/><stop offset="1" stop-color="#FFC27A"/></linearGradient></defs>';
+  s += '<rect width="760" height="300" fill="url(#sky6b)"/><circle cx="620" cy="120" r="34" fill="#FFE3A3" opacity=".8"/>';
+  s += '<rect y="130" width="760" height="56" fill="#2E8FA8"/><path class="wave deco" d="M0 144 q25 -6 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" stroke="#BDEBDF" stroke-width="2" fill="none" opacity=".7"/><path d="M0 186 q40 -10 80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0" fill="#E9D7A8"/><rect y="190" width="760" height="110" fill="#E9D7A8"/>';
+  // poster
+  s += '<rect x="22" y="22" width="300" height="230" rx="8" fill="#F4F1EA" stroke="#5E3B27" stroke-width="5"/><rect x="164" y="252" width="8" height="40" fill="#5E3B27"/>';
+  s += '<text x="172" y="48" text-anchor="middle" class="posterh">Reglas de la playa</text>';
+  const icons = [
+    ['bloqueador', '<rect x="-8" y="-20" width="16" height="22" rx="4" fill="#F2C230" stroke="#B5902A"/><circle cx="12" cy="-18" r="6" fill="#F08A3C"/>'],
+    ['agua', '<rect x="-6" y="-22" width="12" height="24" rx="3" fill="#5FA8D3" stroke="#2E6E9A"/><rect x="-3" y="-27" width="6" height="5" fill="#2E6E9A"/>'],
+    ['gorra y camiseta', '<path d="M-14 -6 q0 -14 14 -14 q14 0 14 14 z" fill="#E8505B"/><path d="M0 -6 h20" stroke="#E8505B" stroke-width="4"/>'],
+    ['bandera roja', '<path d="M-10 4 V-24" stroke="#5E3B27" stroke-width="3"/><path d="M-10 -24 h22 l-6 7 l6 7 h-22 z" fill="#E8505B"/>'],
+    ['salvavidas', '<circle r="12" cy="-8" fill="none" stroke="#E8505B" stroke-width="7"/><circle r="12" cy="-8" fill="none" stroke="#F4F1EA" stroke-width="7" stroke-dasharray="6 6.5"/>'],
+    ['corriente', '<path d="M-14 0 q4 -8 0 -16 q-4 -8 0 -12" stroke="#2E8FA8" stroke-width="3" fill="none"/><path d="M-14 -28 l-4 6 M-14 -28 l4 6" stroke="#2E8FA8" stroke-width="3"/><path d="M0 -10 h18 M14 -14 l4 4 l-4 4" stroke="#2F9E57" stroke-width="3" fill="none"/>'],
+    ['nunca solos', '<circle cx="-7" cy="-20" r="4" fill="#2A2438"/><circle cx="7" cy="-20" r="4" fill="#2A2438"/><path d="M-7 -16 v14 M7 -16 v14 M-7 -10 h14" stroke="#2A2438" stroke-width="3"/>']
+  ];
+  icons.forEach(([label, ic], i) => {
+    const col = i % 3, row = Math.floor(i / 3), x = 72 + col * 100, y = 90 + row * 60;
+    s += `<g transform="translate(${x} ${y})">${ic}</g><text x="${x}" y="${y + 20}" text-anchor="middle" class="poster">${label}</text>`;
+  });
+  // lifeguard tower, flag
+  s += '<path d="M560 290 L572 170 M640 290 L628 170 M566 230 H634" stroke="#F4F1EA" stroke-width="6"/><rect x="556" y="150" width="88" height="24" rx="3" fill="#E8505B"/><text x="600" y="167" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="Manrope, sans-serif">SALVAVIDAS</text>';
+  s += `<g class="people"><g transform="translate(600 ${150 - 34 * 1.15}) scale(1.15)">${famSVG(PEOPLE.wendell.p)}</g></g>`;
+  s += '<path d="M690 290 V120" stroke="#F4F1EA" stroke-width="4"/><path d="M690 120 h40 l-10 12 l10 12 h-40 z" fill="#F2C230"/>';
+  // the kids
+  const kids = [{ skin: '#B07A5A', hairC: '#1F1712', style: 'short', shirtC: '#5FA8D3', age: 9 }, { skin: '#5A3A28', hairC: '#1F1712', style: 'curly', shirtC: '#F08A3C', fem: true, age: 10 }, { skin: '#D9A07E', hairC: '#6B4428', style: 'long', shirtC: '#7ED3B2', fem: true, age: 9 }, { skin: '#8E5A44', hairC: '#2A1D17', style: 'short', shirtC: '#E86F9A', age: 10 }];
+  s += '<g class="people">' + kids.map((k, i) => `<g transform="translate(${370 + i * 44} ${282 - 34 * 1.3}) scale(1.3)">${famSVG(k)}</g>`).join('') + '</g>';
+  s += wildGems.perezoso(500, 60) + wildGems.congo(720, 52) + wildGems.tortuga(724, 262);
+  return s;
+}
+function drawScene() {
+  const svg = $('sceneSvg');
+  svg.innerHTML = S.phase === 'charla' || S.phase === 'done' ? beachSVG() : pharmacySVG();
+  svg.classList.toggle('shop', S.phase === 'patient');
+  svg.querySelectorAll('.gem').forEach(g => {
+    if (S.gems && S.gems.has(g.dataset.gem)) g.classList.add('found');
+    g.addEventListener('click', () => showGem(g.dataset.gem));
+    g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showGem(g.dataset.gem); } });
+  });
+  svg.querySelectorAll('.prod').forEach(g => {
+    const go = () => recommend(g.dataset.prod);
+    g.addEventListener('click', go);
+    g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+}
+function recommend(k) {
+  if (S.phase !== 'patient' || !S.cur) return;
+  const line = `${S.cur.pat.adult ? 'Le' : 'Te'} recomiendo ${PRODS[k].es}.`;
+  const v = $('talk').value.trim();
+  $('talk').value = v ? `${v} ${line}` : line;
+  $('talk').focus();
+  SFX.play('tap');
+}
+
+/* ---------- missions, hints, gems ---------- */
+const setTask = h => { $('task').innerHTML = h; };
+const say = (who, text) => feed.say(who, text, { name: PEOPLE[who].name, fast: true });
+function renderMissions() {
+  const rows = (S.shift || []).map((x, i) => [i <= (S.pi ?? -1) || S.stars['p' + i] ? `Paciente ${i + 1}: ${x.pat.name}` : `Paciente ${i + 1}`, 'p' + i, S.phase === 'patient' && S.pi === i]);
+  rows.push(['La charla de seguridad', 'charla', S.phase === 'charla']);
+  $('missionList').innerHTML = rows.map(([t, k, cur], i) => { const st = S.stars && S.stars[k]; return `<li class="${st ? 'done' : cur ? 'current' : ''}"><span class="n">${st ? '✓' : i + 1}</span><span class="t">${esc(t)}</span>${st ? `<span class="stars">${stars(st)}</span>` : ''}</li>`; }).join('');
+  $('gemCount').innerHTML = `Datos de Costa Rica: <b>${S.gems ? S.gems.size : 0}/6</b> · click the sparkles.`;
+}
+function useHint() {
+  if (!S.started) return;
+  S.hints++;
+  if (S.phase === 'patient' && S.cur) {
+    const c = S.cur, C = CASES[c.k], tu = !c.pat.adult;
+    const askNext = ['sintoma', 'donde', 'desde', 'causa'].find(k => !c.asked.has(k));
+    const Qs = { sintoma: tu ? '¿Qué te pasa?' : '¿Qué le pasa?', donde: tu ? '¿Dónde te duele?' : '¿Dónde le duele?', desde: '¿Desde cuándo?', causa: tu ? '¿Qué te pasó?' : '¿Qué le pasó?' };
+    if (askNext && c.asked.size < 3) return fb('warn', Qs[askNext], 'Ask first. The answers fill in the patient file.');
+    const [a1, a2, p] = C.model.map(x => forTu(x, tu)), tq = tu ? 'Tienes que' : 'Tiene que';
+    return fb('warn', C.refer ? `${tq} ${a1}.` : `${tq} ${a1}. ${tq} ${a2}. ${tu ? 'Te' : 'Le'} recomiendo ${PRODS[p].es}.`, C.refer ? 'Read the file: this is serious.' : 'Two pieces of advice and a product from the shelf.');
+  }
+  if (S.phase === 'charla') return fb('warn', '¡Hola, chicos! Pónganse bloqueador y gorra. Beban mucha agua. Naden cerca del salvavidas. Si hay bandera roja, no entren al mar. Si hay corriente, naden paralelo a la playa. ¡Y nunca naden solos!', 'A model. Use your own words too.');
+}
+const GEMS = {
+  puravida: ['¡Pura vida!', '¿Cómo está? ¡Pura vida! ¡Gracias! ¡Pura vida!', 'Costa Rica’s favourite expression means hello, goodbye, thanks, “all good” and a whole relaxed way of life. Costa Ricans call themselves ticos, from their love of diminutives: chiquitico, momentico, poquitico.'],
+  perezoso: ['El perezoso', 'El perezoso se mueve muy, muy despacio.', 'Two- and three-toed sloths live in the trees along the Caribbean coast. They move so slowly that algae grow in their fur, which helps them hide. They come down from the tree only about once a week.'],
+  congo: ['El mono congo', '¡El mono congo grita muy fuerte!', 'The howler monkey’s call can be heard kilometres away, usually at dawn. On the Caribbean coast it often works as a natural alarm clock.'],
+  tortuga: ['Las tortugas', 'Las tortugas ponen sus huevos en la playa.', 'Leatherback, green and hawksbill turtles nest on Caribbean beaches like Gandoca-Manzanillo and Tortuguero. Volunteers patrol at night to protect the nests, and lights on the beach are kept low so the hatchlings find the sea.'],
+  pati: ['El patí', 'Un patí, por favor. ¡Pica un poquito!', 'A Caribbean pastry filled with spicy beef, from the Afro-Caribbean community of Limón, whose families came from Jamaica and other islands in the 1800s. Limón also has rice and beans cooked in coconut milk, calypso music, and an English-based Creole language spoken alongside Spanish.'],
+  ebais: ['El EBAIS', 'Si es algo serio, vaya al EBAIS.', 'EBAIS (Equipo Básico de Atención Integral en Salud) are the local clinics of Costa Rica’s public health system, the Caja (CCSS). Almost every community has one: it’s the first stop for a doctor.']
+};
+function howl() {
+  if (SFX.muted()) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    const ctx = S.ac || (S.ac = new AC()), t = ctx.currentTime + 0.05;
+    [0, 0.5].forEach(dt => {
+      const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      o.type = 'sawtooth'; o.frequency.setValueAtTime(110, t + dt); o.frequency.linearRampToValueAtTime(150, t + dt + 0.25); o.frequency.linearRampToValueAtTime(95, t + dt + 0.45);
+      f.type = 'lowpass'; f.frequency.value = 700;
+      g.gain.setValueAtTime(0.0001, t + dt); g.gain.exponentialRampToValueAtTime(0.09, t + dt + 0.06); g.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.45);
+      o.connect(f); f.connect(g); g.connect(ctx.destination); o.start(t + dt); o.stop(t + dt + 0.5);
+    });
+  } catch (e) {}
+}
+function showGem(k) {
+  const g = GEMS[k]; if (!g) return;
+  const first = !S.gems.has(k);
+  S.gems.add(k);
+  $('sceneSvg').querySelectorAll(`[data-gem="${k}"]`).forEach(x => x.classList.add('found'));
+  document.querySelector('.gemcard')?.remove();
+  const card = document.createElement('div');
+  card.className = 'gemcard appear';
+  card.innerHTML = `<p class="gtitle">✦ ${g[0]}</p><p>${g[1]}</p><p class="gen">${g[2]}</p><button class="btn ghost small" type="button">Cerrar</button>`;
+  card.querySelector('button').addEventListener('click', () => card.remove());
+  $('viewport').appendChild(card);
+  if (k === 'congo') howl(); else if (first) SFX.play(S.gems.size === 6 ? 'star' : 'badge');
+  renderMissions();
+}
+
+/* ---------- summary ---------- */
+function finish() {
+  const st = S.stars, g = S.gems.size, R = S.results;
+  const refer = R.find(r => r.refer);
+  renderSummary($('summary'), {
+    eyebrow: 'Escena 6 · Costa Rica', title: R.every(r => r.st === 3) && st.charla === 3 ? '¡Una guardia perfecta!' : '¡Buena guardia, pura vida!',
+    stats: [[S.questions, 'Questions to patients'], [S.tenerRight, 'Tener que + infinitive, right'], [S.talkCmds, 'Ustedes commands in the talk'], [`${g}/6`, 'Datos de Costa Rica']],
+    rows: [...R.map((r, i) => [`Paciente ${i + 1}: ${r.name}`, r.st]), ['La charla', st.charla || 1]],
+    badges: [
+      ['Buen detective', 'Asked at least two questions before advising every patient', R.length === S.shift.length && R.every(r => r.qb >= 2)],
+      ['Al médico', 'Sent the serious case to the doctor without selling anything first', !!refer && refer.ok && refer.st >= 2],
+      ['Tiene que…', 'Tener que + infinitive four times, no slips', S.tenerRight >= 4 && S.tenerSlips === 0],
+      ['Con respeto', 'Usted with adults, tú with teens, every time', S.regSlips === 0],
+      ['Buen consejo', 'No advice that would make things worse', S.badAdvice === 0],
+      ['Salvavidas', 'Six ustedes commands in the talk, no slips', S.talkCmds >= 6 && S.talkSlips === 0],
+      ['Pura vida', 'Found all six Datos de Costa Rica', g === 6],
+      ['Buen oído', 'Audio-only challenge on, no text revealed', tts && $('challenge').checked && S.reveals === 0]
+    ],
+    listTitle: 'Tu guardia',
+    list: [...R.map(r => `<b>${esc(r.name)}</b> (${esc(CASES[r.k].ficha.sintoma)}): ${r.log.length ? esc(r.log.join(' ')) : '—'}${r.ok ? '' : ' <i>(Doña Fefi helped)</i>'}`), `<b>Tu charla:</b> ${esc(S.talk || '')}`],
+    outcomes: 'Practised (20-3Y): LC–1.3 a (health and safety) · LC–1.4 b (tener que + infinitive; tú and ustedes commands) · LC–1.4 a (preterite, hace + time, modelled) · LC–1.4 c · A–3.1 a, d, e · A–1.1 a · A–2.2 a · A–4.3 a–b · LC–2.1 a · LC–3.1 a · LC–3.2 a · LC–3.3 a · LC–4.1 a–b · LC–4.4 a · GC–1.2 b · GC–1.4 a · GC–2.2 a.',
+    onAgain: start
+  });
+}
+
+/* ---------- wiring ---------- */
+const feed = makeFeed({
+  feed: $('feed'), challenge: $('challenge'), autoplay: $('autoplay'),
+  people: Object.fromEntries(Object.entries(PEOPLE).map(([k, v]) => [k, { name: v.name, color: v.color, voice: 'f' }])),
+  onReveal: () => { S.reveals++; }
+});
+attachAccentInput([$('talk')], $('accentBar'));
+attachAccentInput([$('write')], $('accentBar2'));
+async function submitTalk(raw) {
+  raw = (raw || '').trim();
+  if (!raw || S.busy || S.phase !== 'patient' || !S.cur || S.cur.done) return;
+  S.busy = true; $('talk').value = '';
+  clearFb();
+  feed.me(raw);
+  try {
+    await toPatient(raw);
+    accentChips(reviewAccents(raw)).forEach(c => $('fbs').appendChild(c));
+    if (S.cur) drawScene();
+  } finally {
+    S.busy = false; renderMissions();
+    if (S.phase === 'patient') $('talk').focus();
+  }
+}
+$('talkForm').addEventListener('submit', e => { e.preventDefault(); submitTalk($('talk').value); });
+$('writeForm').addEventListener('submit', e => { e.preventDefault(); submitTalkWrite($('write').value); });
+$('write').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitTalkWrite($('write').value); } });
+$('hintBtn').addEventListener('click', useHint);
+
+async function start() {
+  try { if (tts) speechSynthesis.cancel(); } catch (e) {}
+  Object.assign(S, {
+    started: true, shift: newShift(), pi: 0, cur: null, phase: 'intro2', stars: {}, gems: S.gems || new Set(), results: [],
+    questions: 0, regSlips: 0, dolerSlips: 0, tenerSlips: 0, tenerRight: 0, badAdvice: 0, hints: 0, reveals: 0,
+    writeTries: 0, talk: '', talkCmds: 0, talkRules: 0, talkSlips: 0, busy: true
+  });
+  $('intro').hidden = true; $('summary').hidden = true; $('writeBox').hidden = true; $('talkBox').hidden = false; $('write').value = '';
+  $('placeName').textContent = 'Farmacia Doña Fefi · Puerto Viejo de Talamanca';
+  document.querySelector('.gemcard')?.remove();
+  clearFb(); feed.reset(); drawScene(); setFicha(); setAdvice(); renderMissions();
+  await say('lucia', '¡Llegaste a Costa Rica, la sexta parada! Puerto Viejo está en el Caribe: playas, selva y mucha cultura afrocaribeña. ¡Pura vida!');
+  await say('fefi', '¡Bienvenido, mi amor! Gracias por ayudarme en la guardia. Una cosa: aquí en Costa Rica mucha gente se habla de usted, hasta entre amigos. Pero con los muchachos puede usar tú. A los adultos, siempre usted.');
+  await say('fefi', 'Primero pregunte qué les pasa. Después dé consejos y recomiende algo del estante. Y si es algo serio… ¡al EBAIS, al médico!');
+  S.busy = false;
+  nextPatient();
+}
+$('startBtn').addEventListener('click', start);
+$('restart').addEventListener('click', start);
+// first paint behind the intro
+Object.assign(S, { phase: 'intro', gems: new Set(), stars: {}, shift: [], pi: -1 });
+drawScene(); renderMissions();
+window.__scene = { S, start, nextPatient, submitTalk, submitTalkWrite, newShift, checkTalk, tenerSlips, dolerSlips, recommend, showGem, useHint, CASES, PRODS, KEYS };
+
+
+/* ---- sound hooks (shared) ---- */
+wireSfxToggle();
+{
+  const _fb = fb;
+  fb = function (kind, es, en, append, box) { SFX.play({ ok: 'correct', err: 'wrong', warn: 'hint', info: 'soft' }[kind] || 'soft'); return _fb(kind, es, en, append, box); };
+  const _rs = renderSummary;
+  renderSummary = function (el, o) { const r = _rs(el, o); SFX.celebrate((o.badges || []).filter(b => b[2]).length); return r; };
+}
+
+})();
+</script>
+<!-- sg-report -->
+<style>
+/* ---- end-of-session report (parts/report.css) ---- */
+.sgr { border: 1px solid rgba(255, 194, 122, .35); background: rgba(255, 194, 122, .06); border-radius: 18px; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+.sgr h3 { margin: 0; }
+.sgr-help { margin: 0; color: var(--muted); font-size: 14px; }
+.sgr-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.sgr-row label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 700; color: var(--muted); }
+.sgr-row label.grow { flex: 1 1 220px; }
+.sgr input, .sgr select, .sgr-verify input { font: inherit; font-size: 16px; color: var(--ink); background: rgba(0, 0, 0, .22); border: 1px solid var(--line); border-radius: 12px; min-height: 44px; padding: 0 12px; width: 100%; box-sizing: border-box; }
+.sgr select { width: auto; min-width: 110px; }
+.sgr input:focus, .sgr select:focus, .sgr-verify input:focus { outline: 2px solid var(--sun); outline-offset: 1px; }
+.sgr-code { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
+.sgr-code span { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.sgr-code b { font-family: var(--font-mono, ui-monospace, monospace); font-size: 22px; letter-spacing: .08em; color: var(--sun); word-break: break-all; }
+.sgr-code b.wait { font-family: var(--font-body); font-size: 15px; letter-spacing: 0; color: var(--muted); font-weight: 600; }
+.sgr-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.sgr-copybox { font: 13px/1.4 var(--font-mono, ui-monospace, monospace); color: var(--ink); background: rgba(0, 0, 0, .25); border: 1px solid var(--line); border-radius: 12px; padding: 10px; width: 100%; box-sizing: border-box; min-height: 120px; }
+.sgr-msg { margin: 0; font-size: 14px; color: var(--accent); min-height: 1em; }
+.sgr-msg:empty { display: none; }
+.sgr-verify { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; max-width: 640px; }
+.sgr-verify p { margin: 0; color: var(--muted); font-size: 14px; }
+.sgr-verify .vrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.sgr-verify .vrow input { flex: 1 1 180px; width: auto; }
+.sgr-verify output { font-size: 14px; line-height: 1.5; }
+.sgr-verify output.ok { color: var(--ok, #7be3a1); }
+.sgr-verify output.bad { color: var(--err, #ff8a8a); }
+#sgrSheet { display: none; }
+
+@media print {
+  html.sgr-ready body > *:not(#sgrSheet) { display: none !important; }
+  html.sgr-ready, html.sgr-ready body { background: #fff !important; color: #111 !important; }
+  html.sgr-ready body::before, html.sgr-ready body::after { display: none !important; }
+  html.sgr-ready #sgrSheet { display: block !important; }
+  @page { margin: 14mm; }
+}
+#sgrSheet { font: 11pt/1.45 'Manrope', system-ui, sans-serif; color: #111; background: #fff; }
+#sgrSheet h1 { font: 800 18pt/1.2 'Unbounded', 'Manrope', sans-serif; margin: 0 0 2pt; }
+#sgrSheet h2 { font: 800 11pt/1.2 'Manrope', sans-serif; text-transform: uppercase; letter-spacing: .08em; color: #555; margin: 14pt 0 5pt; border-bottom: 1px solid #ccc; padding-bottom: 3pt; }
+#sgrSheet .sub { margin: 0; color: #444; }
+#sgrSheet .top { display: flex; justify-content: space-between; gap: 16pt; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 8pt; }
+#sgrSheet .codebox { border: 2px solid #111; border-radius: 6pt; padding: 6pt 10pt; text-align: center; min-width: 150pt; }
+#sgrSheet .codebox small { display: block; font-size: 8pt; text-transform: uppercase; letter-spacing: .1em; color: #555; }
+#sgrSheet .codebox b { font: 700 15pt/1.3 ui-monospace, 'Courier New', monospace; letter-spacing: .06em; }
+#sgrSheet table.who { border-collapse: collapse; margin-top: 8pt; width: 100%; }
+#sgrSheet table.who td { padding: 2pt 10pt 2pt 0; vertical-align: top; }
+#sgrSheet table.who td:first-child { color: #555; width: 30%; }
+#sgrSheet .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6pt; }
+#sgrSheet .grid div { border: 1px solid #bbb; border-radius: 5pt; padding: 5pt 7pt; }
+#sgrSheet .grid b { display: block; font-size: 14pt; }
+#sgrSheet .grid span { font-size: 8.5pt; color: #444; }
+#sgrSheet ul.rows, #sgrSheet ul.bdg { list-style: none; padding: 0; margin: 0; }
+#sgrSheet ul.rows li { display: flex; justify-content: space-between; border-bottom: 1px dotted #bbb; padding: 2pt 0; }
+#sgrSheet ul.bdg li { padding: 1pt 0; }
+#sgrSheet ul.bdg li.off { color: #888; }
+#sgrSheet ol.tr { margin: 0; padding-left: 18pt; }
+#sgrSheet ol.tr li { margin: 1pt 0; break-inside: avoid; }
+#sgrSheet .outc { font-size: 9pt; color: #444; }
+#sgrSheet .foot { margin-top: 14pt; font-size: 8.5pt; color: #666; border-top: 1px solid #ccc; padding-top: 5pt; }
+</style>
+<script>
+/* ---- end-of-session report with a code (parts/report.js) ----
+   Self-contained: works in every game (kit builds and the older 10-3Y pages).
+   It watches #summary; when a game shows its summary, it reads the summary from the page
+   (stats, mission stars, badges, the student's lines, outcomes) and adds a report panel:
+   name + course, a 12-character code, Print and Copy-for-Teams buttons. A print-only sheet
+   (#sgrSheet) is what Ctrl+P / Imprimir prints. A code checker goes in "Para el profe".
+   The game id comes from <meta name="sg-game" content="N">. */
+(() => {
+  'use strict';
+  // id: [level of the game, title, scene label]
+  const GAMES = {
+    1: ['10-3Y', 'Primer encuentro con Lucía', 'Escena 1'],
+    2: ['10-3Y', 'Una tarde en Guadalajara', 'Escena 2'],
+    3: ['10-3Y', 'Una tarde en Guadalajara 3D', 'Escena 2 (3D)'],
+    4: ['10-3Y', '¿Quién se comió el pastel?', 'Escena 3'],
+    5: ['10-3Y', 'Los quehaceres', 'Escena 4'],
+    6: ['10-3Y', 'La maleta', 'Escena 5'],
+    7: ['10-3Y', 'El primer día de clases', 'Escena 6'],
+    8: ['10-3Y', 'La fiesta de Lucía', 'Escena 7'],
+    9: ['10-3Y', 'El taller de alebrijes', 'Escena 8'],
+    21: ['20-3Y', 'Otra vez tarde', 'Escena 1 · Bogotá'],
+    22: ['20-3Y', '¿Quedamos?', 'Escena 2 · San Juan'],
+    23: ['20-3Y', 'El mercado', 'Escena 3 · Oaxaca'],
+    24: ['20-3Y', '¿Moda o no moda?', 'Escena 4 · Madrid'],
+    25: ['20-3Y', '¡Gol!', 'Escena 5 · Buenos Aires'],
+    26: ['20-3Y', 'La farmacia de guardia', 'Escena 6 · Puerto Viejo'],
+    27: ['20-3Y', 'Conexión perdida', 'Escena 7 · Lima'],
+    28: ['20-3Y', 'Mismo idioma, otro mundo', 'Escena 8 · Lethbridge']
+  };
+  const LEVELS = ['10-3Y', '20-3Y', '30-3Y'];
+  const B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'; // Crockford base 32 (no I, L, O, U)
+  const SALT = 'atardecer|lethbridge|espanol';
+  const EPOCH = Date.UTC(2026, 0, 1);
+  const meta = document.querySelector('meta[name="sg-game"]');
+  const GID = meta ? (parseInt(meta.content, 10) || 0) : 0;
+  const GAME = GAMES[GID] || [document.title.includes('20-3Y') ? '20-3Y' : '10-3Y', document.title, ''];
+
+  const store = {
+    get(k) { try { return window.localStorage.getItem('sgr.' + k) || ''; } catch (e) { return ''; } },
+    set(k, v) { try { window.localStorage.setItem('sgr.' + k, v); } catch (e) { /* private mode */ } }
+  };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const normName = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9ñ ]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+  /* ---- code: 48 bits of facts, masked with the name, plus a 12-bit check ---- */
+  function fnv(str) { // FNV-1a 32-bit
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+    return h >>> 0;
+  }
+  const mask48 = name => (BigInt(fnv(SALT + '#a#' + name)) << 16n) ^ BigInt(fnv('#b#' + name + SALT) & 0xffff);
+  // scramble the 48 bits (invertible: odd multipliers mod 2^48 and xor-shifts) so nearby facts give unlike codes
+  const M48 = (1n << 48n) - 1n, K1 = 0x9E3779B97F4An | 1n, K2 = 0xC2B2AE3D27D5n | 1n;
+  const inv = k => { let x = 1n; for (let i = 0; i < 6; i++) x = (x * (2n - k * x)) & M48; return x; }; // Newton: inverse mod 2^48
+  const I1 = inv(K1), I2 = inv(K2);
+  const mix = v => { v = (v * K1) & M48; v ^= v >> 24n; v = (v * K2) & M48; v ^= v >> 24n; return v; };
+  const unmix = v => { v ^= v >> 24n; v = (v * I2) & M48; v ^= v >> 24n; v = (v * I1) & M48; return v; };
+  const clamp = (v, max) => Math.max(0, Math.min(max, Math.round(Number(v) || 0)));
+  const FIELDS = [['gid', 6], ['level', 2], ['stars', 6], ['maxStars', 6], ['badges', 4], ['maxBadges', 4], ['mins', 8], ['day', 12]];
+
+  function encode(f, name) {
+    const n = normName(name);
+    if (!n) return '';
+    let v = 0n;
+    for (const [k, bits] of FIELDS) v = (v << BigInt(bits)) | BigInt(clamp(f[k], (1 << bits) - 1));
+    const check = fnv(n + '|' + v.toString(36) + '|' + SALT) & 0xfff;
+    const all = (mix(v ^ mask48(n)) << 12n) | BigInt(check);
+    let s = '';
+    for (let i = 11; i >= 0; i--) s += B32[Number((all >> BigInt(i * 5)) & 31n)];
+    return s.slice(0, 4) + '-' + s.slice(4, 8) + '-' + s.slice(8);
+  }
+
+  function decode(code, name) {
+    const n = normName(name);
+    const clean = String(code || '').toUpperCase().replace(/[\s-]/g, '').replace(/O/g, '0').replace(/[IL]/g, '1');
+    if (!n || clean.length !== 12 || /[^0-9A-HJKMNP-TV-Z]/.test(clean)) return null;
+    let all = 0n;
+    for (const c of clean) all = (all << 5n) | BigInt(B32.indexOf(c));
+    const check = Number(all & 0xfffn);
+    const v = unmix(all >> 12n) ^ mask48(n);
+    if ((fnv(n + '|' + v.toString(36) + '|' + SALT) & 0xfff) !== check) return null;
+    const f = {}; let rest = v;
+    for (const [k, bits] of [...FIELDS].reverse()) { f[k] = Number(rest & BigInt((1 << bits) - 1)); rest >>= BigInt(bits); }
+    if (!GAMES[f.gid] || f.level > 2) return null;
+    return f;
+  }
+  const dayNum = d => Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - EPOCH) / 864e5);
+  const dayDate = n => new Date(EPOCH + n * 864e5);
+  const fmtDay = d => d.toLocaleDateString('es-CA', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+  /* ---- read the game's own summary ---- */
+  function scrape(sum) {
+    const mine = el => !el.closest('.sgr');
+    const txt = el => (el ? el.textContent.replace(/\s+/g, ' ').trim() : '');
+    const stats = [...sum.querySelectorAll('.stat')].filter(mine).map(s => [txt(s.querySelector('.v')), txt(s.querySelector('.k'))]);
+    const rows = [...sum.querySelectorAll('.mrow')].filter(mine).map(r => {
+      const sp = r.querySelectorAll('span'), st = sp.length ? sp[sp.length - 1].textContent : '';
+      return [txt(sp[0]), (st.match(/★/g) || []).length, (st.match(/[★☆]/g) || []).length];
+    });
+    const badges = [...sum.querySelectorAll('.badge')].filter(mine).map(b => [txt(b).replace(/^★\s*/, ''), b.getAttribute('title') || '', !b.classList.contains('off')]);
+    const ol = [...sum.querySelectorAll('ol')].filter(mine)[0];
+    let listTitle = '';
+    if (ol) { const h = ol.parentElement && ol.parentElement.querySelector('h3'); listTitle = txt(h) || 'Lo que escribiste'; }
+    const list = ol ? [...ol.children].map(li => txt(li)).filter(Boolean) : [];
+    let stars = rows.reduce((a, r) => a + r[1], 0), maxStars = rows.reduce((a, r) => a + r[2], 0);
+    if (!rows.length) {
+      const st = stats.find(([v, k]) => /star|estrell/i.test(k) && /^\d+\s*\/\s*\d+$/.test(v));
+      if (st) [stars, maxStars] = st[0].split('/').map(x => parseInt(x, 10));
+    }
+    return {
+      eyebrow: txt(sum.querySelector('.eyebrow')), heading: txt(sum.querySelector('h2')),
+      stats, rows, badges, listTitle, list,
+      outcomes: txt(sum.querySelector('.outcomes')).replace(/\s*In the (site version|next build) this becomes the printable report with a save code\.?/i, ''),
+      stars, maxStars, nBadges: badges.filter(b => b[2]).length, maxBadges: badges.length
+    };
+  }
+
+  /* ---- state for the current summary ---- */
+  let t0 = Date.now(), cur = null, sheet = null;
+
+  function fields() {
+    const lvl = LEVELS.indexOf($v('sgrLevel')), now = cur.at;
+    return { gid: GID, level: lvl < 0 ? LEVELS.indexOf(GAME[0]) : lvl, stars: cur.d.stars, maxStars: cur.d.maxStars, badges: cur.d.nBadges, maxBadges: cur.d.maxBadges, mins: cur.mins, day: dayNum(now) };
+  }
+  function $v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+  function currentCode() { return cur ? encode(fields(), $v('sgrName')) : ''; }
+
+  function refresh() {
+    if (!cur) return;
+    const name = $v('sgrName').trim(), code = currentCode();
+    const b = document.getElementById('sgrCode');
+    if (b) { b.textContent = code || 'Write your name to get your code'; b.classList.toggle('wait', !code); }
+    renderSheet(name, code);
+  }
+
+  function renderSheet(name, code) {
+    if (!sheet) { sheet = document.createElement('div'); sheet.id = 'sgrSheet'; document.body.appendChild(sheet); }
+    const d = cur.d, at = cur.at, lvl = $v('sgrLevel') || GAME[0];
+    const when = at.toLocaleDateString('es-CA', { day: 'numeric', month: 'long', year: 'numeric' }) + ', ' + at.toLocaleTimeString('es-CA', { hour: '2-digit', minute: '2-digit' });
+    sheet.innerHTML = `
+      <div class="top">
+        <div><p class="sub">Español ${esc(GAME[0])} · ${esc(GAME[2] || d.eyebrow)} · Informe de la sesión</p><h1>${esc(GAME[1])}</h1>
+          <table class="who">
+            <tr><td>Nombre</td><td><b>${name ? esc(name) : '______________________'}</b></td></tr>
+            <tr><td>Curso</td><td>Español ${esc(lvl)}</td></tr>
+            <tr><td>Fecha</td><td>${esc(when)}</td></tr>
+            <tr><td>Tiempo de juego</td><td>${cur.mins} min</td></tr>
+            ${d.maxStars ? `<tr><td>Estrellas</td><td>${d.stars} / ${d.maxStars}</td></tr>` : ''}
+            ${d.maxBadges ? `<tr><td>Logros</td><td>${d.nBadges} / ${d.maxBadges}</td></tr>` : ''}
+          </table></div>
+        <div class="codebox"><small>Código</small><b>${code ? esc(code) : '—'}</b></div>
+      </div>
+      ${d.stats.length ? `<h2>Resumen</h2><div class="grid">${d.stats.map(([v, k]) => `<div><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join('')}</div>` : ''}
+      ${d.rows.length ? `<h2>Misiones</h2><ul class="rows">${d.rows.map(([l, s, m]) => `<li><span>${esc(l)}</span><span>${'★'.repeat(s)}${'☆'.repeat(Math.max(0, m - s))}</span></li>`).join('')}</ul>` : ''}
+      ${d.badges.length ? `<h2>Logros</h2><ul class="bdg">${d.badges.map(([n, t, on]) => `<li class="${on ? '' : 'off'}">${on ? '★' : '☆'} ${esc(n)}${t ? ` — ${esc(t)}` : ''}</li>`).join('')}</ul>` : ''}
+      ${d.list.length ? `<h2>${esc(d.listTitle)}</h2><ol class="tr">${d.list.map(t => `<li>${esc(t)}</li>`).join('')}</ol>` : ''}
+      ${d.outcomes ? `<h2>Para el profe</h2><p class="outc">${esc(d.outcomes)}</p>` : ''}
+      <p class="foot">${esc(d.heading)} · The code holds the game, course, date, stars, badges and minutes, tied to the name above. To check it: open any game, then “Para el profe” → “Check a report code”.</p>`;
+  }
+
+  function teamsText() {
+    const d = cur.d, name = $v('sgrName').trim(), lvl = $v('sgrLevel') || GAME[0];
+    const at = cur.at, date = at.getFullYear() + '-' + String(at.getMonth() + 1).padStart(2, '0') + '-' + String(at.getDate()).padStart(2, '0');
+    const parts = [];
+    if (d.maxStars) parts.push(`Estrellas: ${d.stars}/${d.maxStars}`);
+    if (d.maxBadges) parts.push(`Logros: ${d.nBadges}/${d.maxBadges}`);
+    parts.push(`${cur.mins} min`);
+    return [`Informe · Español ${GAME[0]} · ${GAME[1]}`, `Nombre: ${name} (Español ${lvl})`, `Fecha: ${date}`, parts.join(' · '), `Código: ${currentCode()}`].join('\n');
+  }
+
+  function msg(t) { const m = document.querySelector('.sgr-msg'); if (m) m.textContent = t; }
+  function needName() {
+    if (currentCode()) return false;
+    msg('Escribe tu nombre primero. (Write your name first.)');
+    const n = document.getElementById('sgrName'); if (n) n.focus();
+    return true;
+  }
+
+  function doPrint() {
+    if (needName()) return;
+    refresh(); msg('');
+    try { window.print(); } catch (e) { /* blocked in some frames */ }
+    msg('If the print window didn’t open, press Ctrl+P (⌘P on a Mac): the page prints as your report.');
+  }
+
+  function doCopy() {
+    if (needName()) return;
+    const text = teamsText(), box = document.querySelector('.sgr-copybox');
+    const showBox = () => { if (box) { box.hidden = false; box.value = text; box.focus(); box.select(); } };
+    const done = () => msg('Copiado. Paste it into Teams (Ctrl+V).');
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, () => { showBox(); msg('Press Ctrl+C to copy the text above, then paste it into Teams.'); });
+        return;
+      }
+    } catch (e) { /* fall through */ }
+    showBox();
+    let ok = false; try { ok = document.execCommand && document.execCommand('copy'); } catch (e) { ok = false; }
+    msg(ok ? 'Copiado. Paste it into Teams (Ctrl+V).' : 'Press Ctrl+C to copy the text above, then paste it into Teams.');
+  }
+
+  function attach(sum) {
+    if (sum.querySelector('.sgr')) return;
+    const d = scrape(sum);
+    const oc = sum.querySelector('.outcomes'); if (oc) oc.textContent = d.outcomes;
+    cur = { d, at: new Date(), mins: Math.max(1, Math.min(255, Math.round((Date.now() - t0) / 60000))) };
+    const box = document.createElement('div');
+    box.className = 'sgr';
+    const lvlSaved = store.get('level'), lvl = LEVELS.includes(lvlSaved) && !(GAME[0] === '20-3Y' && lvlSaved === '10-3Y') ? lvlSaved : GAME[0];
+    box.innerHTML = `
+      <h3 class="lbl">Informe de la sesión</h3>
+      <p class="sgr-help">Write your name and course, then print this report or copy it for Teams.</p>
+      <div class="sgr-row">
+        <label class="grow">Nombre <input type="text" id="sgrName" autocomplete="name" spellcheck="false" maxlength="60" placeholder="Nombre y apellido"></label>
+        <label>Curso <select id="sgrLevel">${LEVELS.map(l => `<option${l === lvl ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
+      </div>
+      <div class="sgr-code"><span>Código</span><b id="sgrCode" class="wait"></b></div>
+      <div class="sgr-btns"><button class="btn primary" type="button" data-sgr-print>Imprimir informe</button><button class="btn ghost" type="button" data-sgr-copy>Copiar para Teams</button></div>
+      <textarea class="sgr-copybox" readonly hidden aria-label="Report text for Teams"></textarea>
+      <p class="sgr-msg" aria-live="polite"></p>`;
+    const again = [...sum.children].find(c => c.querySelector && c.querySelector('[data-again], #again'));
+    sum.insertBefore(box, again || null);
+    const nameEl = box.querySelector('#sgrName');
+    nameEl.value = store.get('name');
+    nameEl.addEventListener('input', () => { store.set('name', nameEl.value); msg(''); refresh(); });
+    box.querySelector('#sgrLevel').addEventListener('change', e => { store.set('level', e.target.value); refresh(); });
+    box.querySelector('[data-sgr-print]').addEventListener('click', doPrint);
+    box.querySelector('[data-sgr-copy]').addEventListener('click', doCopy);
+    document.documentElement.classList.add('sgr-ready');
+    refresh();
+  }
+
+  function detach() {
+    cur = null; t0 = Date.now();
+    document.documentElement.classList.remove('sgr-ready');
+    if (sheet) sheet.innerHTML = '';
+  }
+
+  /* ---- teacher's code checker ---- */
+  function addVerifier() {
+    const det = document.querySelector('details.teacher');
+    if (!det || det.querySelector('.sgr-verify')) return;
+    const v = document.createElement('div');
+    v.className = 'sgr-verify';
+    v.innerHTML = `<b>Check a report code</b>
+      <p>Type the student’s name as it appears on the report, and the code. Codes from any game in the set work here.</p>
+      <div class="vrow"><input type="text" placeholder="Nombre" aria-label="Student name" spellcheck="false"><input type="text" placeholder="XXXX-XXXX-XXXX" aria-label="Report code" spellcheck="false" maxlength="16"><button class="btn ghost small" type="button">Comprobar</button></div>
+      <output aria-live="polite"></output>`;
+    det.appendChild(v);
+    const [nIn, cIn] = v.querySelectorAll('input'), out = v.querySelector('output');
+    const check = () => {
+      const f = decode(cIn.value, nIn.value);
+      if (!nIn.value.trim() || !cIn.value.trim()) { out.className = ''; out.textContent = ''; return; }
+      if (!f) { out.className = 'bad'; out.textContent = '✗ This code doesn’t match that name. Check the spelling of the name and the code.'; return; }
+      const g = GAMES[f.gid];
+      out.className = 'ok';
+      out.textContent = `✓ Valid · ${g[1]} (${g[0]} · ${g[2]}) · played as ${LEVELS[f.level]} · ${fmtDay(dayDate(f.day))} · `
+        + (f.maxStars ? `${f.stars}/${f.maxStars} stars · ` : '') + (f.maxBadges ? `${f.badges}/${f.maxBadges} badges · ` : '') + `${f.mins} min`;
+    };
+    v.querySelector('button').addEventListener('click', check);
+    cIn.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+  }
+
+  function watch() {
+    addVerifier();
+    const sum = document.getElementById('summary');
+    if (!sum) return;
+    const look = () => {
+      const shown = !sum.hidden && sum.children.length > 0;
+      if (shown && !sum.querySelector('.sgr')) attach(sum);
+      else if (!shown && cur) detach();
+    };
+    new MutationObserver(look).observe(sum, { attributes: true, attributeFilter: ['hidden'], childList: true });
+    look();
+  }
+
+  window.__report = { encode, decode, scrape, normName, GAMES, gid: GID, code: currentCode, teamsText: () => (cur ? teamsText() : '') };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();
+})();
+</script>
+<!-- /sg-report -->

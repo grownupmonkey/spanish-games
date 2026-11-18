@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Juegos de español · Alberta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap">
+<style>
+  :root {
+    --bg: #17122E; --surface: #221B44; --line: rgba(255,255,255,.12);
+    --text: #F4F0FF; --muted: #B9B2D6; --accent: #5FE0C8; --sun: #FFC27A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--text);
+    font: 16px/1.5 'Manrope', system-ui, sans-serif;
+    background: radial-gradient(1200px 600px at 80% -10%, #6A3F7E55, transparent 60%),
+                linear-gradient(180deg, #241D4D 0%, var(--bg) 60%);
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 48px 20px 64px; }
+  h1 { font: 800 clamp(28px, 5vw, 42px)/1.15 'Unbounded', 'Manrope', sans-serif; margin: 0 0 8px; }
+  .lede { color: var(--muted); margin: 0 0 36px; max-width: 60ch; }
+  h2 { font: 700 13px/1 'Manrope', sans-serif; letter-spacing: .14em; text-transform: uppercase;
+       color: var(--sun); margin: 40px 0 14px; }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  a.card {
+    display: block; padding: 18px 20px; border-radius: 22px; text-decoration: none; color: inherit;
+    background: var(--surface); border: 1px solid var(--line);
+    transition: transform .15s ease, border-color .15s ease;
+  }
+  a.card:hover, a.card:focus-visible { transform: translateY(-2px); border-color: var(--accent); outline: none; }
+  .card .t { font: 600 17px/1.3 'Manrope', sans-serif; }
+  .card .s { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .card.soon { opacity: .55; pointer-events: none; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Juegos de español</h1>
+  <p class="lede">Escoge tu nivel y tu escena. Cada juego es una página sola: ábrela en el navegador y empieza.</p>
+
+  <h2>Español 10-3Y</h2>
+  <div class="grid">
+    <a class="card" href="10-3y/primer-encuentro.html"><div class="t">Primer encuentro con Lucía</div></a>
+    <a class="card" href="10-3y/una-tarde-en-guadalajara.html"><div class="t">Una tarde en Guadalajara</div><div class="s">Escena 2D</div></a>
+    <a class="card" href="10-3y/una-tarde-en-guadalajara-3d.html"><div class="t">Una tarde en Guadalajara 3D</div><div class="s">Escena 3D</div></a>
+    <a class="card" href="10-3y/quien-se-comio-el-pastel.html"><div class="t">¿Quién se comió el pastel?</div></a>
+    <a class="card" href="10-3y/los-quehaceres.html"><div class="t">Los quehaceres de Abuela Rosa</div></a>
+    <a class="card" href="10-3y/la-maleta.html"><div class="t">La maleta de Lucía</div></a>
+    <a class="card" href="10-3y/el-primer-dia-de-clases.html"><div class="t">El primer día de clases</div><div class="s">Pasillo 3D</div></a>
+    <a class="card" href="10-3y/la-fiesta-de-lucia.html"><div class="t">La fiesta de Lucía</div></a>
+    <a class="card" href="10-3y/el-taller-de-alebrijes.html"><div class="t">El taller de alebrijes</div></a>
+  </div>
+
+  <h2>Español 20-3Y</h2>
+  <div class="grid">
+    <a class="card" href="20-3y/otra-vez-tarde.html"><div class="t">Otra vez tarde</div><div class="s">Rutina diaria · Bogotá</div></a>
+    <a class="card" href="20-3y/quedamos.html"><div class="t">¿Quedamos?</div><div class="s">Vida social · San Juan</div></a>
+    <a class="card" href="20-3y/el-mercado.html"><div class="t">El mercado</div><div class="s">Comida · Oaxaca</div></a>
+    <a class="card" href="20-3y/moda.html"><div class="t">¿Moda o no moda?</div><div class="s">Compras y tendencias · Madrid</div></a>
+    <a class="card" href="20-3y/gol.html"><div class="t">¡Gol!</div><div class="s">Deporte y ejercicio · Buenos Aires</div></a>
+    <a class="card" href="20-3y/la-farmacia.html"><div class="t">La farmacia de guardia</div><div class="s">Salud y seguridad · Puerto Viejo</div></a>
+    <a class="card" href="20-3y/conexion-perdida.html"><div class="t">Conexión perdida</div><div class="s">Vacaciones y viajes · Lima</div></a>
+    <a class="card" href="20-3y/mismo-idioma.html"><div class="t">Mismo idioma, otro mundo</div><div class="s">Diversidad cultural · Lethbridge</div></a>
+  </div>
+
+  <h2>Español 30-3Y</h2>
+  <div class="grid">
+    <a class="card" href="30-3y/noche-de-leyendas.html"><div class="t">Noche de leyendas</div><div class="s">Antigua Guatemala</div></a>
+    <a class="card" href="30-3y/cuando-era-pequeno.html"><div class="t">Cuando era pequeño</div><div class="s">Montevideo</div></a>
+  </div>
+
+  <footer>Proyecto para las clases de español en Alberta.</footer>
+</main>
+</body>
+</html>
