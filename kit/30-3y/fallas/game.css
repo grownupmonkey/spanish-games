@@ -1,0 +1,21 @@
+.fwrap { max-width: 1280px; }
+.stage3d { position: relative; border-radius: 22px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); background: #221B44; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+.stage3d .stagehead { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; font-size: 14px; color: #E9E4FF; }
+.gemtally { color: #FFC27A; } .gemtally b { color: #FFE7A8; }
+#view3d { height: min(64vh, 620px); position: relative; }
+#view3d canvas { width: 100% !important; height: 100% !important; display: block; cursor: grab; }
+.linebar { display: grid; grid-template-columns: auto 1fr auto auto; gap: 16px; align-items: center; padding: 14px 18px; background: rgba(23,18,46,.92); border-top: 1px solid rgba(255,255,255,.08); }
+.linebar .who { font: 700 13px/1 'Unbounded', sans-serif; color: #5FE0C8; padding: 8px 12px; border-radius: 999px; background: rgba(95,224,200,.12); }
+.linebar .line { min-height: 40px; }
+.linebar .es, .linebar .en { display: none; }
+body.show-text .linebar .es { display: block; font-weight: 600; }
+body.show-text .linebar .en { display: block; color: #B9B2D6; font-size: 13px; }
+.linebar .line::before { content: '🔊 Escucha… (el texto está oculto)'; color: #B9B2D6; font-size: 14px; }
+body.show-text .linebar .line::before { content: none; }
+.linebar .audio { display: flex; gap: 8px; align-items: center; }
+.linebar .mini { font-size: 12px; color: #B9B2D6; display: flex; gap: 6px; align-items: center; }
+body.no-tts .linebar .audio button { display: none; }
+.gemcard { position: absolute; right: 18px; top: 58px; width: min(380px, 80%); padding: 18px 20px; border-radius: 22px; background: rgba(34,27,68,.94); border: 1px solid rgba(255,231,168,.45); backdrop-filter: blur(8px); color: #F4F0FF; box-shadow: 0 12px 40px rgba(0,0,0,.4); }
+.gemcard .gh { font: 700 12px/1 'Manrope', sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #FFC27A; margin-bottom: 8px; }
+.gemcard .es { font-weight: 600; margin: 0 0 8px; } .gemcard .en2 { color: #B9B2D6; font-size: 14px; margin: 0 0 12px; }
+@media (max-width: 800px) { .linebar { grid-template-columns: 1fr; } }
