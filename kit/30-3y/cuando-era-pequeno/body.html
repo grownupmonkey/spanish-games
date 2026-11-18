@@ -1,0 +1,93 @@
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Español 30-3Y · Juego 2 · Montevideo, Uruguay</p>
+      <h1>Cuando era <span class="glow">pequeño</span></h1>
+      <p class="lede">An afternoon in Montevideo. Play the games your grandparents’ generation played, listen to childhood memories, and tell your own.</p>
+    </div>
+    <div class="toggles">
+      <button class="pill" id="settingsBtn" type="button">⚙ Ajustes</button>
+      <label class="switch sfx-switch"><input type="checkbox" id="sfxOn" checked> Sonido</label>
+    </div>
+  </header>
+
+  <main class="game">
+    <section class="card stage" id="stage" aria-label="Escena">
+      <div class="stagehead"><span class="place" id="placeName">Montevideo</span><span class="clock" id="clock">16:40</span></div>
+      <div class="viewport" id="viewport">
+        <div id="sceneLayer" class="layer-wrap"></div>
+        <div id="mapLayer" class="layer-wrap" hidden></div>
+        <div id="motes"></div>
+        <div id="gemLayer"></div>
+        <div class="npc" id="npc" hidden><div class="npc-portrait" id="npcPortrait"></div><div class="npc-name"><b id="npcName"></b><span class="bars"><i></i><i></i><i></i><i></i></span></div></div>
+        <div class="subs" id="subs" hidden aria-live="polite"></div>
+        <div class="gempop" id="gemPop" hidden></div>
+        <div class="titlecard" id="titleCard" hidden><p class="eyebrow" id="tcEyebrow"></p><h2 id="tcTitle"></h2><p id="tcSub"></p></div>
+        <div class="intro" id="intro">
+          <div class="box">
+            <div class="lucia-row"><div class="face" id="introFace"></div><div><p class="eyebrow">Con Lucía</p><h2>Cuando era pequeño</h2></div></div>
+            <p>Lucía’s grandparents have invited a friend over for <b>la merienda</b> tonight. Until then, you are on your own in Montevideo, finding out what childhood used to be like.</p>
+            <ul>
+              <li>Everyone speaks to you <b>out loud</b>. There is no Spanish text on screen. Use <b>⟲ Repetir</b> and <b>Lento</b> as often as you like.</li>
+              <li>Answer by <b>typing in Spanish</b> or by choosing. Missing accents are fine; you’ll get tips.</li>
+              <li>Listen closely to the childhood memories people share. In the finale you’ll put a whole day in order and tell about your own childhood.</li>
+              <li>Every game is different: new people, places, prices and memories.</li>
+            </ul>
+            <p class="notice tts-only"><b>Headphones on?</b> <button class="btn ghost small" id="testVoice" type="button">▶ Test the voice</button></p>
+            <div><button class="btn primary" id="startBtn" type="button">Empezar la tarde</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="card panel" id="taskCard">
+        <div class="panelhead"><h3 id="taskEyebrow">Ahora</h3><span class="stepdots" id="stepDots"></span></div>
+        <p class="task" id="task">Press <b>Empezar la tarde</b> to begin.</p>
+        <div class="audiobar">
+          <button class="btn ghost small tts-only" id="replayBtn" type="button" title="Alt+R">⟲ Repetir</button>
+          <div class="seg tts-only" id="speedSeg" role="group" aria-label="Velocidad"><button type="button" data-speed="lento">Lento</button><button type="button" data-speed="normal">Normal</button><button type="button" data-speed="natural">Natural</button></div>
+          <button class="btn ghost small" id="helpBtn" type="button">💡 Ayuda</button>
+        </div>
+        <div id="booking" hidden></div>
+        <div id="ia"></div>
+        <div class="fbs" id="fbs" aria-live="polite"></div>
+      </section>
+      <section class="card missions"><h3>Tu tarde</h3><ol id="missionList"></ol></section>
+      <section class="card libreta">
+        <div class="libtabs"><button type="button" class="on" data-pane="libLegends">Recuerdos</button><button type="button" data-pane="libMsgs">Mensajes</button><button type="button" data-pane="libGems">Datos <span id="gemCount">0/6</span></button></div>
+        <ul class="libpane" id="libLegends"><li class="empty">Memories you hear will be collected here.</li></ul>
+        <ul class="libpane" id="libMsgs" hidden></ul>
+        <ul class="libpane" id="libGems" hidden></ul>
+      </section>
+    </aside>
+  </main>
+
+  <!-- End of the night. SESSION REPORT HOOK: the report panel attaches here later (see REPORT in the engine). -->
+  <section class="card summary" id="summary" hidden></section>
+
+  <details class="teacher">
+    <summary>Para el profe: how this game works</summary>
+    <ul>
+      <li><b>Shape of a run (25–35 min):</b> Lucía’s welcome → <b>El ómnibus</b> (always first: say where you are going, catch the fare, say how long you have been in Montevideo with <i>hace</i>) → three of six scenes in random order → <b>La merienda</b> at the house of a friend of Lucía’s grandparents. Between scenes, a map of Montevideo: Lucía’s voice message, the next pin, two optional side encounters and hidden ✦ Datos de Montevideo.</li>
+      <li><b>Scenes:</b> <i>La rayuela</i> (a grandmother tells how she played; tap the squares in the order you hear, including skipping one and going back) · <i>Las escondidas</i> (a grandfather’s memory; clues with <i>detrás, a la derecha, a la izquierda, entre</i> tell you where the child is hiding; ask him about his games) · <i>Las figuritas</i> (swap duplicates for the sticker Lucía’s cousin needs; bargain on counts) · <i>La merienda</i> (order at the confitería, one item sold out, wrong drink, add up the bill in pesos) · <i>Las llamadas</i> (candombe drummer; ask <i>¿hace cuánto que toca?</i>) · <i>El delantal blanco</i> (a retired teacher describes her school; write about yours).</li>
+      <li><b>Memories:</b> nearly every local shares a short memory in the imperfect (mate with the grandfather, Sundays on the Rambla, August kites, the match on the radio, murgas, rainy afternoons), each followed by one listening question. The finale host (Don Washington, Doña Nelly or Don Hugo) tells a whole childhood day; students order five events, answer a question about why, then write about their own childhood (≥ 3 imperfect verbs, ≥ 1 <i>hace</i> + time, ≥ 20 words). The host reacts to ideas that match (games, food, family, school).</li>
+      <li><b>Checked in student writing:</b> the imperfect (<i>jugaba, era, tenía, vivíamos, íbamos</i>), <i>hace</i> + a period of time, and the same invented-form and personal <i>a</i> tips as game 1. Accents never fail an answer; they get tips. <i>Usted</i> is suggested with older strangers. Present-tense answers get a nudge toward the imperfect.</li>
+      <li><b>Audio-only by default.</b> ⚙ Ajustes turns on text (subtitles, option text, card text). The accommodation link adds <code>?texto=1</code> to the URL. If a computer has no Spanish voice, text turns on automatically. The game records whether text was used and why, for the report later. Replay and speed are always available.</li>
+      <li><b>Uruguayan Spanish:</b> <i>gurí, botija, ta, bo, pila, cabal</i>, plus a few <i>vos</i> slips from younger characters (<i>¿querés…? … digo, ¿quiere…?</i>). Students are only expected to use <i>tú</i> and <i>usted</i>.</li>
+      <li><b>What is randomized:</b> the three scenes and their order; every character (from cast pools); destination, fare, menu, sold-out item, wrong drink, prices, sticker and counts; hopscotch sequences, hide-and-seek objects and clues; years and class sizes; which memory each local shares; which host the finale uses; side encounters; which Datos are hidden; and line variants within each scene.</li>
+      <li>Outcomes practised (30-3Y): memories and games of childhood · imperfect and <i>hace</i> + time · describing habits and past experiences · sequencing a story · spatial words · cultural comparison. Check the exact outcome codes against the POS before using this for assessment.</li>
+      <li>Audio uses this computer’s best Spanish voice: <b id="vozName">checking…</b>. Change it in ⚙ Ajustes.</li>
+    </ul>
+  
+</details>
+</div>
+
+<dialog id="settingsDlg">
+  <h2>⚙ Ajustes</h2>
+  <div class="setrow"><div><b>Mostrar texto</b><small>Subtitles and Spanish text. Off by default: try listening first.</small></div><label class="toggle"><input type="checkbox" id="optText"><span></span></label></div>
+  <div class="setrow tts-only"><div><b>Velocidad</b><small>How fast people speak.</small></div><div class="seg" id="speedSeg2"><button type="button" data-speed="lento">Lento</button><button type="button" data-speed="normal">Normal</button><button type="button" data-speed="natural">Natural</button></div></div>
+  <div class="setrow tts-only"><div><b>Voz</b><small>Spanish voices on this computer.</small></div><select id="voiceSel"></select></div>
+  <div class="setrow"><div><b>Efectos de sonido</b><small>Chimes and clicks.</small></div><label class="toggle"><input type="checkbox" id="optSfx" checked><span></span></label></div>
+  <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn primary" id="closeSettings" type="button">Listo</button></div>
+</dialog>

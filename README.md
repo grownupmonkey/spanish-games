@@ -5,7 +5,7 @@ Interactive Spanish games for the Alberta Spanish classes (10-3Y, 20-3Y, 30-3Y).
 ## Layout
 
 - `10-3y/`, `20-3y/`, `30-3y/`: built game pages, one file per game.
-- `kit/`: the starter kit and design guide (`README.md`) and the source bundles for rebuilding the games.
+- `kit/`: the starter kit and design guide (`README.md`), the 10-3Y/20-3Y source bundles, and the 30-3Y build folders (`kit/30-3y/<game>/`, run `python3 assemble.py`).
 - `index.html`: the hub page that links every game.
 
 ## Games

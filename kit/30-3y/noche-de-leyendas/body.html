@@ -1,0 +1,92 @@
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Español 30-3Y · Juego 1 · Antigua Guatemala</p>
+      <h1>Noche de <span class="glow">leyendas</span></h1>
+      <p class="lede">An evening in Antigua. Get around the city in Spanish, collect the legends people tell you, and be ready when Don Chepe stops before the ending.</p>
+    </div>
+    <div class="toggles">
+      <button class="pill" id="settingsBtn" type="button">⚙ Ajustes</button>
+      <label class="switch sfx-switch"><input type="checkbox" id="sfxOn" checked> Sonido</label>
+    </div>
+  </header>
+
+  <main class="game">
+    <section class="card stage" id="stage" aria-label="Escena">
+      <div class="stagehead"><span class="place" id="placeName">Antigua Guatemala</span><span class="clock" id="clock">17:35</span></div>
+      <div class="viewport" id="viewport">
+        <div id="sceneLayer" class="layer-wrap"></div>
+        <div id="mapLayer" class="layer-wrap" hidden></div>
+        <div id="motes"></div>
+        <div id="gemLayer"></div>
+        <div class="npc" id="npc" hidden><div class="npc-portrait" id="npcPortrait"></div><div class="npc-name"><b id="npcName"></b><span class="bars"><i></i><i></i><i></i><i></i></span></div></div>
+        <div class="subs" id="subs" hidden aria-live="polite"></div>
+        <div class="gempop" id="gemPop" hidden></div>
+        <div class="titlecard" id="titleCard" hidden><p class="eyebrow" id="tcEyebrow"></p><h2 id="tcTitle"></h2><p id="tcSub"></p></div>
+        <div class="intro" id="intro">
+          <div class="box">
+            <div class="lucia-row"><div class="face" id="introFace"></div><div><p class="eyebrow">Con Lucía</p><h2>Noche de leyendas</h2></div></div>
+            <p>Lucía has tickets for tonight’s <b>Noche de leyendas</b> at the Arco de Santa Catalina. Until then, you are on your own in Antigua.</p>
+            <ul>
+              <li>Everyone speaks to you <b>out loud</b>. There is no Spanish text on screen. Use <b>⟲ Repetir</b> and <b>Lento</b> as often as you like.</li>
+              <li>Answer by <b>typing in Spanish</b> or by choosing. Missing accents are fine; you’ll get tips.</li>
+              <li>Listen closely to the legends people tell you. In the finale you’ll put one in order and write its ending.</li>
+              <li>Every game is different: new people, places, prices and legends.</li>
+            </ul>
+            <p class="notice tts-only"><b>Headphones on?</b> <button class="btn ghost small" id="testVoice" type="button">▶ Test the voice</button></p>
+            <div><button class="btn primary" id="startBtn" type="button">Empezar la noche</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="card panel" id="taskCard">
+        <div class="panelhead"><h3 id="taskEyebrow">Ahora</h3><span class="stepdots" id="stepDots"></span></div>
+        <p class="task" id="task">Press <b>Empezar la noche</b> to begin.</p>
+        <div class="audiobar">
+          <button class="btn ghost small tts-only" id="replayBtn" type="button" title="Alt+R">⟲ Repetir</button>
+          <div class="seg tts-only" id="speedSeg" role="group" aria-label="Velocidad"><button type="button" data-speed="lento">Lento</button><button type="button" data-speed="normal">Normal</button><button type="button" data-speed="natural">Natural</button></div>
+          <button class="btn ghost small" id="helpBtn" type="button">💡 Ayuda</button>
+        </div>
+        <div id="booking" hidden></div>
+        <div id="ia"></div>
+        <div class="fbs" id="fbs" aria-live="polite"></div>
+      </section>
+      <section class="card missions"><h3>Tu noche</h3><ol id="missionList"></ol></section>
+      <section class="card libreta">
+        <div class="libtabs"><button type="button" class="on" data-pane="libLegends">Leyendas</button><button type="button" data-pane="libMsgs">Mensajes</button><button type="button" data-pane="libGems">Datos <span id="gemCount">0/6</span></button></div>
+        <ul class="libpane" id="libLegends"><li class="empty">Legends you hear will be collected here.</li></ul>
+        <ul class="libpane" id="libMsgs" hidden></ul>
+        <ul class="libpane" id="libGems" hidden></ul>
+      </section>
+    </aside>
+  </main>
+
+  <!-- End of the night. SESSION REPORT HOOK: the report panel attaches here later (see REPORT in the engine). -->
+  <section class="card summary" id="summary" hidden></section>
+
+  <details class="teacher">
+    <summary>Para el profe: how this game works</summary>
+    <ul>
+      <li><b>Shape of a run (25–35 min):</b> Lucía’s welcome → <b>El tuk-tuk</b> (always first: say the posada, catch the price, bargain) → three of six city scenes in random order → <b>Noche de leyendas</b> with Don Chepe. Between scenes, a map of Antigua: Lucía’s voice message, the next pin, two optional side encounters and hidden ✦ Datos de Antigua.</li>
+      <li><b>City scenes:</b> <i>El comedor</i> (order from three daily specials, one sold out; she brings the wrong drink; add up the bill) · <i>El mercado de artesanías</i> (buy the gift Lucía described in her voice note — item, colour, budget — and bargain into budget) · <i>La policía de turismo</i> (ask for something politely, then follow spoken directions on the map) · <i>La terminal de camionetas</i> (find the right bus by listening to three ayudantes; ask tomorrow’s time and fare) · <i>Algo se perdió</i> (say what you lost; tell what you did this afternoon in the preterite; describe it in the imperfect; follow directions to where it was found) · <i>El café</i> (order; catch the wrong change).</li>
+      <li><b>Legends:</b> nearly every local tells a short piece of a legend (El Sombrerón, La Tatuana, El Cadejo, La Llorona, Doña Beatriz y el Volcán de Agua, La Siguanaba), followed by one listening question. Four of six are heard per run; the finale retells one of them in full. Students rebuild the order from audio cards, answer a question about a character’s motives, write the ending (≥ 4 past verbs, ≥ 2 preterite, ≥ 15 words), then hear the real one. Don Chepe reacts to ideas that match.</li>
+      <li><b>Checked in student writing:</b> preterite (regular, spelling-change yo forms <i>llegué, busqué, empecé</i>, stem-changing <i>pidió, durmió</i>, irregular <i>tuvo, hizo, dijo, fue</i>), imperfect for description, present tense where the past is needed (<i>corre → corrió</i>), invented forms (<i>hació → hizo, teneó → tuvo</i>), yo vs. él (<i>yo fue → fui</i>), and the personal <i>a</i> (<i>vio la muchacha → vio a la muchacha</i>). Accents never fail an answer; they get tips. <i>Usted</i> is suggested with adult strangers; the barista uses <i>tú</i>. Modelled, never marked: future (<i>saldrá, le costará</i>), conditional (<i>¿me podría…?</i>), subjunctive (<i>cuando llegue a la esquina, quiero que le compres…, que no cueste más de…</i>).</li>
+      <li><b>Audio-only by default.</b> ⚙ Ajustes turns on text (subtitles, option text, card text). The accommodation link adds <code>?texto=1</code> to the URL. If a computer has no Spanish voice, text turns on automatically. The game records whether text was used and why, for the report later. Replay and speed are always available.</li>
+      <li><b>Chapín Spanish:</b> <i>patojo, pisto, chucho, ¡va pues!, ¡púchica!, cabal, fíjese que…, cruce a la derecha, ¿me lo deja en…?</i>, and a young barista who slips into <i>vos</i> (<i>tenés razón… digo, tienes razón</i>).</li>
+      <li><b>What is randomized:</b> the three city scenes and their order; every character (from cast pools); posada, menu, sold-out dish, wrong drink, prices; the gift, colour and budget; the bus destinations, times and fares; the lost item and where it turns up; every map route (start, facing, turns, distances, decoys); which legend each local tells and which one the finale uses; side encounters; which Datos are hidden; and line variants within each scene.</li>
+      <li>Outcomes practised (30-3Y): LC–1.3 a (folk tales, legends and fables; plus restaurants, shopping and transport revisited) · LC–1.4 b (preterite, imperfect, personal a) · LC–1.4 a (preterite vs. imperfect, conditional, subjunctive, modelled) · A–1.1 a · A–3.2 a (state personal actions in the past) · A–4.2 b (story order) · A–4.3 a, b (describe a problem; solutions) · A–4.4 a (characters and their motivations in a story) · A–5.2 a · LC–2.1 a · LC–2.3 a · LC–4.1 b · LC–4.3 a · LC–5.1 a (time sequencing), c (directions) · LC–5.2 a (folk tales) · GC–1.2 a · GC–2.2 a · GC–3.1 a.</li>
+      <li>Audio uses this computer’s best Spanish voice: <b id="vozName">checking…</b>. Change it in ⚙ Ajustes.</li>
+    </ul>
+  </details>
+</div>
+
+<dialog id="settingsDlg">
+  <h2>⚙ Ajustes</h2>
+  <div class="setrow"><div><b>Mostrar texto</b><small>Subtitles and Spanish text. Off by default: try listening first.</small></div><label class="toggle"><input type="checkbox" id="optText"><span></span></label></div>
+  <div class="setrow tts-only"><div><b>Velocidad</b><small>How fast people speak.</small></div><div class="seg" id="speedSeg2"><button type="button" data-speed="lento">Lento</button><button type="button" data-speed="normal">Normal</button><button type="button" data-speed="natural">Natural</button></div></div>
+  <div class="setrow tts-only"><div><b>Voz</b><small>Spanish voices on this computer.</small></div><select id="voiceSel"></select></div>
+  <div class="setrow"><div><b>Efectos de sonido</b><small>Chimes and clicks.</small></div><label class="toggle"><input type="checkbox" id="optSfx" checked><span></span></label></div>
+  <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn primary" id="closeSettings" type="button">Listo</button></div>
+</dialog>
