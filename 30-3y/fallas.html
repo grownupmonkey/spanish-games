@@ -1861,7 +1861,7 @@ const looksEnglish = n => { const w = n.split(' '), e = w.filter(x => ENGLISH.ha
 const ACCENT_WORDS = { tambien: 'también', manana: 'mañana', despues: 'después', ademas: 'además', mama: 'mamá', papa: 'papá', musica: 'música', miercoles: 'miércoles', sabado: 'sábado', mascleta: 'mascletà', bunuelos: 'buñuelos', bunuelo: 'buñuelo', cremà: 'cremà', crema: 'cremà', tia: 'tía', tio: 'tío', dia: 'día', dias: 'días', aqui: 'aquí', alli: 'allí', rapido: 'rápido', ultimo: 'último', jamas: 'jamás', fantastico: 'fantástico', increible: 'increíble' };
 function reviewAccents(raw) {
   const out = [];
-  words(raw).forEach(w => { const k = keyOf(w), t = ACCENT_WORDS[k]; if (!t || w.toLowerCase() === t || (k === 'crema' && !/la crema/i.test(raw))) return; if (k === 'papa' && /\bla papa\b/i.test(raw)) return; if (!out.some(x => x.fix === t)) out.push({ wrote: w, fix: t }); });
+  words(raw).forEach(w => { const k = keyOf(w), t = ACCENT_WORDS[k]; if (!t || w.toLowerCase() === t.toLowerCase() || (k === 'crema' && !/la crema/i.test(raw))) return; if (k === 'papa' && /\bla papa\b/i.test(raw)) return; if (!out.some(x => x.fix === t)) out.push({ wrote: w, fix: t }); });
   if (raw.includes('?') && !raw.includes('¿')) out.push({ wrote: '?', fix: '¿…?', punct: true });
   return out.slice(0, 3);
 }
@@ -1961,7 +1961,7 @@ function analyzePast(raw) {
 /* ============ 4 · UI HELPERS ============ */
 const state = { lastLine: '', onSubmit: null, help: null };
 let session = null;
-function newSession() { return { started: Date.now(), textShown: ACCOMMODATION, textReason: ACCOMMODATION ? 'accommodation' : '', missions: [], writing: [], transcript: [], stats: { messages: 0, replays: 0, slow: 0, hints: 0, misses: 0 }, events: [], details: {} }; }
+function newSession() { return { started: Date.now(), textShown: ACCOMMODATION || SETTINGS.text, textReason: ACCOMMODATION ? 'accommodation' : (voicesSettled && !VOZ) ? 'novoice' : SETTINGS.text ? 'student' : '', missions: [], writing: [], transcript: [], stats: { messages: 0, replays: 0, slow: 0, hints: 0, misses: 0 }, events: [], details: {} }; }
 function logLine(who, text) { session && session.transcript.push({ who, text }); }
 function setTask(html, eyebrow = 'Ahora') { $id('taskEyebrow').textContent = eyebrow; const t = $id('task'); t.innerHTML = html; t.classList.remove('appear'); void t.offsetWidth; t.classList.add('appear'); }
 function chipEl(kind, es, en) { const c = document.createElement('div'); c.className = 'chip appear ' + kind; c.innerHTML = `${es ? `<b>${es}</b>` : ''}${en ? `<span class="en">${en}</span>` : ''}`; return c; }
@@ -2600,7 +2600,8 @@ window.__fallasGame = { missionBlog, endSession, renderMissions, finishMission, 
     28: ['20-3Y', 'Mismo idioma, otro mundo', 'Escena 8 · Lethbridge'],
     31: ['30-3Y', 'Noche de leyendas', 'Juego 1 · Antigua Guatemala'],
     32: ['30-3Y', 'Cuando era pequeño', 'Juego 2 · Montevideo'],
-    33: ['30-3Y', '¡Fallas!', 'Juego 3 · Valencia']
+    33: ['30-3Y', '¡Fallas!', 'Juego 3 · Valencia'],
+    34: ['30-3Y', 'Radio Habana', 'Juego 4 · La Habana']
   };
   const LEVELS = ['10-3Y', '20-3Y', '30-3Y'];
   const B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'; // Crockford base 32 (no I, L, O, U)

@@ -1,0 +1,97 @@
+<div class="wrap fwrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Español 30-3Y · Juego 4 · La Habana</div>
+      <h1>Radio Habana</h1>
+      <p class="lede">A night as an intern at a community radio station in Havana: interview a musician live, take listeners’ requests, then review a concert on the Malecón. Audio first: listen carefully.</p>
+    </div>
+    <div class="toggles">
+      <button class="pill" id="settingsBtn" type="button">⚙ Ajustes</button>
+      <label class="switch sfx-switch"><input type="checkbox" id="sfxOn" checked> Sonido</label>
+    </div>
+  </header>
+
+  <section class="stage3d" id="stage">
+    <div class="stagehead">
+      <div class="place" id="place"></div>
+      <div class="gemtally">✦ Datos de La Habana <b id="gemCount">0/6</b></div>
+    </div>
+    <div id="view3d"></div>
+    <div class="linebar" id="linebar">
+      <div class="who" id="who">Lucía</div>
+      <div class="line"><div id="lineEs" class="es"></div><div id="lineEn" class="en"></div></div>
+      <div class="audio">
+        <button class="btn small ghost tts-only" id="replay" type="button" title="Alt+R">⟲ Repetir</button>
+        <button class="btn small ghost tts-only" id="slow" type="button">🐢 Lento</button>
+      </div>
+      <button class="btn primary" id="goBtn" type="button" hidden></button>
+    </div>
+    <div id="gemCard" class="gemcard" hidden>
+      <div class="gh">✦ Dato de La Habana</div>
+      <p id="gemEs" class="es"></p>
+      <p id="gemEn" class="en2"></p>
+      <button class="btn small" id="gemClose" type="button">Cerrar</button>
+    </div>
+    <div class="titlecard" id="titleCard" hidden><p class="eyebrow" id="tcEyebrow"></p><h2 id="tcTitle"></h2><p id="tcSub"></p></div>
+    <div class="intro" id="intro">
+      <div class="box">
+        <div class="lucia-row"><div class="face" id="introFace"></div><div><p class="eyebrow">Con Lucía</p><h2>Radio Habana</h2></div></div>
+        <p>Lucía is in Havana, Cuba. Tonight you’re the intern at <b>Radio Malecón 99.5 FM</b>, a community station with a window onto the sea.</p>
+        <ul>
+          <li><b>La entrevista.</b> Interview a Cuban musician live on air, in the <b>present perfect</b> with <b>usted</b> (¿Ha tocado en otros países?). Then tell the listeners what the guest has done.</li>
+          <li><b>Las peticiones.</b> Listeners call in with song requests. Answer them with an <b>object pronoun</b> (Sí, la pongo ahora) and find the record on the shelf.</li>
+          <li><b>La reseña.</b> Go to a concert on the Malecón and write a review for the station’s website.</li>
+        </ul>
+        <p class="notice">Everything is spoken. Text is off: you can turn it on in <b>⚙ Ajustes</b>, and your report will say so. Drag to look around; click the sparkles to find six <i>Datos de La Habana</i>.</p>
+        <p class="notice tts-only"><b>Headphones on?</b> <button class="btn ghost small" id="testVoice" type="button">▶ Test the voice</button></p>
+        <div><button class="btn primary" id="startBtn" type="button">Empezar el programa</button></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gamegrid">
+    <section class="card panel" id="taskCard">
+      <div class="panelhead"><h3 id="taskEyebrow">Ahora</h3></div>
+      <p class="task" id="task">Press <b>Empezar el programa</b> to begin.</p>
+      <div class="row ctrls"><button class="btn ghost small" id="helpBtn" type="button">💡 Ayuda</button></div>
+      <div id="ia"></div>
+      <div class="fbs" id="fbs" aria-live="polite"></div>
+    </section>
+    <aside class="sidecol">
+      <section class="card missions"><h3>Tu programa</h3><ol id="missionList"></ol></section>
+      <section class="card"><h3>El guion</h3><div id="guion"></div></section>
+      <section class="card libreta">
+        <div class="libtabs"><button type="button" class="on" data-pane="callList">Esta noche</button><button type="button" data-pane="gemList">Datos</button></div>
+        <ul class="libpane" id="callList"></ul>
+        <ul class="libpane" id="gemList" hidden></ul>
+      </section>
+    </aside>
+  </div>
+
+  <section class="card summary" id="summary" hidden></section>
+
+  <details class="teacher">
+    <summary>Para el profe</summary>
+    <ul>
+      <li><b>How it works.</b> Four missions in one evening. <i>La entrevista</i>: the student types questions live; each one is matched to a topic on the run sheet (countries, albums, songs, famous collaborators, prizes, venues in Havana) and the guest answers from a random profile, modelling the perfect and object pronouns. <i>El resumen</i>: the student tells new listeners what the guest has done, in the third-person perfect, checked against the guest’s actual facts (numbers, countries, prize). <i>Las peticiones</i>: four calls; the student answers each caller with the right object pronoun, then finds the record on the shelf by listening. One request has already been played (Raúl says so at the start), so the student must say <i>ya la/lo hemos puesto</i>. <i>La reseña</i>: a short concert on the Malecón (band, three songs, the 9 p.m. cañonazo and a solo or sing-along), then a review for the station’s website.</li>
+      <li><b>Randomized every time.</b> The guest (five profiles: son, bolero, timba, trova) and all their facts; the record shelf order; which songs were already played; the four requests (la / lo / los or las), callers and dedications; the band, its songs and the special moment.</li>
+      <li><b>Grammar checked (LC–1.4 b, structured).</b> Present perfect: haber + participle, irregular participles (hecho, escrito, visto, puesto, vuelto, dicho, roto, abierto) with corrections for <i>hacido, escribido, ponido…</i>, a missing h (<i>a grabado</i> → ha grabado), and participle agreement (<i>han tocada</i> → tocado). Direct object pronouns: lo / la / los / las agreeing with what was requested, placed before the conjugated verb or attached to an infinitive or gerund; <i>pongo la</i> → la pongo; <i>le</i> for a thing is corrected.</li>
+      <li><b>Register (LC–4.1 b).</b> Usted with the guest on air is checked (<i>has</i> → ha). Callers use tú with the station, as is normal on Cuban radio.</li>
+      <li><b>A note on the perfect in Cuba.</b> Caribbean Spanish often uses the preterite for things that happened today (<i>esta noche vi…</i>). The game models the perfect where it is natural everywhere (experience: <i>¿Ha tocado alguna vez…?</i>, <i>nunca he…</i>; recent news on air), and the review accepts the preterite without penalty while asking for three perfect forms.</li>
+      <li><b>Stars.</b> Interview: four topics asked with the perfect, usted and no slips. Summary: three perfect forms and three accurate facts. Requests: no wrong records, pronoun errors or missed “ya la hemos puesto”. Review: band, a song, a moment, three perfect forms and an object pronoun (3★ with an opinion and no slips).</li>
+      <li><b>Accuracy notes.</b> The station, guests, collaborators, bands and the guests’ own songs are invented. The classic records are real songs with their composers or best-known performers: Chan Chan (Compay Segundo), Lágrimas negras and Son de la loma (Trío Matamoros), Dos gardenias (Isolina Carrillo), Guantanamera (Joseíto Fernández), El manisero (Moisés Simons), Veinte años (María Teresa Vera), Quizás, quizás, quizás (Osvaldo Farrés), Benny Moré, Orquesta Aragón, Celia Cruz, Omara Portuondo. No lyrics are used; the music is a synthesized son pattern (clave 3-2, tumbao, montuno), not a recording. The Malecón (about 8 km), El Morro, the nightly 9 p.m. cañonazo at La Cabaña, almendrones and “¿Qué bolá?” are accurate.</li>
+      <li><b>Text.</b> Audio-only by default. <code>?texto=1</code> turns text on for students who need it; the report says when text was used or when no Spanish voice was found. The game prefers a Latin American Spanish voice.</li>
+      <li><b>Outcomes (30-3Y).</b> LC–1.3 a (music; arts and entertainment) · LC–1.4 b (perfect tense, direct object pronouns) · LC–4.1 b · GC–1.5 a · A–3.2 a · A–4.3 a, b · A–4.4 a · LC–2.1 a · LC–2.3 a · LC–5.1 a · LC–5.2 a.</li>
+      <li>Audio uses this computer’s best Spanish voice: <b id="vozName">checking…</b>. Change it in ⚙ Ajustes.</li>
+    </ul>
+  </details>
+</div>
+
+<dialog id="settingsDlg">
+  <h2>Ajustes</h2>
+  <div class="setrow"><div><b>Mostrar texto</b><small>Subtitles and Spanish text. Off by default: try listening first.</small></div><label class="toggle"><input type="checkbox" id="optText"><span></span></label></div>
+  <div class="setrow tts-only"><div><b>Velocidad</b><small>How fast people speak.</small></div><div class="seg"><button type="button" data-speed="lento">Lento</button><button type="button" data-speed="normal">Normal</button><button type="button" data-speed="natural">Natural</button></div></div>
+  <div class="setrow tts-only"><div><b>Voz</b><small>Spanish voices on this computer.</small></div><select id="voiceSel"></select></div>
+  <div class="setrow"><div><b>Efectos de sonido</b><small>Chimes, bangs and crackles.</small></div><label class="toggle"><input type="checkbox" id="optSfx" checked><span></span></label></div>
+  <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn primary" id="closeSettings" type="button">Listo</button></div>
+</dialog>

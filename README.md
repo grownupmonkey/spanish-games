@@ -5,7 +5,7 @@ Interactive Spanish games for the Alberta Spanish classes (10-3Y, 20-3Y, 30-3Y).
 ## Layout
 
 - `10-3y/`, `20-3y/`, `30-3y/`: built game pages, one file per game.
-- `kit/`: the starter kit and design guide (`README.md`), the 10-3Y/20-3Y source bundles, the 30-3Y build folders (`kit/30-3y/<game>/`, run `python3 assemble.py`), and the shared end-of-session report (`report.js`, `report.css`, `report_inject.py`; games 1–9, 21–28 and 31–33).
+- `kit/`: the starter kit and design guide (`README.md`), the 10-3Y/20-3Y source bundles, the 30-3Y build folders (`kit/30-3y/<game>/`, run `python3 assemble.py`), and the shared end-of-session report (`report.js`, `report.css`, `report_inject.py`; games 1–9, 21–28 and 31–34).
 - `index.html`: the hub page that links every game.
 
 ## Games
@@ -44,6 +44,7 @@ Interactive Spanish games for the Alberta Spanish classes (10-3Y, 20-3Y, 30-3Y).
 | Noche de leyendas (Antigua Guatemala) | `30-3y/noche-de-leyendas.html` | Not yet published |
 | Cuando era pequeño (Montevideo) | `30-3y/cuando-era-pequeno.html` | Not yet published |
 | ¡Fallas! (Valencia, 3D) | `30-3y/fallas.html` | GitHub Pages only |
+| Radio Habana (La Habana, 3D) | `30-3y/radio-habana.html` | GitHub Pages only |
 
 ## Rebuilding
 
