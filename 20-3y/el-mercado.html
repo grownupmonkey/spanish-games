@@ -878,11 +878,11 @@ function famSVG(p, sc = 1) {
   }
   s += `<ellipse cx="-5.5" cy="32.5" rx="5.5" ry="2.8" fill="#2A1D17"/><ellipse cx="5.5" cy="32.5" rx="5.5" ry="2.8" fill="#2A1D17"/>`;
   s += `<rect x="-19" y="-6" width="6.5" height="21" rx="3.2" fill="${skin}"/><rect x="12.5" y="-6" width="6.5" height="21" rx="3.2" fill="${skin}"/>`;
-  s += `<path d="M-13 -8 Q0 -12 13 -8 L14 14 Q0 16.5 -14 14 Z" fill="${shirt}" stroke="${shirtD}" stroke-width="1.2"/>`;
+  s += `<path d="M-13 -8 Q0 -12 13 -8 L14 14 Q0 16.5 -14 14 Z" fill="${shirt}" stroke="${shirtD}" stroke-width="1.2"/><path d="M-9 -5 Q-11 3 -10 11" stroke="#FFFFFF" stroke-opacity=".22" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M9 -5 Q11 3 10 11" stroke="#000000" stroke-opacity=".16" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
   s += `<path d="M-13 -8 L-20 -3 L-19.5 5 L-13 5 Z M13 -8 L20 -3 L19.5 5 L13 5 Z" fill="${shirt}" stroke="${shirtD}" stroke-width="1.2" stroke-linejoin="round"/>`;
   s += `<rect x="-3.5" y="-14" width="7" height="6" fill="${skinD}"/><path d="M-4.5 -9.6 L0 -4.5 L4.5 -9.6 Z" fill="${skinD}"/>`;
   s += `<circle cx="-12.6" cy="-25" r="3" fill="${skinD}"/><circle cx="12.6" cy="-25" r="3" fill="${skinD}"/>`;
-  s += `<ellipse cx="0" cy="-26" rx="12.5" ry="13.5" fill="${skin}"/>`;
+  s += `<ellipse cx="0" cy="-26" rx="12.5" ry="13.5" fill="${skin}"/><path d="M9 -31 Q13 -25 11 -17" stroke="${skinD}" stroke-width="2" fill="none" opacity=".55" stroke-linecap="round"/>`;
   if (p.style === 'short') s += `<path d="M-13 -24 C-15.5 -43 15.5 -43 13 -24 C11 -32 6 -35 -1 -33 C-6 -35 -11 -31 -13 -24 Z" fill="${hair}"/>`;
   else if (p.style === 'long') s += `<path d="M-13.8 -20 C-17 -45 17 -45 13.8 -20 C12.5 -30 8 -34 3 -35.5 C-2 -31 -8 -31 -13.8 -20 Z" fill="${hair}"/>`;
   else if (p.style === 'curly') s += `<g fill="${hair}">` + [[-11, -34, 6], [-4, -39, 6.5], [4, -39, 6.5], [11, -34, 6], [-14, -27, 4.5], [14, -27, 4.5], [0, -35, 6]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join('') + `</g>`;
@@ -895,7 +895,7 @@ function famSVG(p, sc = 1) {
   if (p.glasses) s += `<g stroke="#17132B" stroke-width="2"><circle cx="-5.3" cy="-25.5" r="4.7" fill="rgba(255,255,255,.2)"/><circle cx="5.3" cy="-25.5" r="4.7" fill="rgba(255,255,255,.2)"/><path d="M-.7 -26 h1.4 M-10 -26.6 L-12.6 -27.6 M10 -26.6 L12.6 -27.6" fill="none"/></g>`;
   if (p.flower) s += `<g transform="translate(9 -37)"><g fill="#F06C8E">${[0, 72, 144, 216, 288].map(r => `<ellipse cx="0" cy="-3.2" rx="2.6" ry="3.4" transform="rotate(${r})"/>`).join('')}</g><circle r="1.8" fill="#FFC27A"/></g>`;
   if (p.party) s += `<path d="M-6 -38 L0 -56 L6 -38 Z" fill="${p.party}" stroke="#17122E" stroke-width=".8"/><circle cx="0" cy="-56" r="2.2" fill="#FFC27A"/>`;
-  return `<g transform="translate(0 34) scale(${k}) translate(0 -34)">${s}</g>`;
+  return `<g transform="translate(0 34) scale(${k}) translate(0 -34)"><ellipse cx="0" cy="34" rx="${kid ? 12 : 15}" ry="3" fill="#0B0820" opacity=".38"/>${s}</g>`;
 }
 
 
@@ -1438,7 +1438,7 @@ async function submitWrite(raw) {
 
 /* ---------- drawing: market hall ---------- */
 function hallSVG() {
-  let s = '<defs><linearGradient id="hallbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#241D4D"/><stop offset="1" stop-color="#3A2E66"/></linearGradient></defs>';
+  let s = '<defs><linearGradient id="hallbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#241D4D"/><stop offset="1" stop-color="#3A2E66"/></linearGradient><linearGradient id="cntH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A06C46"/><stop offset="1" stop-color="#5E3B22"/></linearGradient><filter id="soft3" x="-30%" y="-200%" width="160%" height="500%"><feGaussianBlur stdDeviation="2"/></filter></defs>';
   s += '<rect width="760" height="210" fill="url(#hallbg)"/>';
   s += '<path d="M0 40 L380 8 L760 40" stroke="#5A4A8A" stroke-width="3" fill="none"/>' + [60, 160, 260, 380, 500, 600, 700].map(x => `<path d="M${x} ${40 - 32 * (1 - Math.abs(380 - x) / 380)} V40" stroke="#4A3D78" stroke-width="2"/>`).join('');
   // papel picado
@@ -1453,17 +1453,17 @@ function hallSVG() {
     const V = PEOPLE[STALLS[sid].vendor];
     let g = `<g class="stall" data-stall="${sid}" role="button" tabindex="0" aria-label="${STALLS[sid].sign}"><rect class="hl" x="${x - 4}" y="60" width="${w + 8}" height="98" rx="10"/>`;
     g += `<g transform="translate(${x + w / 2} ${150 - 34 * .9}) scale(.9)">${famSVG(V.p)}</g>`;
-    g += `<rect x="${x}" y="70" width="${w}" height="14" fill="${aw[0]}"/>` + Array.from({ length: Math.floor(w / 16) }, (_, i) => `<rect x="${x + i * 16}" y="70" width="8" height="14" fill="${aw[1]}"/>`).join('') + `<path d="M${x} 84 ${Array.from({ length: Math.floor(w / 16) }, (_, i) => `q4 6 8 0 q4 6 8 0`).join(' ')}" fill="${aw[0]}"/>`;
+    g += `<rect x="${x}" y="70" width="${w}" height="14" fill="${aw[0]}"/>` + Array.from({ length: Math.floor(w / 16) }, (_, i) => `<rect x="${x + i * 16}" y="70" width="8" height="14" fill="${aw[1]}"/>`).join('') + `<rect x="${x}" y="88" width="${w}" height="8" fill="#000" opacity=".18"/><path d="M${x} 84 ${Array.from({ length: Math.floor(w / 16) }, (_, i) => `q4 6 8 0 q4 6 8 0`).join(' ')}" fill="${aw[0]}"/>`;
     g += `<rect x="${x + 4}" y="84" width="3" height="66" fill="#7A5236"/><rect x="${x + w - 7}" y="84" width="3" height="66" fill="#7A5236"/>`;
-    g += `<rect x="${x}" y="128" width="${w}" height="24" rx="2" fill="#8A5A3C"/><rect x="${x}" y="126" width="${w}" height="5" fill="#A87A52"/>`;
+    g += `<ellipse cx="${x + w / 2}" cy="152" rx="${w / 2 + 4}" ry="3.5" fill="#000" opacity=".35" filter="url(#soft3)"/><rect x="${x}" y="128" width="${w}" height="24" rx="2" fill="url(#cntH)"/><rect x="${x}" y="126" width="${w}" height="5" fill="#C0905F"/><rect x="${x}" y="126" width="${w}" height="1.5" fill="#fff" opacity=".3"/><rect x="${x}" y="131" width="${w}" height="3" fill="#000" opacity=".2"/>`;
     g += `<text x="${x + w / 2}" y="67" text-anchor="middle" font-size="10" font-weight="800" fill="#F2EEE6" font-family="Manrope, sans-serif" letter-spacing=".08em">${STALLS[sid].sign}</text></g>`;
     return g;
   };
   s += stall('verduras', 24, 176, ['#2FAE6A', '#F4F1EA']) + stall('queso', 222, 160, ['#E8505B', '#F4F1EA']) + stall('abarrotes', 404, 160, ['#3A7BD5', '#F2C230']);
   // produce piles on counters (decoration)
-  s += [[50, '#E8453C'], [80, '#8CC63F'], [112, '#3E5A2A'], [146, '#F1E6D8'], [176, '#9BCF53']].map(([x, c]) => `<g pointer-events="none">${[0, 1, 2].map(k => `<circle cx="${x + k * 7 - 7}" cy="${124 - (k === 1 ? 4 : 0)}" r="5" fill="${c}"/>`).join('')}</g>`).join('');
-  s += `<g pointer-events="none"><path d="M240 122 h30 v-6 h-30 z" fill="#B5503A"/><rect x="330" y="114" width="28" height="10" rx="3" fill="#9E2F28"/></g>`;
-  s += `<g pointer-events="none"><rect x="420" y="112" width="26" height="12" rx="2" fill="#F1E3C0"/><ellipse cx="482" cy="120" rx="16" ry="4" fill="#E9D7A8"/><rect x="510" y="112" width="22" height="12" rx="2" fill="#2A2438"/><rect x="540" y="114" width="18" height="10" rx="2" fill="#6B3A1E"/></g>`;
+  s += [[50, '#E8453C'], [80, '#8CC63F'], [112, '#3E5A2A'], [146, '#F1E6D8'], [176, '#9BCF53']].map(([x, c]) => `<g pointer-events="none">${[0, 1, 2].map(k => `<circle cx="${x + k * 7 - 7}" cy="${124 - (k === 1 ? 4 : 0)}" r="5" fill="${c}"/><circle cx="${x + k * 7 - 9}" cy="${122 - (k === 1 ? 4 : 0)}" r="1.5" fill="#fff" opacity=".45"/>`).join('')}</g>`).join('');
+  s += `<g pointer-events="none"><ellipse cx="256" cy="126" rx="17" ry="2" fill="#000" opacity=".3"/>${[0, 1, 2].map(i => `<path d="M${242 + i * 3} ${124 - i * 3} q14 -5 28 0 q-14 4 -28 0z" fill="${["#B5503A", "#C4624A", "#A84530"][i]}" stroke="#7A2E1E" stroke-width=".8"/>`).join("")}<ellipse cx="344" cy="126" rx="16" ry="2" fill="#000" opacity=".3"/>${[0, 1, 2, 3].map(i => `<ellipse cx="${333 + i * 7.5}" cy="120" rx="4.6" ry="4" fill="#A3402E" stroke="#6E2A1E" stroke-width=".8"/><circle cx="${332 + i * 7.5}" cy="118.5" r="1.1" fill="#fff" opacity=".4"/>`).join("")}</g>`;
+  s += `<g pointer-events="none"><ellipse cx="433" cy="126" rx="15" ry="2" fill="#000" opacity=".3"/>${[0, 1, 2, 3].map(i => `<ellipse cx="433" cy="${123 - i * 2.6}" rx="13" ry="3.4" fill="#F1E3C0" stroke="#D2BC8E" stroke-width=".8"/>`).join("")}<ellipse cx="482" cy="125" rx="17" ry="2" fill="#000" opacity=".25"/><ellipse cx="482" cy="121" rx="16" ry="4" fill="#E9D7A8" stroke="#C9B07A" stroke-width=".8"/><ellipse cx="521" cy="126" rx="12" ry="2" fill="#000" opacity=".3"/><path d="M511 125 q-2 -12 10 -13 q12 1 10 13z" fill="#C9A06A" stroke="#8A6A3E" stroke-width=".8"/><path d="M514 114 q7 -3 14 0" stroke="#8A6A3E" stroke-width="1.6" fill="none"/><ellipse cx="521" cy="114" rx="6" ry="1.6" fill="#2A2438"/><ellipse cx="549" cy="126" rx="11" ry="2" fill="#000" opacity=".3"/>${[0, 1].map(i => `<rect x="${540 + i * 2}" y="${118 - i * 4}" width="16" height="7" rx="1.5" fill="${i ? "#7A4426" : "#6B3A1E"}" stroke="#3E200E" stroke-width=".8"/><path d="M${545 + i * 2} ${118 - i * 4} v7 M${550 + i * 2} ${118 - i * 4} v7" stroke="#3E200E" stroke-width=".6"/>`).join("")}</g>`;
   // quesillo gem at Don Beto's counter
   s += `<g class="gem" data-gem="quesillo" tabindex="0" role="button" aria-label="El quesillo"><circle class="ring" cx="300" cy="116" r="16"/><circle cx="300" cy="116" r="10" fill="#F7F3E6" stroke="#D9CFB4"/><path d="M291 112 q9 -6 18 0 M290 118 q10 6 20 0 M293 122 q7 4 14 0" stroke="#D9CFB4" stroke-width="1.3" fill="none"/><circle class="spark" cx="314" cy="102" r="2.2"/></g>`;
   // chapulines basket (gem)
@@ -1483,13 +1483,13 @@ const DOTS = (pts, f) => pts.map(([x, y]) => f(x, y)).join('');
 const P5 = [[-13, -6], [0, -8], [13, -6], [-6, -15], [7, -15]];
 function produce(k) {
   switch (k) {
-    case 'jitomates': return DOTS(P5, (x, y) => `<circle cx="${x}" cy="${y}" r="7.5" fill="#E8453C" stroke="#B5302A"/><path d="M${x - 3} ${y - 6} l3 2 l3 -2" stroke="#2F8F4E" stroke-width="2" fill="none"/>`);
-    case 'tomates': return DOTS(P5, (x, y) => `<circle cx="${x}" cy="${y}" r="7" fill="#8CC63F" stroke="#5E8A2A"/><path d="M${x - 7} ${y - 1} q7 -11 14 0" fill="#E6D8A0" opacity=".85"/>`);
-    case 'aguacates': return DOTS(P5, (x, y) => `<ellipse cx="${x}" cy="${y}" rx="6.5" ry="8.5" fill="#3E5A2A" stroke="#26391A"/>`);
-    case 'cebollas': return DOTS(P5, (x, y) => `<circle cx="${x}" cy="${y}" r="7" fill="#F1E6D8" stroke="#D8C4A8"/><path d="M${x} ${y - 7} v-5" stroke="#B8A27A" stroke-width="1.5"/>`);
+    case 'jitomates': return DOTS(P5, (x, y) => `<circle cx="${x}" cy="${y}" r="7.5" fill="#E8453C" stroke="#B5302A"/><circle cx="${x - 2.5}" cy="${y - 3}" r="2" fill="#fff" opacity=".45"/><path d="M${x - 3} ${y - 6} l3 2 l3 -2" stroke="#2F8F4E" stroke-width="2" fill="none"/>`);
+    case 'tomates': return DOTS(P5, (x, y) => `<circle cx="${x}" cy="${y}" r="7" fill="#8CC63F" stroke="#5E8A2A"/><circle cx="${x - 2.5}" cy="${y - 3}" r="2" fill="#fff" opacity=".45"/><path d="M${x - 7} ${y - 1} q7 -11 14 0" fill="#E6D8A0" opacity=".85"/>`);
+    case 'aguacates': return DOTS(P5, (x, y) => `<ellipse cx="${x}" cy="${y}" rx="6.5" ry="8.5" fill="#3E5A2A" stroke="#26391A"/><ellipse cx="${x - 2}" cy="${y - 3}" rx="1.6" ry="2.6" fill="#fff" opacity=".25"/>`);
+    case 'cebollas': return DOTS(P5, (x, y) => `<circle cx="${x}" cy="${y}" r="7" fill="#F1E6D8" stroke="#D8C4A8"/><path d="M${x + 2} ${y - 5} q4 5 0 10" stroke="#C9B08A" stroke-width="1.4" fill="none"/><path d="M${x} ${y - 7} v-5" stroke="#B8A27A" stroke-width="1.5"/>`);
     case 'chiles': return DOTS([[-12, -5], [2, -6], [-6, -12], [8, -12], [12, -4]], (x, y) => `<path d="M${x - 10} ${y} q10 -8 20 -2 q-10 6 -20 2z" fill="#9BCF53" stroke="#5E8A2A"/>`);
     case 'cilantro': return `<path d="M-2 0 V-10 M2 0 V-10" stroke="#3E7A2E" stroke-width="2"/>` + DOTS([[-12, -14], [-4, -18], [5, -18], [12, -13], [-8, -10], [8, -10], [0, -12]], (x, y) => `<circle cx="${x}" cy="${y}" r="5" fill="#3FA34D"/>`);
-    case 'limones': return DOTS([[-14, -4], [-5, -5], [4, -5], [13, -4], [-9, -11], [0, -12], [9, -11], [-4, -17], [5, -17]], (x, y) => `<circle cx="${x}" cy="${y}" r="4.6" fill="#7FC241" stroke="#4E8A2A"/>`);
+    case 'limones': return DOTS([[-14, -4], [-5, -5], [4, -5], [13, -4], [-9, -11], [0, -12], [9, -11], [-4, -17], [5, -17]], (x, y) => `<circle cx="${x}" cy="${y}" r="4.6" fill="#7FC241" stroke="#4E8A2A"/><circle cx="${x - 1.6}" cy="${y - 1.8}" r="1.2" fill="#fff" opacity=".45"/>`);
     case 'quesillo': return `<circle cx="0" cy="-11" r="13" fill="#F7F3E6" stroke="#D9CFB4"/><path d="M-11 -16 q11 -8 22 0 M-12 -9 q12 8 24 0 M-8 -3 q8 4 16 0" stroke="#D9CFB4" stroke-width="1.4" fill="none"/>`;
     case 'queso': return `<path d="M-18 -4 v-9 a18 6 0 0 1 36 0 v9 a18 6 0 0 1 -36 0z" fill="#FBF7EA" stroke="#DCD3BA"/><ellipse cx="0" cy="-13" rx="18" ry="6" fill="#FFFDF5" stroke="#DCD3BA"/>`;
     case 'tasajo': case 'cecina': { const c = k === 'tasajo' ? '#B5503A' : '#9E2F28'; return [-12, -2, 8].map((x, i) => `<rect x="${x - 8}" y="${-16 + i * 3}" width="22" height="9" rx="4" fill="${c}" stroke="${shade(c, -0.3)}" transform="rotate(${-12 + i * 10} ${x} -10)"/>`).join(''); }
@@ -1498,27 +1498,27 @@ function produce(k) {
     case 'tlayudas': return [0, 1, 2].map(i => `<ellipse cx="0" cy="${-4 - i * 3}" rx="22" ry="5" fill="#E9D7A8" stroke="#C9B07A"/>`).join('') + '<circle cx="-6" cy="-10" r="1.2" fill="#B08A5A"/><circle cx="8" cy="-11" r="1.2" fill="#B08A5A"/>';
     case 'frijoles': return `<path d="M-18 0 q-2 -18 18 -18 q20 0 18 18z" fill="#2A2438"/>` + DOTS([[-8, -6], [0, -10], [8, -6], [-3, -14], [5, -13]], (x, y) => `<ellipse cx="${x}" cy="${y}" rx="2.2" ry="1.5" fill="#4A4060"/>`);
     case 'chocolate': return [-12, 0, 12].map((x, i) => `<rect x="${x - 6}" y="${-18 + (i % 2) * 4}" width="12" height="16" rx="2" fill="#6B3A1E" stroke="#3E200E"/><path d="M${x - 6} ${-12 + (i % 2) * 4} h12" stroke="#4E2A14"/>`).join('');
-    case 'pan': return DOTS([[-10, -6], [10, -6], [0, -13]], (x, y) => `<ellipse cx="${x}" cy="${y}" rx="9" ry="7" fill="#E0A848" stroke="#B07A2A"/><circle cx="${x - 3}" cy="${y - 3}" r=".9" fill="#FFF3D6"/><circle cx="${x + 2}" cy="${y - 4}" r=".9" fill="#FFF3D6"/>`);
+    case 'pan': return DOTS([[-10, -6], [10, -6], [0, -13]], (x, y) => `<ellipse cx="${x}" cy="${y}" rx="9" ry="7" fill="#E0A848" stroke="#B07A2A"/><ellipse cx="${x - 3}" cy="${y - 3}" rx="4" ry="2" fill="#fff" opacity=".25"/><circle cx="${x - 3}" cy="${y - 3}" r=".9" fill="#FFF3D6"/><circle cx="${x + 2}" cy="${y - 4}" r=".9" fill="#FFF3D6"/>`);
     case 'arroz': return `<path d="M-18 0 q-2 -16 18 -16 q20 0 18 16z" fill="#F4F1EA"/>` + DOTS([[-8, -6], [0, -10], [8, -6], [-3, -4], [5, -3]], (x, y) => `<ellipse cx="${x}" cy="${y}" rx="1.6" ry="1" fill="#D8D2C4"/>`);
   }
   return '';
 }
-const basketShape = '<path d="M-24 0 h48 l-6 22 h-36 z" fill="#B08048" stroke="#7A5530" stroke-width="1.5"/><path d="M-22 6 h44 M-20 12 h40 M-18 18 h36" stroke="#7A5530" stroke-width="1" opacity=".6"/><ellipse cx="0" cy="0" rx="24" ry="5" fill="#C89A5E" stroke="#7A5530" stroke-width="1.5"/>';
+const basketShape = '<ellipse cx="0" cy="23" rx="22" ry="3" fill="#000" opacity=".4" filter="url(#soft3s)"/><path d="M-24 0 h48 l-6 22 h-36 z" fill="url(#bask3)" stroke="#7A5530" stroke-width="1.5"/><path d="M-22 6 h44 M-20 12 h40 M-18 18 h36" stroke="#7A5530" stroke-width="1" opacity=".6"/><ellipse cx="0" cy="0" rx="24" ry="5" fill="#C89A5E" stroke="#7A5530" stroke-width="1.5"/>';
 function stallSVG(sid) {
   const V = PEOPLE[STALLS[sid].vendor], rows = [[], [], []];
   S.w.stalls[sid].forEach(b => rows[b.row].push(b));
-  let s = '<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A3068"/><stop offset="1" stop-color="#2C2454"/></linearGradient></defs><rect width="760" height="300" fill="url(#wall)"/>';
+  let s = '<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A3068"/><stop offset="1" stop-color="#2C2454"/></linearGradient><linearGradient id="bask3" x1="0" x2="1"><stop offset="0" stop-color="#D2A26A"/><stop offset=".55" stop-color="#B08048"/><stop offset="1" stop-color="#7A5530"/></linearGradient><linearGradient id="cnt3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9E6A44"/><stop offset="1" stop-color="#5E3B22"/></linearGradient><filter id="soft3s" x="-30%" y="-200%" width="160%" height="500%"><feGaussianBlur stdDeviation="1.6"/></filter></defs><rect width="760" height="300" fill="url(#wall)"/>';
   s += '<rect x="150" y="96" width="560" height="8" rx="2" fill="#7A5236"/><rect x="160" y="104" width="6" height="40" fill="#5E3B27"/><rect x="694" y="104" width="6" height="40" fill="#5E3B27"/>';
   s += `<g transform="translate(712 ${204 - 34 * 1.55}) scale(1.55)">${famSVG(V.p)}</g>`;
-  s += '<rect x="140" y="172" width="610" height="36" fill="#8A5A3C"/><rect x="140" y="166" width="610" height="8" fill="#A87A52"/>';
-  s += '<rect x="140" y="266" width="610" height="34" fill="#6B4A36"/><rect x="140" y="260" width="610" height="8" fill="#8A6A4E"/>';
-  const Y = [258, 166, 92], SC = [1.55, 1.3, 1.05];
+  s += '<rect x="140" y="172" width="610" height="36" fill="url(#cnt3)"/><rect x="140" y="166" width="610" height="8" fill="#C0905F"/><rect x="140" y="166" width="610" height="1.6" fill="#fff" opacity=".3"/><rect x="140" y="174" width="610" height="4" fill="#000" opacity=".22"/>';
+  s += '<rect x="140" y="266" width="610" height="34" fill="url(#cnt3)"/><rect x="140" y="260" width="610" height="8" fill="#B08A62"/><rect x="140" y="260" width="610" height="1.6" fill="#fff" opacity=".3"/><rect x="140" y="268" width="610" height="4" fill="#000" opacity=".22"/>';
+  const Y = [240, 146, 79], SC = [1.55, 1.3, 1.05];
   rows.forEach((list, r) => {
     list.forEach((b, i) => {
       const x = 196 + (i + 0.5) * (460 / Math.max(list.length, 3)) + (list.length < 3 ? (3 - list.length) * 460 / 6 : 0);
       const sc = SC[r];
       s += `<g transform="translate(${x} ${Y[r] - 4}) scale(${sc})">${basketShape}${produce(b.k)}</g>`;
-      const label = PRODUCTS[b.k].es, w = label.length * 6.2 + 14, ty = r === 0 ? 282 : r === 1 ? 192 : 112;
+      const label = PRODUCTS[b.k].es, w = label.length * 6.2 + 14, ty = r === 0 ? 282 : r === 1 ? 192 : 100;
       s += `<g><rect x="${x - w / 2}" y="${ty - 4}" width="${w}" height="16" rx="8" fill="#F3EFE4" stroke="#B9A98A"/><text x="${x}" y="${ty + 8}" text-anchor="middle" class="tag">${label}</text></g>`;
     });
   });
@@ -1532,7 +1532,7 @@ function stallSVG(sid) {
 function pepper(x, y) { return `<path d="M${x} ${y} q6 -2 10 -8 q-2 8 -10 10z" fill="#E8453C"/><path d="M${x + 9} ${y - 8} l2 -3" stroke="#3FA34D" stroke-width="1.6"/>`; }
 const SEAT = { abuela: 432, tio: 512, tomas: 592, me: 664 };
 function fondaSVG() {
-  let s = '<rect width="760" height="300" fill="#4A3170"/>';
+  let s = '<defs><filter id="soft3f" x="-30%" y="-200%" width="160%" height="500%"><feGaussianBlur stdDeviation="2"/></filter></defs><rect width="760" height="300" fill="#4A3170"/>';
   s += '<rect x="14" y="12" width="328" height="276" rx="6" fill="#7A5236"/><rect x="22" y="20" width="312" height="260" rx="3" fill="#1F2E26"/>';
   s += '<text x="40" y="46" class="chalk h">Menú del día</text>';
   Object.values(DISHES).forEach((d, i) => {
@@ -1542,7 +1542,7 @@ function fondaSVG() {
   });
   s += '<path d="M360 210 h390" stroke="#3A2A20" stroke-width="2"/>';
   // chairs
-  Object.values(SEAT).forEach(x => { s += `<rect x="${x - 17}" y="128" width="34" height="80" rx="5" fill="#8A5A3C"/><rect x="${x - 13}" y="134" width="26" height="6" rx="2" fill="#A87A52"/>`; });
+  Object.values(SEAT).forEach(x => { s += `<rect x="${x - 17}" y="128" width="34" height="80" rx="5" fill="#8A5A3C"/><rect x="${x + 9}" y="128" width="8" height="80" rx="3" fill="#000" opacity=".2"/><rect x="${x - 13}" y="134" width="26" height="6" rx="2" fill="#A87A52"/>`; });
   // people (seated: feet hidden by the table)
   const fam = { abuela: PEOPLE.abuela.p, tio: PEOPLE.tio.p, tomas: PEOPLE.tomas.p };
   for (const [w, p] of Object.entries(fam)) {
@@ -1550,11 +1550,11 @@ function fondaSVG() {
     s += `<g class="talk${on}" data-who="${w}" role="button" tabindex="0" aria-label="${PEOPLE[w].name}"><ellipse class="ring" cx="${SEAT[w]}" cy="156" rx="34" ry="56"/><g transform="translate(${SEAT[w]} ${232 - 34 * sc}) scale(${sc})">${famSVG(p)}</g></g>`;
   }
   // table + cloth
-  s += '<rect x="384" y="204" width="312" height="10" rx="3" fill="#C89A5E"/><rect x="390" y="214" width="300" height="52" fill="#F4F1EA"/>' + ['#E86F9A', '#F2C230', '#5FE0C8', '#F08A3C', '#8B5CC7'].map((c, i) => `<rect x="390" y="${218 + i * 9}" width="300" height="4" fill="${c}" opacity=".85"/>`).join('');
+  s += '<rect x="384" y="204" width="312" height="10" rx="3" fill="#C89A5E"/><rect x="390" y="214" width="300" height="52" fill="#F4F1EA"/><rect x="640" y="214" width="50" height="52" fill="#000" opacity=".08"/><rect x="390" y="214" width="300" height="4" fill="#000" opacity=".18"/><ellipse cx="540" cy="268" rx="160" ry="5" fill="#000" opacity=".3" filter="url(#soft3f)"/>' + ['#E86F9A', '#F2C230', '#5FE0C8', '#F08A3C', '#8B5CC7'].map((c, i) => `<rect x="390" y="${218 + i * 9}" width="300" height="4" fill="${c}" opacity=".85"/>`).join('');
   // plates
   ['abuela', 'tio', 'tomas', 'me'].forEach(w => {
     const d = S.orders && S.orders[w];
-    s += `<ellipse cx="${SEAT[w]}" cy="204" rx="20" ry="5" fill="#F7F3E6" stroke="#CFC6B4"/>`;
+    s += `<ellipse cx="${SEAT[w] + 1}" cy="206" rx="20" ry="4" fill="#000" opacity=".25"/><ellipse cx="${SEAT[w]}" cy="204" rx="20" ry="5" fill="#F7F3E6" stroke="#CFC6B4"/><ellipse cx="${SEAT[w] - 5}" cy="202.5" rx="7" ry="1.2" fill="#fff" opacity=".8"/>`;
     if (d && S.served) s += `<ellipse cx="${SEAT[w]}" cy="201" rx="13" ry="3.5" fill="${{ tlayuda: '#E9D7A8', mole: '#3A1E14', enfrijoladas: '#2A2438', chile: '#9BCF53', sopa: '#C8B85A', tamales: '#E8B83A', memelas: '#C9B07A' }[d]}"/>`;
   });
   s += `<text x="${SEAT.me}" y="170" text-anchor="middle" class="pname">tú</text>`;

@@ -245,6 +245,7 @@ table.nb { border-collapse: collapse; width: 100%; font-size: 13px; }
 .giftbox { display: flex; flex-direction: column; gap: 6px; }
 .tag { display: flex; gap: 12px; align-items: center; background: #FFF6E8; color: #2A1F3D; border-radius: 14px; padding: 12px 14px; transform: rotate(-.8deg); border-left: 6px solid #E86F9A; }
 .tag p { margin: 0; font-size: 16px; font-weight: 600; }
+.tagico svg { width: 40px; height: 40px; display: block; }
 .tagico { font-size: 34px; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
 .guestbtns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .guestbtns .choice { text-align: center; padding: 8px 6px; }
@@ -364,7 +365,7 @@ kbd { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .2
         <ol class="steps" id="steps"></ol>
         <p class="task" id="task">Press Empezar to begin.</p>
         <div class="giftbox" id="giftBox" hidden>
-          <div class="tag"><span class="tagico" id="tagIco">🎁</span><p id="tagText"></p></div>
+          <div class="tag"><span class="tagico" id="tagIco"><svg viewBox="-20 -20 40 40" width="40" height="40" aria-hidden="true"><rect x="-14" y="-4" width="28" height="20" rx="2" fill="#E86F9A"/><rect x="-16" y="-10" width="32" height="8" rx="2" fill="#F08AB0"/><rect x="-3" y="-10" width="6" height="26" fill="#FFC27A"/></svg></span><p id="tagText"></p></div>
           <p class="invask">¿Quién trajo este regalo?</p>
           <div class="guestbtns" id="guestBtns"></div>
         </div>
@@ -867,9 +868,9 @@ function personSVG({ skin = '#c98b5e', hair = '#3b2419', hairStyle = 'short', gl
   const topHair = hairStyle === 'bald' ? `<path d="M-14 -30 q-2 -4 2 -6 M14 -30 q2 -4 -2 -6" stroke="${hair}" stroke-width="4" fill="none"/>`
     : hairStyle === 'curly' ? `<g fill="${hair}"><circle cx="-10" cy="-38" r="7"/><circle cx="0" cy="-41" r="7"/><circle cx="10" cy="-38" r="7"/><circle cx="-14" cy="-30" r="5"/><circle cx="14" cy="-30" r="5"/></g>`
     : `<path d="M-15 -28 a15 14 0 0 1 30 0 q-6 -6 -15 -6 q-9 0 -15 6 z" fill="${hair}"/>`;
-  return `<g transform="scale(${scale})">${longHair}`
-    + `<rect x="-20" y="-6" width="40" height="34" rx="12" fill="${shirt}" stroke="rgba(0,0,0,.2)"/>`
-    + `<circle cx="0" cy="-26" r="15" fill="${skin}"/>${topHair}`
+  return `<g transform="scale(${scale})"><ellipse cx="1" cy="29" rx="20" ry="3.5" fill="#0B0820" opacity=".35"/>${longHair}`
+    + `<rect x="-20" y="-6" width="40" height="34" rx="12" fill="${shirt}" stroke="rgba(0,0,0,.2)"/><path d="M10 -5 q10 2 10 14 v8 q0 10 -10 10 z" fill="#000" opacity=".15"/><path d="M-13 -2 q-3 8 -2 18" stroke="#fff" stroke-opacity=".25" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
+    + `<circle cx="0" cy="-26" r="15" fill="${skin}"/><path d="M10 -36 q6 10 1 20" stroke="#000" stroke-opacity=".14" stroke-width="3" fill="none" stroke-linecap="round"/>${topHair}`
     + (beard ? `<path d="M-11 -22 q11 16 22 0 q-2 10 -11 11 q-9 -1 -11 -11z" fill="${hair}"/>` : '')
     + `<circle cx="-5" cy="-26" r="1.9" fill="#1d1410"/><circle cx="5" cy="-26" r="1.9" fill="#1d1410"/>`
     + (glasses ? `<g fill="none" stroke="#15203b" stroke-width="1.6"><circle cx="-5.5" cy="-26" r="4.6"/><circle cx="5.5" cy="-26" r="4.6"/><path d="M-1 -26 h2"/></g>` : '')
@@ -897,11 +898,11 @@ function famSVG(p, sc = 1) {
   }
   s += `<ellipse cx="-5.5" cy="32.5" rx="5.5" ry="2.8" fill="#2A1D17"/><ellipse cx="5.5" cy="32.5" rx="5.5" ry="2.8" fill="#2A1D17"/>`;
   s += `<rect x="-19" y="-6" width="6.5" height="21" rx="3.2" fill="${skin}"/><rect x="12.5" y="-6" width="6.5" height="21" rx="3.2" fill="${skin}"/>`;
-  s += `<path d="M-13 -8 Q0 -12 13 -8 L14 14 Q0 16.5 -14 14 Z" fill="${shirt}" stroke="${shirtD}" stroke-width="1.2"/>`;
+  s += `<path d="M-13 -8 Q0 -12 13 -8 L14 14 Q0 16.5 -14 14 Z" fill="${shirt}" stroke="${shirtD}" stroke-width="1.2"/><path d="M-9 -5 Q-11 3 -10 11" stroke="#FFFFFF" stroke-opacity=".22" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M9 -5 Q11 3 10 11" stroke="#000000" stroke-opacity=".16" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
   s += `<path d="M-13 -8 L-20 -3 L-19.5 5 L-13 5 Z M13 -8 L20 -3 L19.5 5 L13 5 Z" fill="${shirt}" stroke="${shirtD}" stroke-width="1.2" stroke-linejoin="round"/>`;
   s += `<rect x="-3.5" y="-14" width="7" height="6" fill="${skinD}"/><path d="M-4.5 -9.6 L0 -4.5 L4.5 -9.6 Z" fill="${skinD}"/>`;
   s += `<circle cx="-12.6" cy="-25" r="3" fill="${skinD}"/><circle cx="12.6" cy="-25" r="3" fill="${skinD}"/>`;
-  s += `<ellipse cx="0" cy="-26" rx="12.5" ry="13.5" fill="${skin}"/>`;
+  s += `<ellipse cx="0" cy="-26" rx="12.5" ry="13.5" fill="${skin}"/><path d="M9 -31 Q13 -25 11 -17" stroke="${skinD}" stroke-width="2" fill="none" opacity=".55" stroke-linecap="round"/>`;
   if (p.style === 'short') s += `<path d="M-13 -24 C-15.5 -43 15.5 -43 13 -24 C11 -32 6 -35 -1 -33 C-6 -35 -11 -31 -13 -24 Z" fill="${hair}"/>`;
   else if (p.style === 'long') s += `<path d="M-13.8 -20 C-17 -45 17 -45 13.8 -20 C12.5 -30 8 -34 3 -35.5 C-2 -31 -8 -31 -13.8 -20 Z" fill="${hair}"/>`;
   else if (p.style === 'curly') s += `<g fill="${hair}">` + [[-11, -34, 6], [-4, -39, 6.5], [4, -39, 6.5], [11, -34, 6], [-14, -27, 4.5], [14, -27, 4.5], [0, -35, 6]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join('') + `</g>`;
@@ -914,7 +915,7 @@ function famSVG(p, sc = 1) {
   if (p.glasses) s += `<g stroke="#17132B" stroke-width="2"><circle cx="-5.3" cy="-25.5" r="4.7" fill="rgba(255,255,255,.2)"/><circle cx="5.3" cy="-25.5" r="4.7" fill="rgba(255,255,255,.2)"/><path d="M-.7 -26 h1.4 M-10 -26.6 L-12.6 -27.6 M10 -26.6 L12.6 -27.6" fill="none"/></g>`;
   if (p.flower) s += `<g transform="translate(9 -37)"><g fill="#F06C8E">${[0, 72, 144, 216, 288].map(r => `<ellipse cx="0" cy="-3.2" rx="2.6" ry="3.4" transform="rotate(${r})"/>`).join('')}</g><circle r="1.8" fill="#FFC27A"/></g>`;
   if (p.party) s += `<path d="M-6 -38 L0 -56 L6 -38 Z" fill="${p.party}" stroke="#17122E" stroke-width=".8"/><circle cx="0" cy="-56" r="2.2" fill="#FFC27A"/>`;
-  return `<g transform="translate(0 34) scale(${k}) translate(0 -34)">${s}</g>`;
+  return `<g transform="translate(0 34) scale(${k}) translate(0 -34)"><ellipse cx="0" cy="34" rx="${kid ? 12 : 15}" ry="3" fill="#0B0820" opacity=".38"/>${s}</g>`;
 }
 
 
@@ -940,6 +941,29 @@ const PROF = {
 };
 // any job a student might want to be (for «Quiero ser…»)
 const DREAM_JOBS = new Set(Object.values(PROF).flat().concat(['artista', 'músico', 'música', 'periodista', 'piloto', 'dentista', 'abogado', 'abogada', 'actor', 'actriz', 'científico', 'científica', 'programador', 'programadora', 'futbolista', 'cantante', 'arquitecto', 'arquitecta', 'fotógrafo', 'fotógrafa', 'carpintero', 'carpintera', 'electricista', 'peluquero', 'peluquera', 'granjero', 'granjera', 'escritor', 'escritora', 'diseñador', 'diseñadora', 'astronauta', 'jugador', 'jugadora', 'deportista', 'chef', 'soldado', 'contador', 'contadora', 'farmacéutico', 'farmacéutica', 'mecánico', 'maestro', 'maestra', 'doctor', 'doctora', 'empresario', 'empresaria', 'youtuber', 'streamer', 'veterinario', 'veterinaria', 'psicólogo', 'psicóloga', 'policía', 'bombero', 'bombera']).map(keyOf));
+/* ---------- drawn gift icons for La fiesta (replace the emoji). viewBox -20 -20 40 40, light from the top left. ---------- */
+const GIFT_SH = '<ellipse cx="1" cy="17" rx="14" ry="2" fill="#000" opacity=".25"/>';
+const GIFT_ICON = {
+  regalo: GIFT_SH + '<rect x="-14" y="-4" width="28" height="20" rx="2" fill="#E86F9A"/><rect x="7" y="-4" width="7" height="20" fill="#000" opacity=".15"/><rect x="-16" y="-10" width="32" height="8" rx="2" fill="#F08AB0"/><rect x="-3" y="-10" width="6" height="26" fill="#FFC27A"/><path d="M0 -10 c-10 -10 -16 -2 -8 0 M0 -10 c10 -10 16 -2 8 0" stroke="#FFC27A" stroke-width="3" fill="none"/><rect x="-14" y="-9" width="10" height="2" rx="1" fill="#fff" opacity=".4"/>',
+  leer: GIFT_SH + '<path d="M-16 -10 q8 -4 16 0 v24 q-8 -4 -16 0 z" fill="#3A7BD5"/><path d="M0 -10 q8 -4 16 0 v24 q-8 -4 -16 0 z" fill="#2A5FB0"/><path d="M-13 -6 q6 -3 11 0 M-13 -1 q6 -3 11 0 M-13 4 q6 -3 11 0 M3 -6 q6 -3 11 0 M3 -1 q6 -3 11 0" stroke="#fff" stroke-opacity=".7" stroke-width="1.4" fill="none"/>',
+  nadar: GIFT_SH + '<g transform="translate(0 9)"><path d="M-17 0 h34" stroke="#2A2438" stroke-width="3"/><ellipse cx="-8" cy="0" rx="7.5" ry="6" fill="#5FC9E8" stroke="#2A5FB0" stroke-width="2.5"/><ellipse cx="8" cy="0" rx="7.5" ry="6" fill="#5FC9E8" stroke="#2A5FB0" stroke-width="2.5"/><path d="M-11 -3 l3 -2 M5 -3 l3 -2" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></g>',
+  cocinar: GIFT_SH + '<rect x="-14" y="-14" width="26" height="30" rx="2" fill="#F2C230"/><rect x="8" y="-14" width="4" height="30" fill="#000" opacity=".15"/><rect x="-14" y="-14" width="4" height="30" fill="#C99A1E"/><ellipse cx="2" cy="0" rx="7" ry="2.4" fill="#F4F1EA"/><path d="M-5 0 q7 10 14 0 z" fill="#9AA0AE"/><path d="M-1 -8 q-2 -3 0 -5 M3 -8 q-2 -3 0 -5" stroke="#fff" stroke-width="1.2" fill="none"/>',
+  dibujar: GIFT_SH + [['#E8505B', -10], ['#F2C230', -4], ['#2FAE6A', 2], ['#3A7BD5', 8]].map(([c, x]) => `<rect x="${x}" y="-12" width="5" height="22" fill="${c}"/><path d="M${x} 10 l2.5 6 l2.5 -6 z" fill="#F2D9A0"/><path d="M${x + 1.6} 14 l.9 2 l.9 -2 z" fill="${c}"/><rect x="${x + 3.6}" y="-12" width="1.4" height="22" fill="#000" opacity=".2"/>`).join(''),
+  bailar: GIFT_SH + '<rect x="-16" y="-12" width="32" height="22" rx="3" fill="#F4F1EA" stroke="#E8505B" stroke-width="2"/><path d="M-8 6 v-10 l10 -3 v10" stroke="#E8505B" stroke-width="2" fill="none"/><circle cx="-10" cy="6" r="2.6" fill="#E8505B"/><circle cx="0" cy="3" r="2.6" fill="#E8505B"/><text x="8" y="4" font-size="4.6" font-weight="800" fill="#2A2438" font-family="Manrope, sans-serif" text-anchor="middle">SALSA</text>',
+  cantar: GIFT_SH + '<rect x="-3" y="-2" width="6" height="18" rx="2.5" fill="#2A2438"/><rect x="0" y="-2" width="3" height="18" fill="#000" opacity=".3"/><circle cx="0" cy="-8" r="8" fill="#9AA5AE"/><path d="M-6 -11 h12 M-7 -7 h14 M-6 -3 h12" stroke="#5E6B7A" stroke-width="1"/><ellipse cx="-3" cy="-11" rx="2.5" ry="1.8" fill="#fff" opacity=".6"/>',
+  'jugar al fútbol': GIFT_SH + '<circle cx="0" cy="0" r="14" fill="#fff" stroke="#2A2438" stroke-width="1.6"/><path d="M0 -5 l4.8 3.5 l-1.8 5.6 h-6 l-1.8 -5.6 z" fill="#2A2438"/><path d="M0 -5 v-8 M4.8 -1.5 l7.6 -2.5 M3 4.1 l4.6 6.5 M-3 4.1 l-4.6 6.5 M-4.8 -1.5 l-7.6 -2.5" stroke="#2A2438" stroke-width="1.4"/><path d="M5 -12 a14 14 0 0 1 4 22" stroke="#000" stroke-opacity=".12" stroke-width="4" fill="none"/>',
+  'jugar videojuegos': GIFT_SH + '<path d="M-16 4 q-2 -12 8 -12 h16 q10 0 8 12 q-1 8 -7 6 l-5 -4 h-8 l-5 4 q-6 2 -7 -6 z" fill="#5E6B7A"/><path d="M-10 -2 v6 M-13 1 h6" stroke="#F4F1EA" stroke-width="2"/><circle cx="9" cy="-1" r="2" fill="#E8505B"/><circle cx="13" cy="3" r="2" fill="#5FE0C8"/><path d="M-12 -6 h20" stroke="#fff" stroke-opacity=".3" stroke-width="1.6" stroke-linecap="round"/>',
+  'tocar la guitarra': GIFT_SH + '<rect x="-14" y="-14" width="26" height="30" rx="2" fill="#8B5CC7"/><rect x="8" y="-14" width="4" height="30" fill="#000" opacity=".15"/><path d="M-6 -6 v14 M-6 -6 l10 -3 v14" stroke="#F4F1EA" stroke-width="1.8" fill="none"/><circle cx="-8" cy="8" r="2.4" fill="#F4F1EA"/><circle cx="2" cy="5" r="2.4" fill="#F4F1EA"/>',
+  'ver películas': GIFT_SH + '<rect x="-15" y="-8" width="30" height="22" rx="2" fill="#2A2438"/><path d="M-15 -8 l30 -6 v6" fill="#F4F1EA" stroke="#2A2438" stroke-width="1.6"/><path d="M-8 -9.4 l4 5 M0 -11 l4 5 M8 -12.6 l4 5" stroke="#2A2438" stroke-width="2"/><path d="M-11 -2 h12 M-11 3 h18 M-11 8 h8" stroke="#F4F1EA" stroke-opacity=".7" stroke-width="1.4"/>',
+  'escuchar música': GIFT_SH + '<path d="M-13 6 v-4 a13 13 0 0 1 26 0 v4" stroke="#2A2438" stroke-width="3" fill="none"/><rect x="-16" y="2" width="8" height="12" rx="3" fill="#E8505B"/><rect x="8" y="2" width="8" height="12" rx="3" fill="#E8505B"/><rect x="13" y="2" width="3" height="12" rx="1.5" fill="#000" opacity=".2"/><rect x="-14" y="4" width="2" height="7" rx="1" fill="#fff" opacity=".4"/>',
+  'sacar fotos': GIFT_SH + '<rect x="-16" y="-8" width="32" height="22" rx="4" fill="#3A4450"/><rect x="-7" y="-12" width="10" height="5" rx="1.5" fill="#3A4450"/><circle cx="0" cy="3" r="8" fill="#9EC6D8" stroke="#F4F1EA" stroke-width="2"/><circle cx="-2" cy="1" r="2.4" fill="#fff" opacity=".7"/><rect x="9" y="-5" width="4" height="3" rx="1" fill="#F2C230"/>',
+  correr: GIFT_SH + '<path d="M-16 12 v-8 q4 -10 12 -6 l10 8 h8 q4 1 2 6 z" fill="#E8505B"/><path d="M-16 12 h32" stroke="#F4F1EA" stroke-width="3"/><path d="M-6 0 l3 3 M-2 -2 l3 3" stroke="#F4F1EA" stroke-width="1.4"/><path d="M-12 -2 q4 -6 8 -4" stroke="#fff" stroke-opacity=".4" stroke-width="1.6" fill="none"/>',
+  'montar en bicicleta': GIFT_SH + '<path d="M-14 6 q0 -16 14 -16 q14 0 14 16 z" fill="#3A7BD5"/><path d="M0 -10 q8 0 12 10" stroke="#fff" stroke-opacity=".35" stroke-width="2" fill="none"/><path d="M-6 -9 v14 M3 -10 v15" stroke="#2A5FB0" stroke-width="1.6"/><rect x="-16" y="4" width="32" height="4" rx="2" fill="#2A2438"/>',
+  patinar: GIFT_SH + '<path d="M-12 6 v-18 h10 v10 l12 4 q4 2 2 6 z" fill="#E86F9A"/><rect x="-14" y="6" width="28" height="3" rx="1.5" fill="#F4F1EA"/><circle cx="-8" cy="13" r="3" fill="#5FE0C8"/><circle cx="8" cy="13" r="3" fill="#5FE0C8"/><path d="M-10 -10 v12" stroke="#fff" stroke-opacity=".4" stroke-width="1.6"/>',
+  'ir de compras': GIFT_SH + '<path d="M-12 -6 h24 l-2 22 h-20 z" fill="#F2C230"/><path d="M6 -6 h6 l-2 22 h-5 z" fill="#000" opacity=".15"/><path d="M-5 -6 q0 -8 5 -8 q5 0 5 8" stroke="#B5902A" stroke-width="2" fill="none"/><rect x="-7" y="2" width="14" height="8" rx="1.5" fill="#F4F1EA"/><path d="M-4 6 h8" stroke="#E8505B" stroke-width="1.6"/>'
+};
+const giftIconSVG = k => `<svg viewBox="-20 -20 40 40" width="40" height="40" aria-hidden="true">${GIFT_ICON[k] || GIFT_ICON.regalo}</svg>`;
+
 const ACTS = {
   leer: ['📚', 'un libro'], nadar: ['🥽', 'unas gafas para nadar'], cocinar: ['🍳', 'un libro de recetas'], dibujar: ['✏️', 'unos lápices de colores'],
   bailar: ['💃', 'una clase de salsa'], cantar: ['🎤', 'un micrófono de karaoke'], 'jugar al fútbol': ['⚽', 'un balón de fútbol'],
@@ -1072,7 +1096,7 @@ function drawPatio() {
   const boxes = [[566, 262, 30, 34, '#E8505B', '#F2C230'], [600, 272, 26, 24, '#3A6FD8', '#FFF6DD'], [630, 256, 32, 40, '#2F9E57', '#E86F9A'], [586, 240, 22, 22, '#B57EDC', '#5FE0C8']];
   (S.gifts || []).forEach((gf, i) => {
     const [x, y, w, h, c, r] = boxes[i];
-    if (gf.opened) s += `<text x="${x + w / 2}" y="${y + h - 8}" class="ico" font-size="24" text-anchor="middle" dominant-baseline="central">${ACTS[gf.act][0]}</text>`;
+    if (gf.opened) s += GIFT_ICON[gf.act] ? `<g transform="translate(${x + w / 2} ${y + h - 10}) scale(.62)">${GIFT_ICON[gf.act]}</g>` : `<text x="${x + w / 2}" y="${y + h - 8}" class="ico" font-size="24" text-anchor="middle" dominant-baseline="central">${ACTS[gf.act][0]}</text>`;
     else s += `<g class="${S.gi === i && S.phase === 'gifts' ? 'curgift' : ''}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${c}"/><path d="M${x + w / 2} ${y} v${h} M${x} ${y + h / 2} h${w}" stroke="${r}" stroke-width="4"/><path d="M${x + w / 2} ${y} q-8 -10 -12 -2 q4 6 12 2 q8 -10 12 -2 q-4 6 -12 2" fill="${r}"/></g>`;
   });
   s += `</g>`;
@@ -1327,7 +1351,7 @@ function showGift() {
   const txt = `Este regalo es de alguien que ${factText(gf.facts[0], gf.giver)} y ${factText(gf.facts[1], gf.giver)}.`;
   gf.text = txt;
   $('tagText').textContent = `«${txt}»`;
-  $('tagIco').textContent = '🎁';
+  $('tagIco').innerHTML = giftIconSVG('regalo');
   $('guestBtns').innerHTML = S.guests.map(g => `<button type="button" class="choice gb" data-id="${g.id}">${g.name}</button>`).join('');
   $('guestBtns').querySelectorAll('.gb').forEach(b => b.addEventListener('click', () => guessGiver(S.guests.find(g => g.id === b.dataset.id), b)));
   $('task').textContent = `Regalo ${S.gi + 1} de 4. Read the card. Check your notes, or ask more questions, then choose who brought it.`;
@@ -1348,7 +1372,7 @@ async function guessGiver(g, b) {
   if (gf.tries === 0) S.giftFirst++;
   gf.opened = true; b.classList.add('ok');
   const [ico, item] = ACTS[gf.act];
-  $('tagIco').textContent = ico;
+  $('tagIco').innerHTML = GIFT_ICON[gf.act] ? giftIconSVG(gf.act) : ico;
   fb('ok', `¡Sí! Es de ${g.name}.`);
   SFX.play('star', { force: true });
   drawPatio(); renderSteps();

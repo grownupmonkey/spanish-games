@@ -845,9 +845,9 @@ function personSVG({ skin = '#c98b5e', hair = '#3b2419', hairStyle = 'short', gl
   const topHair = hairStyle === 'bald' ? `<path d="M-14 -30 q-2 -4 2 -6 M14 -30 q2 -4 -2 -6" stroke="${hair}" stroke-width="4" fill="none"/>`
     : hairStyle === 'curly' ? `<g fill="${hair}"><circle cx="-10" cy="-38" r="7"/><circle cx="0" cy="-41" r="7"/><circle cx="10" cy="-38" r="7"/><circle cx="-14" cy="-30" r="5"/><circle cx="14" cy="-30" r="5"/></g>`
     : `<path d="M-15 -28 a15 14 0 0 1 30 0 q-6 -6 -15 -6 q-9 0 -15 6 z" fill="${hair}"/>`;
-  return `<g transform="scale(${scale})">${longHair}`
-    + `<rect x="-20" y="-6" width="40" height="34" rx="12" fill="${shirt}" stroke="rgba(0,0,0,.2)"/>`
-    + `<circle cx="0" cy="-26" r="15" fill="${skin}"/>${topHair}`
+  return `<g transform="scale(${scale})"><ellipse cx="1" cy="29" rx="20" ry="3.5" fill="#0B0820" opacity=".35"/>${longHair}`
+    + `<rect x="-20" y="-6" width="40" height="34" rx="12" fill="${shirt}" stroke="rgba(0,0,0,.2)"/><path d="M10 -5 q10 2 10 14 v8 q0 10 -10 10 z" fill="#000" opacity=".15"/><path d="M-13 -2 q-3 8 -2 18" stroke="#fff" stroke-opacity=".25" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
+    + `<circle cx="0" cy="-26" r="15" fill="${skin}"/><path d="M10 -36 q6 10 1 20" stroke="#000" stroke-opacity=".14" stroke-width="3" fill="none" stroke-linecap="round"/>${topHair}`
     + (beard ? `<path d="M-11 -22 q11 16 22 0 q-2 10 -11 11 q-9 -1 -11 -11z" fill="${hair}"/>` : '')
     + `<circle cx="-5" cy="-26" r="1.9" fill="#1d1410"/><circle cx="5" cy="-26" r="1.9" fill="#1d1410"/>`
     + (glasses ? `<g fill="none" stroke="#15203b" stroke-width="1.6"><circle cx="-5.5" cy="-26" r="4.6"/><circle cx="5.5" cy="-26" r="4.6"/><path d="M-1 -26 h2"/></g>` : '')
@@ -926,6 +926,18 @@ function planDay() {
    ===================================================================== */
 const DOOR_X = { a11: 6, a12: 16, lab: 26, a14: 36, musica: 46, dir: 56, gym: 11, a15: 26, arte: 36, cafe: 46, biblio: 56 };
 const DOOR_SIDE = { a11: 'N', a12: 'N', lab: 'N', a14: 'N', musica: 'N', dir: 'N', gym: 'S', a15: 'S', arte: 'S', cafe: 'S', biblio: 'S' };
+/* ---------- drawn room signs for Primer día (replace the emoji). viewBox -50 -50 100 100, light from the top left. ---------- */
+const PD_ICON = {
+  lab: '<ellipse cx="2" cy="40" rx="34" ry="4" fill="#000" opacity=".3"/><rect x="-26" y="30" width="52" height="8" rx="3" fill="#9AA5AE"/><rect x="-26" y="30" width="52" height="2.4" fill="#fff" opacity=".4"/><path d="M-6 30 q-16 -4 -14 -26 q2 -10 12 -14" stroke="#5E6B7A" stroke-width="7" fill="none" stroke-linecap="round"/><rect x="-4" y="-40" width="14" height="40" rx="4" transform="rotate(28 3 -20)" fill="#E3E9F1"/><rect x="5" y="-40" width="5" height="40" rx="2" transform="rotate(28 3 -20)" fill="#AEB6C6"/><rect x="-6" y="-46" width="18" height="9" rx="3" transform="rotate(28 3 -20)" fill="#3A7BD5"/><rect x="-14" y="10" width="34" height="5" rx="2" fill="#5E6B7A"/><circle cx="-4" cy="2" r="3" fill="#5FE0C8"/>',
+  musica: '<path d="M-14 22 V-24 L26 -34 V14" stroke="#FFC27A" stroke-width="6" fill="none" stroke-linejoin="round"/><path d="M-14 -24 L26 -34 V-22 L-14 -12 Z" fill="#FFC27A"/><ellipse cx="-22" cy="24" rx="11" ry="8.5" transform="rotate(-20 -22 24)" fill="#FFC27A"/><ellipse cx="18" cy="16" rx="11" ry="8.5" transform="rotate(-20 18 16)" fill="#FFC27A"/><ellipse cx="-25" cy="21" rx="3.5" ry="2" transform="rotate(-20 -25 21)" fill="#fff" opacity=".55"/><ellipse cx="15" cy="13" rx="3.5" ry="2" transform="rotate(-20 15 13)" fill="#fff" opacity=".55"/><path d="M-6 -22 L20 -29" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>',
+  dir: '<ellipse cx="2" cy="40" rx="34" ry="4" fill="#000" opacity=".3"/><path d="M-34 -18 h22 l6 7 h40 v47 h-68 z" fill="#C98B2A"/><rect x="-26" y="-30" width="44" height="34" rx="2" fill="#F4F1EA" transform="rotate(-6)"/><path d="M-20 -20 h30 M-20 -12 h30 M-20 -4 h22" stroke="#9AA0AE" stroke-width="2.4" transform="rotate(-6)"/><path d="M-34 -6 h68 v42 h-68 z" fill="#F2C230"/><path d="M-34 -6 h68 v5 h-68 z" fill="#fff" opacity=".35"/><path d="M24 -6 h10 v42 h-10 z" fill="#000" opacity=".15"/><rect x="-8" y="10" width="16" height="6" rx="3" fill="#C98B2A"/>',
+  gym: '<ellipse cx="3" cy="42" rx="26" ry="4" fill="#000" opacity=".3"/><circle cx="0" cy="0" r="36" fill="#F08A3C"/><path d="M14 -32 a36 36 0 0 1 0 64 a40 40 0 0 0 0 -64z" fill="#000" opacity=".16"/><path d="M-36 0 h72 M0 -36 v72 M-25 -26 q14 26 0 52 M25 -26 q-14 26 0 52" stroke="#3A1E0C" stroke-width="3" fill="none"/><ellipse cx="-14" cy="-18" rx="9" ry="6" transform="rotate(-35 -14 -18)" fill="#fff" opacity=".35"/>',
+  arte: '<ellipse cx="2" cy="40" rx="34" ry="4" fill="#000" opacity=".3"/><path d="M0 -34 c26 0 40 16 38 32 c-2 14 -14 10 -20 14 c-6 4 2 12 -4 20 c-8 8 -24 4 -34 -4 c-14 -10 -20 -28 -10 -44 c6 -10 16 -18 30 -18z" fill="#E7C9A0"/><path d="M30 -18 c6 10 8 24 0 30 c-6 4 -14 4 -16 10" stroke="#000" stroke-opacity=".12" stroke-width="5" fill="none"/><circle cx="-14" cy="-14" r="6" fill="#E8505B"/><circle cx="4" cy="-20" r="6" fill="#F2C230"/><circle cx="20" cy="-8" r="6" fill="#3A7BD5"/><circle cx="-20" cy="6" r="6" fill="#2FAE6A"/><circle cx="-4" cy="18" r="6" fill="#8B5CC7"/><path d="M8 40 L40 -6" stroke="#8A5A36" stroke-width="5" stroke-linecap="round"/><path d="M38 -4 l8 -14 l-2 16 z" fill="#E8505B"/>',
+  cafe: '<ellipse cx="2" cy="38" rx="36" ry="4" fill="#000" opacity=".3"/><path d="M-36 4 L0 -22 L36 4 Z" fill="#E0A848"/><path d="M-36 4 L0 -22 L0 4 Z" fill="#fff" opacity=".18"/><path d="M-38 6 h76 l-4 6 h-68 z" fill="#3FA34D"/><path d="M-36 12 h72 v8 h-72 z" fill="#E8453C"/><path d="M-36 20 h72 v6 h-72 z" fill="#F2C230"/><path d="M-36 26 h72 l-6 10 h-60 z" fill="#E0A848"/><path d="M20 26 h16 l-6 10 h-10 z" fill="#000" opacity=".15"/>',
+  biblio: '<ellipse cx="2" cy="40" rx="36" ry="4" fill="#000" opacity=".3"/>' + [['#E8505B', -34, 12, 70], ['#3A7BD5', -20, 12, 62], ['#2FAE6A', -6, 14, 72], ['#F2C230', 10, 12, 58]].map(([c, x, w, h]) => `<rect x="${x}" y="${38 - h}" width="${w}" height="${h}" rx="2" fill="${c}"/><rect x="${x + w - 4}" y="${38 - h}" width="4" height="${h}" fill="#000" opacity=".18"/><rect x="${x + 2}" y="${42 - h}" width="2.4" height="${h - 8}" fill="#fff" opacity=".35"/><path d="M${x} ${46 - h} h${w} M${x} ${30} h${w}" stroke="#fff" stroke-opacity=".6" stroke-width="1.6"/>`).join('') + '<rect x="24" y="-26" width="12" height="64" rx="2" transform="rotate(14 30 38)" fill="#8B5CC7"/>'
+};
+function pdIconSVG(id) { return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100" width="200" height="200">${PD_ICON[id]}</svg>`; }
+
 const School3D = (() => {
   const host = $('viewport3d');
   const noop = () => {};
@@ -994,6 +1006,7 @@ const School3D = (() => {
       g.strokeStyle = '#FFC27A'; g.lineWidth = 8; g.strokeRect(6, 6, W - 12, Hh - 12);
       g.textAlign = 'center'; g.textBaseline = 'middle';
       if (r.num) { g.fillStyle = '#CFC6EC'; g.font = '700 30px Manrope, Segoe UI, sans-serif'; g.fillText('AULA', W / 2, 40); g.fillStyle = '#FFFFFF'; g.font = '800 84px Manrope, Segoe UI, sans-serif'; g.fillText(r.num, W / 2, 104); }
+      else if (PD_ICON[r.id]) { const img = new Image(); img.onload = () => { g.drawImage(img, W / 2 - 60, Hh / 2 - 60, 120, 120); sg.needsUpdate = true; }; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(pdIconSVG(r.id)); }
       else { g.font = `96px ${EMOJI}`; g.fillText(r.ico, W / 2, Hh / 2 + 6); }
     });
     const sign = new T.Mesh(new T.PlaneGeometry(1.1, 0.69), new T.MeshBasicMaterial({ map: sg }));
@@ -1184,7 +1197,7 @@ function drawSchool() {
     const cx = r.x + r.w / 2;
     s += `<g class="room${S.hl === r.id ? ' hl' : ''}" data-room="${r.id}" role="button" tabindex="0" aria-label="${r.name}"><rect class="r" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="6"/>`
       + (r.num ? `<text x="${cx}" y="${r.y + r.h / 2 - 8}" class="rnum" text-anchor="middle" dominant-baseline="central">${r.num}</text><text x="${cx}" y="${r.y + r.h / 2 + 18}" class="rname" text-anchor="middle">Aula</text>`
-        : `<text x="${cx}" y="${r.y + r.h / 2 - 10}" class="ico" font-size="32" text-anchor="middle" dominant-baseline="central">${r.ico}</text>`
+        : (PD_ICON[r.id] ? `<g transform="translate(${cx} ${r.y + r.h / 2 - 12}) scale(.4)">${PD_ICON[r.id]}</g>` : `<text x="${cx}" y="${r.y + r.h / 2 - 10}" class="ico" font-size="32" text-anchor="middle" dominant-baseline="central">${r.ico}</text>`)
           + r.name.replace(/^(el|la) /, '').split(/ (?=de )/).map((l, k) => `<text x="${cx}" y="${r.y + r.h / 2 + 22 + k * 14}" class="rname roomlbl2" text-anchor="middle">${k ? l : capFirst(l)}</text>`).join(''))
       + `<rect x="${cx - 14}" y="${r.y < 190 ? r.y + r.h - 4 : r.y - 2}" width="28" height="6" fill="var(--wood)"/></g>`;
   }

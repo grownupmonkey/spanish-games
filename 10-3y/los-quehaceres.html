@@ -794,9 +794,9 @@ function personSVG({ skin = '#c98b5e', hair = '#3b2419', hairStyle = 'short', gl
   const topHair = hairStyle === 'bald' ? `<path d="M-14 -30 q-2 -4 2 -6 M14 -30 q2 -4 -2 -6" stroke="${hair}" stroke-width="4" fill="none"/>`
     : hairStyle === 'curly' ? `<g fill="${hair}"><circle cx="-10" cy="-38" r="7"/><circle cx="0" cy="-41" r="7"/><circle cx="10" cy="-38" r="7"/><circle cx="-14" cy="-30" r="5"/><circle cx="14" cy="-30" r="5"/></g>`
     : `<path d="M-15 -28 a15 14 0 0 1 30 0 q-6 -6 -15 -6 q-9 0 -15 6 z" fill="${hair}"/>`;
-  return `<g transform="scale(${scale})">${longHair}`
-    + `<rect x="-20" y="-6" width="40" height="34" rx="12" fill="${shirt}" stroke="rgba(0,0,0,.2)"/>`
-    + `<circle cx="0" cy="-26" r="15" fill="${skin}"/>${topHair}`
+  return `<g transform="scale(${scale})"><ellipse cx="1" cy="29" rx="20" ry="3.5" fill="#0B0820" opacity=".35"/>${longHair}`
+    + `<rect x="-20" y="-6" width="40" height="34" rx="12" fill="${shirt}" stroke="rgba(0,0,0,.2)"/><path d="M10 -5 q10 2 10 14 v8 q0 10 -10 10 z" fill="#000" opacity=".15"/><path d="M-13 -2 q-3 8 -2 18" stroke="#fff" stroke-opacity=".25" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
+    + `<circle cx="0" cy="-26" r="15" fill="${skin}"/><path d="M10 -36 q6 10 1 20" stroke="#000" stroke-opacity=".14" stroke-width="3" fill="none" stroke-linecap="round"/>${topHair}`
     + (beard ? `<path d="M-11 -22 q11 16 22 0 q-2 10 -11 11 q-9 -1 -11 -11z" fill="${hair}"/>` : '')
     + `<circle cx="-5" cy="-26" r="1.9" fill="#1d1410"/><circle cx="5" cy="-26" r="1.9" fill="#1d1410"/>`
     + (glasses ? `<g fill="none" stroke="#15203b" stroke-width="1.6"><circle cx="-5.5" cy="-26" r="4.6"/><circle cx="5.5" cy="-26" r="4.6"/><path d="M-1 -26 h2"/></g>` : '')
@@ -850,14 +850,156 @@ const house = $('house');
 const objPos = id => { const o = OBJECTS[id], r = ROOMS[o.room]; return [r.x + o.dx, r.y + o.dy]; };
 const standPos = id => { const o = OBJECTS[id], r = ROOMS[o.room]; return [r.x + o.dx - (o.dx > 60 ? 42 : -42), r.y + r.h - 36]; };
 
+/* ---------- drawn house for Los quehaceres (replaces the emoji furniture) ---------- */
+const QH = { WL: '#C9935E', WM: '#8A5A36', WD: '#5E3B24', FRAME: '#3A2C52' };
+const QH_WALLS = { dormitorio: ['#F6DCE8', '#E6B8CF'], bano: ['#D9F1F3', '#A9D8DE'], sala: ['#FCE5C6', '#F0C793'], comedor: ['#FFEBCD', '#F2CB96'], cocina: ['#E5F2DE', '#BFDBB1'] };
+const qhFloorY = id => ROOMS[id].y + ROOMS[id].h - 14;
+const qhShadow = (x, y, rx, op = .32) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${Math.max(2, rx * .12)}" fill="#000" opacity="${op}" filter="url(#qhsoft)"/>`;
+
+function qhRoom(id) {
+  const { x, y, w, h } = ROOMS[id], fy = qhFloorY(id);
+  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#qhwall-${id})"/>`;
+  if (id === 'dormitorio') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#qhstripes)"/>`;
+  if (id === 'bano' || id === 'cocina') {
+    const ty = y + (id === 'bano' ? 70 : 84);
+    s += Array.from({ length: Math.floor((fy - ty) / 12) + 1 }, (_, i) => `<path d="M${x} ${ty + i * 12} h${w}" stroke="#fff" stroke-opacity=".45"/>`).join('')
+      + Array.from({ length: Math.floor(w / 12) }, (_, i) => `<path d="M${x + 6 + i * 12} ${ty} V${fy}" stroke="#fff" stroke-opacity=".45"/>`).join('');
+  }
+  s += `<circle cx="${x + w / 2}" cy="${y + 10}" r="${Math.min(w, 180) * .55}" fill="url(#qhlamp)"/><path d="M${x + w / 2 - 8} ${y} h16 l-3 6 h-10 z" fill="#FFE7A8"/>`;
+  s += `<rect x="${x}" y="${fy}" width="${w}" height="14" fill="${QH.WL}"/>`
+    + Array.from({ length: Math.floor(w / 26) }, (_, i) => `<path d="M${x + 13 + i * 26 + (i % 2) * 6} ${fy + 2} v12" stroke="${QH.WM}" stroke-width="1"/>`).join('')
+    + `<rect x="${x}" y="${fy - 3}" width="${w}" height="3.5" fill="${QH.WD}"/>`;
+  // decoration that is not clickable
+  if (id === 'dormitorio') {
+    s += `<rect x="${x + 14}" y="${y + 28}" width="44" height="46" rx="3" fill="#2B2557" stroke="${QH.WM}" stroke-width="4"/><path d="M${x + 36} ${y + 28} v46 M${x + 14} ${y + 51} h44" stroke="${QH.WM}" stroke-width="2.5"/><circle cx="${x + 46}" cy="${y + 39}" r="5" fill="#FFF1C9"/><circle cx="${x + 48}" cy="${y + 37.5}" r="4.4" fill="#2B2557"/><circle cx="${x + 24}" cy="${y + 36}" r="1" fill="#fff"/><circle cx="${x + 27}" cy="${y + 62}" r=".9" fill="#fff"/>`
+      + `<path d="M${x + 8} ${y + 24} q6 30 2 56 h8 q-6 -28 -2 -56 z M${x + 64} ${y + 24} q-6 30 -2 56 h-8 q6 -28 2 -56 z" fill="#E86F9A" opacity=".9"/><path d="M${x + 6} ${y + 24} h60" stroke="${QH.WD}" stroke-width="2.5" stroke-linecap="round"/>`;
+  } else if (id === 'bano') {
+    s += `<rect x="${x + 104}" y="${y + 30}" width="30" height="36" rx="12" fill="#BFE3F0" stroke="#C9A25E" stroke-width="3"/><path d="M${x + 112} ${y + 42} l8 -8 M${x + 112} ${y + 52} l14 -14" stroke="#fff" stroke-width="2" opacity=".7"/>`
+      + `<path d="M${x + 24} ${y + 30} h66" stroke="#B9C3C9" stroke-width="2.5" stroke-linecap="round"/><path d="M${x + 76} ${y + 31} q-4 26 2 52 h12 v-52 z" fill="#5FC9B8" opacity=".55"/>`;
+  } else if (id === 'sala') {
+    s += `<rect x="${x + 96}" y="${y + 34}" width="46" height="30" fill="#FFF7E8" stroke="#C98F3B" stroke-width="3"/><path d="M${x + 99} ${y + 61} l12 -12 l8 7 l9 -10 l11 15 z" fill="#E7896A"/><circle cx="${x + 131}" cy="${y + 43}" r="4" fill="#FFC27A"/>`
+      + `<ellipse cx="${x + 92}" cy="${fy + 1}" rx="54" ry="5" fill="#B5503A" opacity=".55"/>`;
+  } else if (id === 'comedor') {
+    s += `<path d="M${x + 80} ${y} v26" stroke="#3A2A20" stroke-width="1.5"/><path d="M${x + 66} ${y + 38} q14 -16 28 0 z" fill="#5FE0C8"/><circle cx="${x + 80}" cy="${y + 40}" r="3" fill="#FFF4C8"/>`
+      + ['#E86F9A', '#F2C230', '#5FE0C8', '#F08A3C', '#8B5CC7', '#E86F9A'].map((c, i) => `<path d="M${x + 10 + i * 22} ${y + 20} h16 l-8 11 z" fill="${c}"/>`).join('')
+      + `<path d="M${x + 6} ${y + 20} q${w / 2 - 6} 6 ${w - 12} 0" stroke="#5E3B24" stroke-width="1" fill="none"/>`;
+  } else if (id === 'cocina') {
+    s += `<rect x="${x + 60}" y="${y + 34}" width="76" height="5" fill="${QH.WM}"/>` + [[66, '#E8505B'], [80, '#F2C230'], [94, '#5FE0C8'], [112, '#F08A3C']].map(([dx, c]) => `<rect x="${x + dx}" y="${y + 22}" width="10" height="12" rx="2" fill="${c}"/><rect x="${x + dx}" y="${y + 20}" width="10" height="3" fill="#F4F1EA"/><rect x="${x + dx + 1.5}" y="${y + 24}" width="2" height="8" fill="#fff" opacity=".4"/>`).join('')
+      + qhShadow(x + 66, fy + 1, 16) + `<rect x="${x + 54}" y="${y + 50}" width="26" height="${fy - y - 50}" rx="4" fill="url(#qhmetal)" stroke="#9AA5AE"/><path d="M${x + 54} ${y + 82} h26" stroke="#9AA5AE"/><rect x="${x + 75}" y="${y + 60}" width="2" height="12" fill="#7D8699"/><rect x="${x + 75}" y="${y + 88}" width="2" height="12" fill="#7D8699"/><rect x="${x + 57}" y="${y + 53}" width="3" height="26" rx="1.5" fill="#fff" opacity=".7"/>`;
+  }
+  return s;
+}
+
+function qhGarden() {
+  const { x, y, w, h } = ROOMS.jardin, gy = y + h - 80;
+  let s = '';
+  for (let i = 0; i < 13; i++) { const px = x + 6 + i * 16; s += `<path d="M${px} ${gy + 10} V${gy - 30} l5 -6 l5 6 V${gy + 10} z" fill="#4A3B6B" stroke="#3A2E57"/>`; }
+  s += `<rect x="${x}" y="${gy - 18}" width="${w}" height="4" fill="#3A2E57"/>`;
+  s += `<path d="M${x} ${gy + 6} Q${x + w / 2} ${gy - 4} ${x + w} ${gy + 6} V${y + h} H${x} Z" fill="#2E5A47"/><path d="M${x} ${y + h - 14} H${x + w} V${y + h} H${x} Z" fill="#244A3B"/>`;
+  s += qhShadow(x + 162, gy + 8, 30, .35) + `<rect x="${x + 156}" y="${y + 120}" width="12" height="${gy - y - 112}" fill="#5A3A28"/><rect x="${x + 162}" y="${y + 120}" width="6" height="${gy - y - 112}" fill="#000" opacity=".2"/><circle cx="${x + 162}" cy="${y + 104}" r="34" fill="#245E45"/><circle cx="${x + 138}" cy="${y + 122}" r="22" fill="#2B6C50"/><circle cx="${x + 184}" cy="${y + 120}" r="22" fill="#2B6C50"/><circle cx="${x + 158}" cy="${y + 82}" r="20" fill="#2F7656"/><circle cx="${x + 150}" cy="${y + 80}" r="9" fill="#4E9A72" opacity=".6"/>`;
+  s += [[x + 150, y + 96], [x + 172, y + 112], [x + 144, y + 126], [x + 178, y + 90]].map(([a, b]) => `<circle cx="${a}" cy="${b}" r="3" fill="#FF8A5B"/><circle cx="${a - 1}" cy="${b - 1}" r="1" fill="#fff" opacity=".6"/>`).join('');
+  s += `<path d="M${x - 14} ${y + 26} Q${x + 70} ${y + 64} ${x + 152} ${y + 78}" stroke="#2A1F3D" stroke-width="1.2" fill="none"/>`
+    + Array.from({ length: 9 }, (_, i) => { const t = (i + .5) / 9, bx = (1 - t) * (1 - t) * (x - 14) + 2 * t * (1 - t) * (x + 70) + t * t * (x + 152), by = (1 - t) * (1 - t) * (y + 26) + 2 * t * (1 - t) * (y + 64) + t * t * (y + 78); return `<circle cx="${bx.toFixed(1)}" cy="${(by + 3).toFixed(1)}" r="6" fill="#FFC27A" opacity=".25"/><circle cx="${bx.toFixed(1)}" cy="${(by + 3).toFixed(1)}" r="2.6" fill="${['#FFC27A', '#FF8A5B', '#5FE0C8'][i % 3]}"/>`; }).join('');
+  s += [[x + 100, gy + 1, '#B57EDC'], [x + 116, gy + 2, '#E86F9A']].map(([a, b, c]) => `<path d="M${a} ${b + 10} v-10" stroke="#3E8A5E" stroke-width="1.5"/><circle cx="${a}" cy="${b}" r="3.5" fill="${c}"/>`).join('');
+  return s;
+}
+
+function choresHouseSVG() {
+  const W = HOUSE_W, H = HOUSE_H;
+  let s = `<defs><linearGradient id="qhsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140F2E"/><stop offset=".6" stop-color="#2E2160"/><stop offset="1" stop-color="#6A3E78"/></linearGradient>`
+    + `<radialGradient id="qhlamp"><stop offset="0" stop-color="#FFF4C8" stop-opacity=".6"/><stop offset=".5" stop-color="#FFE3A0" stop-opacity=".18"/><stop offset="1" stop-color="#FFE3A0" stop-opacity="0"/></radialGradient>`
+    + `<pattern id="qhstripes" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="6" height="14" fill="#fff" opacity=".13"/></pattern>`
+    + `<radialGradient id="qhmoon"><stop offset="0" stop-color="#FFF1C9" stop-opacity=".5"/><stop offset="1" stop-color="#FFF1C9" stop-opacity="0"/></radialGradient>`
+    + `<linearGradient id="qhmetal" x1="0" x2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#E4E9F1"/><stop offset="1" stop-color="#AEB6C6"/></linearGradient>`
+    + `<linearGradient id="qhwood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A06C46"/><stop offset="1" stop-color="#5E3B22"/></linearGradient>`
+    + `<linearGradient id="qhporc" x1="0" x2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#EEF1F3"/><stop offset="1" stop-color="#B9C6CC"/></linearGradient>`
+    + `<filter id="qhsoft" x="-30%" y="-200%" width="160%" height="500%"><feGaussianBlur stdDeviation="1.8"/></filter>`;
+  for (const [id, [a, b]] of Object.entries(QH_WALLS)) s += `<linearGradient id="qhwall-${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
+  s += `</defs><rect width="${W}" height="${H}" fill="url(#qhsky)"/>`;
+  s += [[40, 30], [120, 18], [190, 54], [330, 14], [460, 40], [560, 22], [700, 30], [600, 80], [80, 80], [520, 96], [700, 100], [250, 8]].map(([a, b], i) => `<circle cx="${a}" cy="${b}" r="${i % 3 ? 1.1 : 1.7}" fill="#FFF6DD" opacity="${i % 2 ? .6 : .9}"/>`).join('');
+  s += `<circle cx="650" cy="52" r="60" fill="url(#qhmoon)"/><circle cx="650" cy="52" r="20" fill="#FFF1C9"/><circle cx="643" cy="47" r="4" fill="#EBDDB0"/><circle cx="657" cy="60" r="2.6" fill="#EBDDB0"/>`;
+  s += `<path d="M0 400 Q120 372 260 392 T520 388 T${W} 384 V${H} H0 Z" fill="#1B2F33"/><rect x="0" y="410" width="${W}" height="${H - 410}" fill="#1E3A30"/><path d="M0 410 H${W}" stroke="#2E5A47" stroke-width="3"/>`;
+  s += `<rect x="408" y="44" width="26" height="60" fill="#6B3240"/><rect x="404" y="40" width="34" height="8" fill="#542633"/><rect x="424" y="48" width="10" height="56" fill="#000" opacity=".18"/>`;
+  s += `<polygon points="18,126 270,24 522,126" fill="#8E3B3F"/><polygon points="270,24 522,126 270,126" fill="#000" opacity=".12"/>`;
+  for (let yy = 44; yy < 126; yy += 13) { const hw = (yy - 24) / 102 * 252; s += `<path d="M${(270 - hw).toFixed(1)} ${yy} H${(270 + hw).toFixed(1)}" stroke="#6E2A33" stroke-width="2"/>`; }
+  s += `<path d="M14 128 L270 22 L526 128" stroke="#5E2230" stroke-width="7" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`;
+  s += `<circle cx="270" cy="88" r="15" fill="#FFD68A" stroke="${QH.WM}" stroke-width="4"/><path d="M270 73 v30 M255 88 h30" stroke="${QH.WM}" stroke-width="2.5"/>`;
+  s += qhGarden();
+  for (const id of ['dormitorio', 'bano', 'sala', 'comedor', 'cocina']) s += qhRoom(id);
+  s += `<rect x="36" y="256" width="468" height="8" fill="${QH.FRAME}"/><rect x="276" y="120" width="8" height="140" fill="${QH.FRAME}"/><rect x="196" y="260" width="8" height="150" fill="${QH.FRAME}"/><rect x="346" y="260" width="8" height="150" fill="${QH.FRAME}"/>`;
+  s += `<rect x="38" y="118" width="464" height="294" fill="none" stroke="${QH.FRAME}" stroke-width="8"/>`;
+  for (const [id, r] of Object.entries(ROOMS)) {
+    const t = r.name.split(' ')[1].toUpperCase(), lw = t.length * 8 + 16;
+    s += `<rect x="${r.x + 6}" y="${r.y + 6}" width="${lw}" height="18" rx="9" fill="#14102A" opacity=".72"/><text x="${r.x + 6 + lw / 2}" y="${r.y + 19}" text-anchor="middle" class="roomlbl" style="opacity:1">${t}</text>`;
+  }
+  return s;
+}
+
+/* Each prop: (x, y) is the object's anchor (the click target); fy is the floor line under it. */
+const QH_PROPS = {
+  cama: (x, y, fy) => qhShadow(x, fy, 50)
+    + `<rect x="${x - 50}" y="${y - 30}" width="10" height="${fy - y + 30}" rx="4" fill="url(#qhwood)"/><path d="M${x - 50} ${y - 26} q5 -8 10 0" fill="${QH.WM}"/>`
+    + `<rect x="${x - 40}" y="${y + 10}" width="88" height="10" fill="url(#qhwood)"/><rect x="${x + 42}" y="${y + 18}" width="6" height="${fy - y - 18}" fill="${QH.WD}"/><rect x="${x - 40}" y="${y + 18}" width="5" height="${fy - y - 18}" fill="${QH.WD}"/>`
+    + `<rect x="${x - 40}" y="${y - 4}" width="88" height="16" rx="5" fill="#FBF6EE"/><ellipse cx="${x - 26}" cy="${y - 6}" rx="13" ry="6" fill="#FFFFFF" stroke="#E2D8CC"/>`
+    + `<path d="M${x - 14} ${y - 2} h52 q10 0 10 8 v10 h-62 z" fill="#2F8F86"/><path d="M${x - 14} ${y + 6} h62" stroke="#5FE0C8" stroke-width="2" opacity=".7"/><path d="M${x + 36} ${y - 1} q10 1 10 9 v8 h-10 z" fill="#000" opacity=".15"/><path d="M${x - 10} ${y} h40" stroke="#fff" stroke-opacity=".35" stroke-width="2" stroke-linecap="round"/>`,
+  ropa: (x, y, fy) => qhShadow(x, fy, 20)
+    + `<path d="M${x - 15} ${fy - 24} h30 l-3 24 h-24 z" fill="#C8A270" stroke="#8A6A3E"/><path d="M${x - 14} ${fy - 17} h28 M${x - 13} ${fy - 10} h26" stroke="#8A6A3E" stroke-width=".8" opacity=".7"/><path d="M${x + 6} ${fy - 23} h8 l-2.6 23 h-6 z" fill="#000" opacity=".14"/>`
+    + `<path d="M${x - 16} ${fy - 24} q4 -10 12 -8 q4 -8 12 -2 q8 -2 8 10 z" fill="#3A7BD5"/><path d="M${x - 10} ${fy - 26} q8 -6 16 -1" stroke="#fff" stroke-opacity=".35" stroke-width="1.6" fill="none"/>`
+    + `<path d="M${x + 2} ${fy - 30} l8 -3 l4 6 l-4 2 v6 h-8 v-6 l-4 -2 z" fill="#E86F9A" stroke="#B5305A" stroke-width=".7"/><path d="M${x - 20} ${fy - 2} q6 -6 12 -2 q-2 4 -12 2 z" fill="#F2C230"/>`,
+  guitarra: (x, y) => `<ellipse cx="${x + 3}" cy="${y + 4}" rx="11" ry="20" fill="#000" opacity=".12"/><path d="M${x - 1} ${y - 26} h4 l-1 -4 h-2 z" fill="${QH.WD}"/><rect x="${x - 2}" y="${y - 28}" width="4" height="26" fill="#5E3B24"/><rect x="${x - 3.5}" y="${y - 34}" width="7" height="8" rx="2" fill="#3A2A20"/>`
+    + `<circle cx="${x}" cy="${y + 2}" r="8" fill="#D9883A"/><ellipse cx="${x}" cy="${y + 14}" rx="11" ry="10" fill="#D9883A"/><path d="M${x + 5} ${y - 4} q6 6 4 12 q6 6 2 14" stroke="#000" stroke-opacity=".18" stroke-width="3" fill="none"/>`
+    + `<circle cx="${x}" cy="${y + 7}" r="3" fill="#3A2A20"/><rect x="${x - 4}" y="${y + 16}" width="8" height="2.4" fill="#3A2A20"/><path d="M${x - 1} ${y - 26} V${y + 17} M${x + 1} ${y - 26} V${y + 17}" stroke="#F4F1EA" stroke-width=".5"/><ellipse cx="${x - 4}" cy="${y + 10}" rx="2" ry="4" fill="#fff" opacity=".3"/>`,
+  banera: (x, y, fy) => qhShadow(x, fy, 42)
+    + `<path d="M${x - 42} ${y - 4} h84 q0 30 -14 30 h-56 q-14 0 -14 -30 z" fill="url(#qhporc)" stroke="#9FB3B8"/><rect x="${x - 44}" y="${y - 7}" width="88" height="5" rx="2.5" fill="#F7F7F4" stroke="#9FB3B8"/>`
+    + `<path d="M${x - 32} ${y + 26} l-3 ${fy - y - 26} h6 z M${x + 32} ${y + 26} l3 ${fy - y - 26} h-6 z" fill="#C9A25E"/>`
+    + [[-26, -10, 7], [-14, -13, 8], [0, -11, 7], [14, -14, 8], [28, -10, 7]].map(([dx, dy, r]) => `<circle cx="${x + dx}" cy="${y + dy}" r="${r}" fill="#fff"/><circle cx="${x + dx - 2}" cy="${y + dy - 2}" r="${r * .3}" fill="#D9F1F3"/>`).join('')
+    + `<path d="M${x + 38} ${y - 7} v-16 h-8" stroke="#9AA5AE" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M${x - 34} ${y + 2} q30 6 60 0" stroke="#fff" stroke-opacity=".7" stroke-width="2" fill="none"/>`,
+  bano: (x, y, fy) => qhShadow(x, fy, 18)
+    + `<rect x="${x - 4}" y="${y - 26}" width="22" height="22" rx="3" fill="url(#qhporc)" stroke="#9FB3B8"/><rect x="${x + 10}" y="${y - 22}" width="5" height="2" rx="1" fill="#9AA5AE"/>`
+    + `<path d="M${x - 16} ${y - 2} h32 q0 14 -12 16 l2 ${fy - y - 14} h-12 l2 -${fy - y - 14} q-12 -2 -12 -16 z" fill="url(#qhporc)" stroke="#9FB3B8"/><rect x="${x - 18}" y="${y - 5}" width="36" height="5" rx="2.5" fill="#E8E8E2" stroke="#9FB3B8"/><path d="M${x - 10} ${y + 2} q4 8 8 10" stroke="#fff" stroke-width="2" fill="none" opacity=".8"/>`,
+  tele: (x, y, fy) => qhShadow(x, fy, 28)
+    + `<rect x="${x - 26}" y="${fy - 18}" width="52" height="18" rx="2" fill="url(#qhwood)"/><rect x="${x - 26}" y="${fy - 18}" width="52" height="2" fill="#fff" opacity=".25"/><circle cx="${x - 12}" cy="${fy - 9}" r="1.6" fill="#E0A84A"/><circle cx="${x + 12}" cy="${fy - 9}" r="1.6" fill="#E0A84A"/>`
+    + `<rect x="${x - 4}" y="${fy - 24}" width="8" height="6" fill="#2A2438"/><rect x="${x - 26}" y="${fy - 58}" width="52" height="34" rx="3" fill="#1D1830"/><rect x="${x - 23}" y="${fy - 55}" width="46" height="28" rx="1.5" fill="#3A5E8A"/><path d="M${x - 23} ${fy - 55} h18 l-12 28 h-6 z" fill="#fff" opacity=".12"/>`,
+  suelo: (x, y, fy) => qhShadow(x - 6, fy, 16)
+    + `<path d="M${x - 12} ${fy - 2} q8 -6 16 -2 q-4 4 -16 2 z" fill="#8A7A6A" opacity=".8"/><circle cx="${x - 16}" cy="${fy - 3}" r="1.4" fill="#8A7A6A"/>`
+    + `<path d="M${x + 4} ${y - 30} L${x + 13} ${fy - 20}" stroke="#B07A4A" stroke-width="3" stroke-linecap="round"/><path d="M${x + 8} ${fy - 22} h12 l4 22 h-20 z" fill="#E0B44A" stroke="#A8802E"/><path d="M${x + 9} ${fy - 14} h15" stroke="#C0302A" stroke-width="2.4"/><path d="M${x + 7} ${fy - 4} v4 M${x + 12} ${fy - 4} v4 M${x + 17} ${fy - 4} v4 M${x + 22} ${fy - 4} v4" stroke="#A8802E" stroke-width="1"/>`,
+  mesa: (x, y, fy) => qhShadow(x, fy, 50)
+    + `<rect x="${x - 58}" y="${fy - 52}" width="6" height="52" rx="2" fill="${QH.WM}"/><rect x="${x - 60}" y="${fy - 24}" width="16" height="4" fill="${QH.WM}"/><rect x="${x + 52}" y="${fy - 52}" width="6" height="52" rx="2" fill="${QH.WD}"/><rect x="${x + 44}" y="${fy - 24}" width="16" height="4" fill="${QH.WD}"/>`
+    + `<rect x="${x - 40}" y="${fy - 22}" width="5" height="22" fill="${QH.WD}"/><rect x="${x + 35}" y="${fy - 22}" width="5" height="22" fill="${QH.WD}"/>`
+    + `<path d="M${x - 44} ${fy - 30} h88 v12 q-44 6 -88 0 z" fill="#F4F1EA"/><path d="M${x - 44} ${fy - 26} h88 M${x - 44} ${fy - 21} h88" stroke="#E86F9A" stroke-width="1.6" opacity=".8"/><rect x="${x - 46}" y="${fy - 32}" width="92" height="4" rx="2" fill="#C89A5E"/><rect x="${x - 46}" y="${fy - 32}" width="92" height="1.4" fill="#fff" opacity=".4"/>`
+    + [-24, 0, 24].map(dx => `<ellipse cx="${x + dx}" cy="${fy - 33}" rx="9" ry="2.4" fill="#fff" stroke="#CFC6B4"/>`).join('') + `<path d="M${x - 34} ${fy - 36} v4 M${x + 34} ${fy - 36} v4" stroke="#9AA0AE" stroke-width="1.4"/>`,
+  platos: (x, y, fy) => qhShadow(x, fy, 32)
+    + `<rect x="${x - 30}" y="${y + 6}" width="60" height="${fy - y - 6}" fill="url(#qhwood)"/><rect x="${x - 32}" y="${y + 2}" width="64" height="6" rx="1.5" fill="#E9E4DA"/><rect x="${x - 32}" y="${y + 2}" width="64" height="1.6" fill="#fff" opacity=".7"/><rect x="${x - 30}" y="${y + 8}" width="60" height="3" fill="#000" opacity=".2"/><path d="M${x} ${y + 12} V${fy - 2}" stroke="${QH.WD}"/><circle cx="${x - 4}" cy="${y + 26}" r="1.4" fill="#E0A84A"/><circle cx="${x + 4}" cy="${y + 26}" r="1.4" fill="#E0A84A"/>`
+    + `<path d="M${x + 14} ${y + 2} v-12 q0 -4 6 -4 h4" stroke="#9AA5AE" stroke-width="2.2" fill="none" stroke-linecap="round"/>`
+    + [0, 1, 2, 3].map(i => `<ellipse cx="${x - 8}" cy="${y - i * 3}" rx="13" ry="3.2" fill="#FFFFFF" stroke="#B9C3CA" stroke-width=".8"/>`).join('') + `<circle cx="${x - 12}" cy="${y - 10}" r="1.6" fill="#C98B4A"/><circle cx="${x - 4}" cy="${y - 9.4}" r="1.1" fill="#9BCF53"/><path d="M${x - 2} ${y - 13} l8 -8" stroke="#9AA0AE" stroke-width="1.6" stroke-linecap="round"/>`,
+  basura: (x, y, fy) => qhShadow(x, fy, 14)
+    + `<path d="M${x - 11} ${fy - 30} h22 l-2 30 h-18 z" fill="#5E8A6A"/><path d="M${x + 4} ${fy - 30} h7 l-2 30 h-6 z" fill="#000" opacity=".2"/><path d="M${x - 6} ${fy - 26} v22 M${x} ${fy - 26} v22" stroke="#4A7055" stroke-width="1.2"/>`
+    + `<rect x="${x - 13}" y="${fy - 35}" width="26" height="5" rx="2" fill="#4A7055"/><rect x="${x - 4}" y="${fy - 38}" width="8" height="3" rx="1.5" fill="#3A5A44"/><path d="M${x - 9} ${fy - 28} v20" stroke="#fff" stroke-opacity=".3" stroke-width="2"/>`
+    + `<path d="M${x - 8} ${fy - 35} l3 -6 l4 4 l3 -5 l2 7" fill="#F4F1EA" stroke="#B9C3CA" stroke-width=".8"/>`,
+  plantas: (x, y, fy) => [[-14, 0, 1], [14, 3, .85]].map(([dx, dy, k]) => {
+    const px = x + dx, by = fy + dy;
+    return qhShadow(px, by, 12 * k, .4) + `<path d="M${px - 10 * k} ${by - 16 * k} h${20 * k} l-${3 * k} ${16 * k} h-${14 * k} z" fill="#C2643A"/><rect x="${px - 11 * k}" y="${by - 19 * k}" width="${22 * k}" height="${4 * k}" rx="1.5" fill="#D9784A"/><path d="M${px + 4 * k} ${by - 15 * k} h${5 * k} l-${2.6 * k} ${15 * k} h-${3 * k} z" fill="#000" opacity=".18"/>`
+      + `<path d="M${px} ${by - 19 * k} q-14 -8 -12 -22 q8 6 12 22 q0 -18 8 -26 q4 14 -8 26 q10 -10 18 -8 q-6 10 -18 8" fill="#3FA34D" stroke="#2E7A3A" stroke-width=".8"/><path d="M${px - 6} ${by - 34 * k} q2 6 6 12" stroke="#8ED39A" stroke-width="1.4" fill="none"/>`;
+  }).join(''),
+  perro: (x, y, fy) => qhShadow(x, fy, 22, .4)
+    + `<path d="M${x + 14} ${fy - 16} q12 -4 10 -16" stroke="#B07A44" stroke-width="4" fill="none" stroke-linecap="round"/>`
+    + `<ellipse cx="${x + 4}" cy="${fy - 12}" rx="16" ry="11" fill="#C98B4A"/><path d="M${x + 10} ${fy - 20} q8 4 8 10 q-2 8 -10 9 z" fill="#000" opacity=".14"/>`
+    + `<rect x="${x - 6}" y="${fy - 10}" width="6" height="10" rx="3" fill="#B07A44"/><rect x="${x + 10}" y="${fy - 8}" width="6" height="8" rx="3" fill="#B07A44"/>`
+    + `<circle cx="${x - 10}" cy="${fy - 26}" r="10" fill="#C98B4A"/><ellipse cx="${x - 18}" cy="${fy - 23}" rx="5" ry="4" fill="#E2B07A"/><circle cx="${x - 21}" cy="${fy - 24}" r="1.8" fill="#1D1410"/><circle cx="${x - 9}" cy="${fy - 29}" r="1.4" fill="#1D1410"/><circle cx="${x - 9.4}" cy="${fy - 29.5}" r=".5" fill="#fff"/>`
+    + `<path d="M${x - 6} ${fy - 34} q8 -2 8 8 q-4 2 -8 -8 z" fill="#8A5A2E"/><path d="M${x - 16} ${fy - 20} q4 2 6 0" stroke="#7A3B2A" stroke-width="1" fill="none"/><path d="M${x - 15} ${fy - 33} q3 -2 5 1" stroke="#fff" stroke-opacity=".3" stroke-width="1.4" fill="none"/>`
+};
+function qhPropFloor(id) { const o = OBJECTS[id]; return o.room === 'jardin' ? ROOMS.jardin.y + ROOMS.jardin.h - 52 : qhFloorY(o.room); }
+function qhLabelY(id, y) { const o = OBJECTS[id], fy = qhPropFloor(id); return id === 'guitarra' ? y + 38 : o.room === 'jardin' ? fy + 14 : fy + 8; }
+function qhLabel(x, y, label) { const w = label.length * 6.1 + 12; return `<rect x="${x - w / 2}" y="${y - 10}" width="${w}" height="15" rx="7.5" fill="#14102A" opacity=".72"/><text x="${x}" y="${y + 1}" class="itemlbl" text-anchor="middle">${label}</text>`; }
+
 /* ---------- drawing ---------- */
 function drawHouse() {
-  let s = houseSVG({});
+  let s = choresHouseSVG();
   for (const [id, o] of Object.entries(OBJECTS)) {
     const [x, y] = objPos(id);
-    s += `<g class="obj" data-obj="${id}" role="button" tabindex="0" aria-label="${o.label}"><circle class="hit" cx="${x}" cy="${y}" r="24"/>`
-      + `<text x="${x}" y="${y}" class="ico" font-size="${id === 'cama' ? 34 : 28}" text-anchor="middle" dominant-baseline="central">${o.ico}</text>`
-      + `<text x="${x}" y="${y + 27}" class="itemlbl" text-anchor="middle">${o.label}</text></g>`;
+    s += `<g class="obj" data-obj="${id}" role="button" tabindex="0" aria-label="${o.label}">`
+      + (QH_PROPS[id] ? QH_PROPS[id](x, y, qhPropFloor(id)) : `<text x="${x}" y="${y}" class="ico" font-size="28" text-anchor="middle" dominant-baseline="central">${o.ico}</text>`)
+      + `<circle class="hit" cx="${x}" cy="${y}" r="24"/>` + qhLabel(x, qhLabelY(id, y), o.label) + `</g>`;
   }
   const [mx, my] = S.pos || standPos('suelo');
   s += `<g id="me" style="transform: translate(${mx}px, ${my}px)"><g class="bodyg">${personSVG({ skin: '#d6a37a', hair: '#3b2419', hairStyle: 'short', shirt: 'var(--accent)' }, 0.8)}</g><text y="34" class="pname" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">Tú</text></g>`;
