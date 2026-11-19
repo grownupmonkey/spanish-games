@@ -11,8 +11,6 @@ function analyzeSe(raw) {
   r.pron = (n.match(/(?:^| )se (?:le |me |te |nos |les )?(?:[a-z]+(?:o|aron|ieron|io|a|an))(?= |$)/g) || []).length;
   return r;
 }
-const QPRET = /(?:^| )(paso|ocurrio|compro|hizo|cayo|mojo|rompio|dano|regalaron|regalo|hice|pasaron|fue|estuvo|puso|llevo|seco|guardo|apago|limpio|dejo|intento)(?= |$)/;
-const TU_Q = /(?:^| )(te|tu|compraste|hiciste|pasaste|estabas|tienes|puedes|pusiste|dejaste|secaste)(?= |$)/;
 
 /* ============ the shop and the pictures (PixiJS) ============ */
 let SHOP = null, PIC = null;
@@ -135,14 +133,11 @@ async function customerRound(i, key) {
   resetForStory(S, C); await wait(500);
   for (const st of C.story) { await Promise.all([talk([st.es], voice), st.act(S)]); await wait(250); }
   await wait(600);
-  // 4 · questions for the work order
+  // 4 · examine the phone
   showLayer('shop');
-  await workOrder(C, voice);
-  // 5 · examine the phone and say how it's fixed
   await examine(C);
-  await fixIt(C, voice);
-  // 6 · order the conversation
-  await orderConversation(C, voice);
+  // 5 · build the conversation (who said what, in what order)
+  await chatBuilder(C, voice);
   await customerLeaves();
   const stars = ROUND.issues <= 1 ? 3 : ROUND.issues <= 3 ? 2 : 1;
   session.rounds.push({ key, cust: cust.name, issues: ROUND.issues, order: ROUND.order });
@@ -203,36 +198,6 @@ function pwimSort(C) {
   });
 }
 
-/* ---- work order: preterite questions with usted ---- */
-const FIELDS = {
-  when: { label: 'when', rx: /(cuando|que dia|a que hora|en que momento)/, not: /compr|regal/ },
-  after: { label: 'after', rx: /(despues|luego|que hizo|que hiciste|que paso despues|y entonces)/ },
-  bought: { label: 'bought', rx: /(compr|regal|garantia|cuantos anos tiene|hace cuanto (tiempo )?(lo |la )?tiene)/ },
-};
-async function workOrder(C, voice) {
-  const ans = { when: pick(WHEN), after: C.after, bought: pick(BOUGHT) };
-  setTask('Fill in the <b>work order</b> (right). Ask the customer three questions in the <b>preterite</b>, with <b>usted</b>: when it happened, what they did afterwards, and when they bought the phone. <i>¿Cuándo pasó? ¿Qué hizo después? ¿Cuándo lo compró?</i>', 'La orden de reparación');
-  setHelp(lvl => ['Usted forms: ¿Cuándo se le cayó? ¿Qué hizo después? ¿Cuándo lo compró?', 'Question words open with ¿ and have an accent: ¿Cuándo…? ¿Qué…?'][Math.min(lvl, 1)]);
-  composer({ placeholder: '¿Cuándo pasó?' });
-  const done = {}; let tries = 0;
-  await waitSubmit(async raw => {
-    youSaid(raw); session.stats.messages++; logLine('Tú', raw); tries++;
-    const n = norm(raw);
-    if (looksEnglish(n)) { fb('warn', 'En español, por favor', ''); return false; }
-    const f = Object.keys(FIELDS).find(k => FIELDS[k].rx.test(n) && !(FIELDS[k].not && FIELDS[k].not.test(n)));
-    const pret = analyzePast(raw).pret.length > 0 || QPRET.test(n), tu = TU_Q.test(n);
-    accentTips(raw);
-    if (!f) { await talk([pick(['¿Cómo? No le entendí.', '¿Perdón? ¿Me lo pregunta otra vez?'])], voice); fb('info', '', 'Ask about one of the three things on the work order.'); return false; }
-    if (done[f]) { await talk(['Eso ya se lo dije.'], voice); return false; }
-    if (tu) { ROUND.issues++; fb('warn', 'Usted', 'Use usted with customers: ¿Cuándo se le cayó? ¿Qué hizo? ¿Cuándo lo compró?'); }
-    if (pret) fb('ok', 'Pretérito ✓', { when: 'When it happened', after: 'What they did after', bought: 'When they bought it' }[f]);
-    else { ROUND.issues++; fb('warn', 'Pretérito', 'Ask it with a verb in the preterite: ¿Cuándo pasó? ¿Qué hizo? ¿Cuándo lo compró?'); }
-    done[f] = true; ROUND.order[f] = ans[f].replace(/\.$/, ''); renderOrder(ROUND.order);
-    await talk([ans[f]], voice);
-    return Object.keys(done).length >= 3 ? raw : false;
-  });
-  ia('');
-}
 /* ---- examine the phone on the counter ---- */
 async function examine(C) {
   setTask('Now <b>click the phone</b> on the counter to examine it.', 'La avería');
@@ -252,63 +217,97 @@ async function examine(C) {
   await goButton('Cerrar ✕'); hideGo();
   await tween(L, { alpha: 0 }, 300); clearLayer('closeup'); L.alpha = 1; PX.layers.closeup.visible = false;
 }
-/* ---- say how it's fixed: impersonal se + object pronoun ---- */
-async function fixIt(C, voice) {
-  const D = DAMAGE[C.damage];
-  setTask(`Tell ${esc(ROUND.cust.name)} how the phone is repaired and when it will be ready. Use <b>impersonal se</b> and an <b>object pronoun</b> for the phone: <i>Se cambia ${esc(D.part)}. Lo tiene listo mañana.</i>`, 'La reparación');
-  setHelp(lvl => [`Impersonal se: se + verb in the 3rd person: se cambia ${D.part}, se seca, se limpia, se revisa. Plural: se cambian las piezas.`, 'The phone (el celular) → lo: “Lo tiene listo el viernes.” “Se lo devuelvo mañana.”'][Math.min(lvl, 1)]);
-  composer({ placeholder: `Se cambia ${D.part}…` });
-  let tries = 0;
-  await waitSubmit(async raw => {
-    youSaid(raw); session.stats.messages++; logLine('Tú', raw); tries++;
-    const n = norm(raw), se = analyzeSe(raw), d = analyzeDOP(raw), part = D.rx.test(n);
-    se.slips.forEach(s => fb('err', `<span class="fix"><s>${esc(s.wrote)}</s> → ${esc(s.fix)}</span>`, s.note));
-    d.misplaced.forEach(m => fb('err', `<span class="fix"><s>${esc(m.verb)} ${m.p}</s> → ${esc(m.fix)}</span>`, 'The pronoun goes before the conjugated verb.'));
-    d.le.forEach(w => fb('err', `<span class="fix"><s>${esc(w)}</s> → lo</span>`, 'For the phone, use lo, not le.'));
-    accentTips(raw);
-    fb(se.imp.length ? 'ok' : 'warn', 'Se impersonal', se.imp.length ? se.imp[0] : 'Use impersonal se: se cambia…, se seca…, se limpia…');
-    fb(part ? 'ok' : 'warn', 'La pieza', part ? D.part : `What’s damaged? Look at the close-up: ${D.label}.`);
-    fb(d.prons.length ? 'ok' : 'warn', 'Pronombre', d.prons.length ? `${d.prons[0].p} ✓` : 'Add an object pronoun for the phone: lo tiene listo…, se lo devuelvo…');
-    const met = se.imp.length && part && d.prons.length && !se.slips.length;
-    if (met || tries >= 3) {
-      if (!met) ROUND.issues += 2; else if (tries > 1) ROUND.issues++;
-      ROUND.order.fix = raw; renderOrder(ROUND.order); session.writing.push({ scene: `${ROUND.cust.name}: la reparación`, text: raw });
-      ia(''); await talk([pick(['¡Qué bien! Muchas gracias. Entonces vuelvo después.', '¡Perfecto! ¡Qué alivio! Muchas gracias.', '¡Listo! Mil gracias, muy amable.'])], voice);
-      return raw;
-    }
-    await talk([!part ? '¿Y qué tiene el celular? ¿Qué se repara?' : !se.imp.length ? '¿Y cómo se repara?' : '¿Y cuándo lo tengo listo?'], voice);
-    return false;
-  });
+/* ---- build the conversation: sort each message to a side (customer left, technician right) and order it ---- */
+function chatLines(C) {
+  const D = DAMAGE[C.damage], st = C.story, [a, b, c] = C.chat || [0, 4, 5];
+  const fix = C.damage === 'water' ? 'Mire, se seca el celular y se cambia la batería. Lo tiene listo mañana.' : C.damage === 'coffee' ? 'Mire, se limpia el parlante. Lo tiene listo mañana.' : `Mire, se cambia ${D.part}. Lo tiene listo mañana.`;
+  return [
+    ['c', '¡Buenas! Mire, se me dañó el celular.'], ['t', '¡Buenas! ¿Qué le pasó?'],
+    ['c', st[a].es], ['c', st[b].es], ['c', st[c].es],
+    ['t', '¡Uy, qué pesar! Primero, ¿cuándo pasó?'], ['c', ROUND.ans.when],
+    ['t', '¿Y qué hizo después?'], ['c', C.after],
+    ['t', 'Una última pregunta: ¿cuándo lo compró?'], ['c', ROUND.ans.bought],
+    ['t', fix], ['c', '¡Qué bien! Muchas gracias.'],
+  ].map(([side, es], idx) => ({ side, es, idx }));
 }
-/* ---- order the conversation ---- */
-const GLYPHS = ['◆', '●', '▲', '■', '✦', '★'];
-async function orderConversation(C, voice) {
-  const D = DAMAGE[C.damage], st = C.story;
-  const lines = [
-    { who: voice, tag: ROUND.cust.name, es: 'Buenas. Mire, se me dañó el celular.' },
-    { who: voice, tag: ROUND.cust.name, es: st[0].es }, { who: voice, tag: ROUND.cust.name, es: st[3].es }, { who: voice, tag: ROUND.cust.name, es: st[4].es },
-    { who: CAST.fabio, tag: 'Técnico', es: `Se cambia ${D.part}. Lo tiene listo mañana.`.replace('Se cambia la batería', C.damage === 'water' ? 'Se seca el celular y se cambia la batería' : 'Se cambia la batería').replace('Se cambia el parlante', 'Se limpia el parlante') },
-    { who: voice, tag: ROUND.cust.name, es: '¡Qué bien! Muchas gracias.' },
-  ].map((l, idx) => Object.assign(l, { idx }));
-  setTask('Put the conversation back in order. Press ▶ to hear a line, <b>Añadir</b> to place it. Then <b>Comprobar</b>.', 'Ordena la conversación');
-  setHelp('Think about the story: first the problem, then what happened, step by step, then the repair, then goodbye.');
-  const cards = shuffle(lines), slots = Array(lines.length).fill(null), locked = new Set(); let checks = 0;
-  await new Promise(resolve => {
+function chatBuilder(C, voice) {
+  ROUND.ans = { when: pick(WHEN), bought: pick(BOUGHT) };
+  const lines = chatLines(C), N = lines.length, name = ROUND.cust.name, place = Array(N).fill(null), bad = new Set(), ok = new Set();
+  const order = shuffle(lines.map(l => l.idx)); let checks = 0, sel = null;
+  const whoOf = side => side === 'c' ? voice : CAST.fabio;
+  setTask(`Rebuild the conversation between <b>${esc(name)}</b> and the technician. Drag each message into the chat: <b>left</b> if ${esc(name)} says it, <b>right</b> if the technician says it, in the order it happened. Press ▶ to hear a message. Then <b>Comprobar</b>.`, 'La conversación');
+  setHelp(lvl => [`It starts with ${name} saying what’s wrong. The technician asks questions (¿…?), ${name} answers each one right after it.`, 'Look for clues: “Primero…”, “¿Y qué hizo después?”, “Una última pregunta…”. The story lines go in the order they happened. The repair comes near the end.'][Math.min(lvl, 1)]);
+  return new Promise(resolve => {
+    const bubble = (l, where, side) => `<div class="cb ${side ? (side === 'c' ? 'cust' : 'tech') : 'neutral'}${ok.has(l.idx) ? ' locked' : ''}${sel === l.idx ? ' sel' : ''}" data-idx="${l.idx}"><button class="cplay" type="button" data-p="${l.idx}" aria-label="Escuchar">▶</button><span>${esc(l.es)}</span></div>`;
     const draw = () => {
-      ia(`<div class="order"><div class="pool">${cards.filter(c => !slots.includes(c)).map(c => `<div class="ocard"><button class="aplay" type="button" data-p="${c.idx}">▶</button><span class="og">${GLYPHS[cards.indexOf(c)]}</span><span class="otext"><small>${esc(c.tag)}</small>${esc(c.es)}</span><button class="btn small primary" type="button" data-add="${c.idx}">Añadir</button></div>`).join('') || '<p class="keyhelp">All placed. Check the order, or remove a line with ×.</p>'}</div>
-        <ol class="slots">${slots.map((c, s) => c ? `<li class="${locked.has(c) ? 'lock' : ''}"><span class="n">${s + 1}</span><span class="otext"><small>${esc(c.tag)}</small>${esc(c.es)}</span>${locked.has(c) ? '<span class="tick">✓</span>' : `<button class="x" type="button" data-rm="${s}">×</button>`}</li>` : `<li class="empty"><span class="n">${s + 1}</span><span class="ph">…</span></li>`).join('')}</ol>
-        <div class="row"><button class="btn primary" type="button" id="checkOrd"${slots.includes(null) ? ' disabled' : ''}>Comprobar</button></div></div>`);
-      $id('ia').querySelectorAll('[data-p]').forEach(b => b.addEventListener('click', () => { const l = lines[+b.dataset.p]; talk([l.es], l.who, { replay: true }); }));
-      $id('ia').querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => { const s = slots.indexOf(null); if (s >= 0) { slots[s] = lines[+b.dataset.add]; try { SFX.play('soft'); } catch (e) {} draw(); } }));
-      $id('ia').querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click', () => { slots[+b.dataset.rm] = null; draw(); }));
-      const cb = $id('checkOrd'); if (cb) cb.addEventListener('click', async () => {
-        checks++; let right = 0;
-        slots.forEach((c, s) => { if (c && c.idx === s) { locked.add(c); right++; } else slots[s] = null; });
-        if (right === lines.length) { fb('ok', '¡Perfecto!', checks === 1 ? 'In order on the first try.' : `In order after ${checks} tries.`); if (checks > 2) ROUND.issues++; ia(''); resolve(); return; }
+      const placed = new Set(place.filter(Boolean).map(p => p.idx));
+      ia(`<div class="chatb">
+        <div class="cpool" data-pool="1"><h4>Mensajes</h4>${order.filter(i => !placed.has(i)).map(i => bubble(lines[i])).join('') || '<p class="keyhelp">All placed. Press Comprobar.</p>'}</div>
+        <div class="cphone"><div class="chead"><span class="cav">${esc(name[0])}</span><span><b>${esc(name)}</b><small>izquierda</small></span><span class="cright"><b>Técnico</b><small>derecha</small></span></div>
+          <ol class="cthread">${place.map((p, r) => `<li class="crow${p && bad.has(r) ? ' bad' : ''}${p && ok.has(p.idx) ? ' good' : ''}" data-row="${r}"><div class="cz" data-row="${r}" data-side="c">${p && p.side === 'c' ? bubble(lines[p.idx], 'row', 'c') : ''}</div><div class="cz" data-row="${r}" data-side="t">${p && p.side === 't' ? bubble(lines[p.idx], 'row', 't') : ''}</div></li>`).join('')}</ol></div>
+      </div><div class="row"><button class="btn primary" type="button" id="checkChat"${place.includes(null) ? ' disabled' : ''}>Comprobar</button><span class="keyhelp">Click a message, then click a spot, or drag it.</span></div>`);
+      wire();
+    };
+    const findPlace = idx => place.findIndex(p => p && p.idx === idx);
+    const drop = (idx, row, side) => {
+      if (ok.has(idx)) return; const from = findPlace(idx);
+      if (row == null) { if (from >= 0) { place[from] = null; bad.delete(from); } }
+      else { const occ = place[row]; if (occ && ok.has(occ.idx)) return;
+        if (from >= 0) { place[from] = occ && occ.idx !== idx ? { idx: occ.idx, side: occ.side } : null; bad.delete(from); }
+        place[row] = { idx, side }; bad.delete(row); }
+      sel = null; try { SFX.play('soft'); } catch (e) {} draw();
+    };
+    window.__chat = { lines, drop, get place() { return place; } };
+    const wire = () => {
+      const root = $id('ia');
+      root.querySelectorAll('[data-p]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); const l = lines[+b.dataset.p]; talk([l.es], whoOf(l.side), { replay: true }); }));
+      root.querySelectorAll('.cz').forEach(z => z.addEventListener('click', () => { if (sel != null) drop(sel, +z.dataset.row, z.dataset.side); }));
+      root.querySelector('.cpool').addEventListener('click', e => { if (sel != null && !e.target.closest('.cb')) drop(sel, null); });
+      root.querySelectorAll('.cb:not(.locked)').forEach(el => el.addEventListener('pointerdown', e => {
+        if (e.target.closest('[data-p]') || e.button > 0) return;
+        e.preventDefault(); const idx = +el.dataset.idx, x0 = e.clientX, y0 = e.clientY, r0 = el.getBoundingClientRect(); let ghost = null, over = null, lastY = y0, scr = 0;
+        const edge = () => { const v = window.innerHeight, d = lastY < 70 ? -14 : lastY > v - 70 ? 14 : 0; if (d) window.scrollBy(0, d); if (ghost) scr = requestAnimationFrame(edge); };
+        const zoneAt = (x, y) => { const t = document.elementFromPoint(x, y); return t && (t.closest('.cz') || t.closest('.cpool')); };
+        const mv = ev => {
+          if (!ghost && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 6) return;
+          lastY = ev.clientY;
+          if (!ghost) { ghost = el.cloneNode(true); scr = requestAnimationFrame(edge); ghost.classList.add('ghost'); ghost.style.width = r0.width + 'px'; document.body.appendChild(ghost); el.classList.add('dragging'); }
+          ghost.style.left = (ev.clientX - (x0 - r0.left)) + 'px'; ghost.style.top = (ev.clientY - (y0 - r0.top)) + 'px';
+          const z = zoneAt(ev.clientX, ev.clientY); if (z !== over) { over && over.classList.remove('over'); over = z; over && over.classList.add('over'); }
+          if (z && z.classList.contains('cz')) { ghost.classList.toggle('cust', z.dataset.side === 'c'); ghost.classList.toggle('tech', z.dataset.side === 't'); ghost.classList.remove('neutral'); }
+          else { ghost.classList.remove('cust', 'tech'); ghost.classList.add('neutral'); }
+        };
+        const up = ev => {
+          window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up);
+          if (!ghost) { sel = sel === idx ? null : idx; draw(); return; }
+          cancelAnimationFrame(scr); ghost.remove(); ghost = null; el.classList.remove('dragging'); over && over.classList.remove('over');
+          const z = zoneAt(ev.clientX, ev.clientY);
+          if (z && z.classList.contains('cz')) drop(idx, +z.dataset.row, z.dataset.side); else if (z) drop(idx, null); else draw();
+        };
+        window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
+      }));
+      const cb = $id('checkChat'); if (cb) cb.addEventListener('click', async () => {
+        checks++; bad.clear();
+        place.forEach((p, r) => { if (p.idx === r && p.side === lines[r].side) ok.add(p.idx); else bad.add(r); });
+        if (!bad.size) {
+          fb('ok', '¡Perfecto!', checks === 1 ? 'Every message in the right place, first try.' : `All correct after ${checks} tries.`);
+          ROUND.issues += Math.min(2, checks - 1); draw(); $id('checkChat').disabled = true; await finishChat(); resolve(); return;
+        }
         try { SFX.play('wrong'); } catch (e) {}
-        if (checks >= 3) { lines.forEach(l => { slots[l.idx] = l; locked.add(l); }); ROUND.issues++; draw(); fb('info', 'El orden correcto', 'Here is the right order. Listen to it once more.'); for (const l of lines) await talk([l.es], l.who, { replay: true }); ia(''); resolve(); return; }
-        fb('warn', `${right}/${lines.length}`, 'Ticked lines are in the right place. The others went back.'); draw();
+        const wrongSide = [...bad].filter(r => place[r].side !== lines[place[r].idx].side).length;
+        if (checks >= 3) {
+          lines.forEach(l => { place[l.idx] = { idx: l.idx, side: l.side }; ok.add(l.idx); }); bad.clear(); ROUND.issues += 2; draw(); $id('checkChat').disabled = true;
+          fb('info', 'La conversación correcta', 'Here is the conversation in order. Listen to it once.'); await finishChat(); resolve(); return;
+        }
+        fb('warn', `${N - bad.size}/${N}`, `The glowing messages are in the wrong place${wrongSide ? ` (${wrongSide} on the wrong side: who says it?)` : ''}. Green ones are locked in. Move the others and check again.`);
+        draw();
       });
+    };
+    const finishChat = async () => {
+      Object.assign(ROUND.order, { when: ROUND.ans.when.replace(/\.$/, ''), after: C.after.replace(/\.$/, ''), bought: ROUND.ans.bought.replace(/\.$/, ''), fix: lines[11].es.replace(/^Mire, /, '') }); renderOrder(ROUND.order);
+      await wait(400);
+      for (const l of lines) { const el = $id('ia').querySelector(`.cthread .cb[data-idx="${l.idx}"]`); el && el.classList.add('speaking'); el && el.scrollIntoView({ block: 'nearest', behavior: reduced() ? 'auto' : 'smooth' }); await talk([l.es], whoOf(l.side)); el && el.classList.remove('speaking'); }
+      await goButton('Siguiente →'); hideGo(); ia('');
     };
     draw();
   });

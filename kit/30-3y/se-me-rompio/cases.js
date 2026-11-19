@@ -82,7 +82,7 @@ const CASES = {
       { es: 'Después, salió corriendo al jardín.', act: async S => { await Promise.all([tween(S.perro, { x: 1150, y: 800 }, 1200, 'inOut'), tween(S.cel, { x: 1290, y: 670 }, 1200, 'inOut')]); } },
       { es: 'Ahora el celular no carga.', act: async S => { await tween(S.cel, { x: 960, y: 780 }, 500, 'bounce'); burst(S.root, 960, 800, { color: 0xFFC27A, n: 8, speed: 4 }); await wait(400); } },
     ],
-    after: 'Se lo quité a Toby y lo limpié con una toalla.',
+    after: 'Se lo quité a Toby y lo limpié con una toalla.', chat: [0, 3, 5],
   },
   tinto: {
     title: 'Un tinto en la cafetería', damage: 'coffee', bg: bgCafe,
