@@ -46,6 +46,7 @@ Interactive Spanish games for the Alberta Spanish classes (10-3Y, 20-3Y, 30-3Y).
 | ¡Fallas! (Valencia, 3D) | `30-3y/fallas.html` | GitHub Pages only |
 | Radio Habana (La Habana, 3D) | `30-3y/radio-habana.html` | GitHub Pages only |
 | Se me rompió (Medellín, 2D · PixiJS) | `30-3y/se-me-rompio.html` | GitHub Pages only |
+| Se busca (Barcelona, phone app) | `30-3y/se-busca.html` | GitHub Pages only |
 
 ## Rebuilding
 

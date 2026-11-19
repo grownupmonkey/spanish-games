@@ -1,0 +1,105 @@
+<div class="wrap fwrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Español 30-3Y · Juego 6 · Barcelona</div>
+      <h1>Se busca</h1>
+      <p class="lede">A summer job hunt in Barcelona on a job app. Read the postings, match applicants to jobs, do a video interview, and write your own profile.</p>
+    </div>
+    <div class="toggles">
+      <button class="pill" id="settingsBtn" type="button">⚙ Ajustes</button>
+      <label class="switch sfx-switch"><input type="checkbox" id="sfxOn" checked> Sonido</label>
+    </div>
+  </header>
+
+  <section class="stage3d" id="stage">
+    <div class="stagehead">
+      <div class="place" id="place"></div>
+      <div class="gemtally">✦ Datos de Barcelona <b id="gemCount">0/6</b></div>
+    </div>
+    <div id="view3d"><div id="sceneHost"></div>
+      <div class="phone" id="phone">
+        <div class="pstatus"><span id="pclock">10:24</span><span class="notch"></span><span class="pbat"><i></i></span></div>
+        <div class="pbanner" id="pbanner" hidden></div>
+        <div class="pscreen" id="pscreen"></div>
+        <nav class="ptabs" id="ptabs"><button type="button" data-tab="ofertas" class="on">Ofertas</button><button type="button" data-tab="audios">Audios</button><button type="button" data-tab="llamada">Llamada</button><button type="button" data-tab="perfil">Perfil</button></nav>
+      </div>
+    </div>
+    <div class="linebar" id="linebar">
+      <div class="who" id="who">Lucía</div>
+      <div class="line"><div id="lineEs" class="es"></div><div id="lineEn" class="en"></div></div>
+      <div class="audio">
+        <button class="btn small ghost tts-only" id="replay" type="button" title="Alt+R">⟲ Repetir</button>
+        <button class="btn small ghost tts-only" id="slow" type="button">🐢 Lento</button>
+      </div>
+      <button class="btn primary" id="goBtn" type="button" hidden></button>
+    </div>
+    <div id="gemCard" class="gemcard" hidden>
+      <div class="gh">✦ Dato de Barcelona</div>
+      <p id="gemEs" class="es"></p>
+      <p id="gemEn" class="en2"></p>
+      <button class="btn small" id="gemClose" type="button">Cerrar</button>
+    </div>
+    <div class="titlecard" id="titleCard" hidden><p class="eyebrow" id="tcEyebrow"></p><h2 id="tcTitle"></h2><p id="tcSub"></p></div>
+    <div class="intro" id="intro">
+      <div class="box">
+        <div class="lucia-row"><div class="face" id="introFace"></div><div><p class="eyebrow">Con Lucía</p><h2>Se busca</h2></div></div>
+        <p>Lucía is in Barcelona, and so are you: you want a summer job! Everything happens on <b>Curro</b>, a job app on your phone.</p>
+        <ul>
+          <li><b>Las ofertas.</b> Read six job postings. The app asks questions out loud; tap the posting that answers each one.</li>
+          <li><b>Los candidatos.</b> Listen to four applicants’ voice messages and match each one to the right job. Then sort phrases: <i>sé…</i> or <i>conozco…</i>?</li>
+          <li><b>La entrevista.</b> Choose a job and do a video interview. Answer about <b>yourself</b>: what you’ve done (<i>he trabajado…</i>), what you know (<i>sé… / conozco…</i>), last summer (<i>trabajé…</i>) and this summer (<i>trabajaré…</i>).</li>
+          <li><b>Tu perfil.</b> Write the “Sobre mí” for your profile, and wait for a message…</li>
+        </ul>
+        <p class="notice">Postings are written; questions, voice messages and the interview are spoken. You can turn on text for the spoken parts in <b>⚙ Ajustes</b>, and your report will say so. Click the sparkles on the terrace to find six <i>Datos de Barcelona</i>.</p>
+        <p class="notice tts-only"><b>Headphones on?</b> <button class="btn ghost small" id="testVoice" type="button">▶ Test the voice</button></p>
+        <div><button class="btn primary" id="startBtn" type="button">Abrir la app</button></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gamegrid">
+    <section class="card panel" id="taskCard">
+      <div class="panelhead"><h3 id="taskEyebrow">Ahora</h3></div>
+      <p class="task" id="task">Press <b>Abrir la app</b> to begin.</p>
+      <div class="row ctrls"><button class="btn ghost small" id="helpBtn" type="button">💡 Ayuda</button></div>
+      <div id="ia"></div>
+      <div class="fbs" id="fbs" aria-live="polite"></div>
+    </section>
+    <aside class="sidecol">
+      <section class="card missions"><h3>Tu día</h3><ol id="missionList"></ol></section>
+      <section class="card"><h3>Tu solicitud</h3><div id="solicitud"></div></section>
+      <section class="card libreta">
+        <div class="libtabs"><button type="button" class="on" data-pane="vocabList">Vocabulario</button><button type="button" data-pane="gemList">Datos</button></div>
+        <ul class="libpane" id="vocabList"></ul>
+        <ul class="libpane" id="gemList" hidden></ul>
+      </section>
+    </aside>
+  </div>
+
+  <section class="card summary" id="summary" hidden></section>
+
+  <details class="teacher">
+    <summary>Para el profe</summary>
+    <ul>
+      <li><b>How it works.</b> Four missions on a phone job app (<i>Curro</i>, Spanish slang for “job”). (1) <b>Las ofertas:</b> six written postings (a summer camp, a lifeguard, a beach bar, a bike-tour guide, a souvenir shop, a market kitchen). The app asks five spoken questions (<i>¿Para qué trabajo hay que saber nadar muy bien?</i>); students tap the right posting. (2) <b>Los candidatos:</b> four applicants leave voice messages (five sentences each, with the perfect, preterite, future and saber/conocer); students drag each one onto the right job. Two postings are decoys. Then they sort eight phrases from the messages into <i>Sé…</i> or <i>Conozco…</i>. (3) <b>La entrevista:</b> students choose any posting and do a spoken video interview in usted. Four questions, answered about themselves: experience (perfect), skills and places (saber/conocer), last summer (preterite) and plans (simple future). If an answer misses the structure, the interviewer asks a follow-up that models it aloud. (4) <b>Tu perfil:</b> a “Sobre mí” of about 50 words, shown live on the phone, then a job offer arrives.</li>
+      <li><b>No model to copy.</b> Interview questions are spoken, and answers are personal. Help gives patterns (<i>he + participle</i>, <i>sé + infinitive</i>) rather than sentences.</li>
+      <li><b>Randomized every time.</b> Which four applicants (and so which two decoy postings), the five questions, the eight saber/conocer phrases and their order.</li>
+      <li><b>Grammar checked (LC–1.4 b, structured).</b> Perfect tense (<i>he trabajado, he cuidado</i>; missing h <i>a trabajado → ha trabajado</i>; irregular participles <i>hacido → hecho</i>; agreement <i>he trabajada → he trabajado</i>). Preterite with the series’ corrections. Simple future (<i>trabajaré, ahorraré, haré</i>; <i>voy a</i> is accepted but nudged). Saber vs. conocer: <i>sé + infinitive</i>, <i>sé que…</i>; <i>conozco + place/person</i>, with personal a (<i>conozco a Marta</i>); mix-ups (<i>conozco nadar → sé nadar</i>, <i>sé Barcelona → conozco Barcelona</i>), forms (<i>sabo → sé, conoco → conozco</i>) and the accent on <i>sé</i>.</li>
+      <li><b>Modelled, never marked.</b> The interviewer’s usted (<i>cuénteme, ¿qué hará?</i>), Spain’s vocabulary (<i>canguro, zumo, chiringuito, instituto, vale</i>), the present subjunctive in set phrases (<i>en lo que sea</i>), and the perfect for recent events, which is more common in Spain than in Latin America.</li>
+      <li><b>Text.</b> Postings and the sorting phrases are written (reading tasks). Questions, voice messages and the interview are audio-only by default. <code>?texto=1</code> turns text on for students who need it; the report notes when text was used.</li>
+      <li><b>Stars.</b> Ofertas: 3★ with at most one wrong tap. Candidatos: 3★ when all matches are right on the first check and at most one sorting error. Interview: 3★ with at most one slip (an answer missing its structure counts as one). Profile: 2+ perfect, 2+ preterite, 2+ future, sé and conozco both used correctly, about 50 words (3★ with at most one form slip).</li>
+      <li><b>Accuracy notes.</b> The companies, people and postings are invented; pay is in euros per hour and plausible for summer work in Spain. Barcelona facts: Gaudí worked on the Sagrada Família for over forty years until his death in 1926 and is buried in its crypt; Catalan and Spanish are both official; the waterfront and beaches were rebuilt for the 1992 Olympics; La Boqueria market off La Rambla; Spain’s late lunch and dinner times; Sant Jordi (23 April) with books and roses.</li>
+      <li><b>Outcomes (30-3Y).</b> LC–1.3 a (the world of work) · LC–1.4 b (perfect, preterite, simple future, irregular present conocer and saber) · LC–2.1 a · LC–2.3 a · LC–3.1 a · LC–3.2 a · LC–4.1 b · GC–3.1 b.</li>
+      <li>Audio uses this computer’s best Spanish voice (Spain preferred): <b id="vozName">checking…</b>. Change it in ⚙ Ajustes.</li>
+    </ul>
+  </details>
+</div>
+
+<dialog id="settingsDlg">
+  <h2>Ajustes</h2>
+  <div class="setrow"><div><b>Mostrar texto</b><small>Subtitles and Spanish text. Off by default: try listening first.</small></div><label class="toggle"><input type="checkbox" id="optText"><span></span></label></div>
+  <div class="setrow tts-only"><div><b>Velocidad</b><small>How fast people speak.</small></div><div class="seg"><button type="button" data-speed="lento">Lento</button><button type="button" data-speed="normal">Normal</button><button type="button" data-speed="natural">Natural</button></div></div>
+  <div class="setrow tts-only"><div><b>Voz</b><small>Spanish voices on this computer.</small></div><select id="voiceSel"></select></div>
+  <div class="setrow"><div><b>Efectos de sonido</b><small>Chimes, bangs and crackles.</small></div><label class="toggle"><input type="checkbox" id="optSfx" checked><span></span></label></div>
+  <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn primary" id="closeSettings" type="button">Listo</button></div>
+</dialog>
