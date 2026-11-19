@@ -1,0 +1,156 @@
+/* ===================== CASES: six ways to break a phone in Medellín =====================
+   Each case: a picture (PWIM: 8 words in 3 groups), a story told over the animated picture (CI / MovieTalk),
+   the customer's answers for the work order, the damage, and the conversation to put in order.
+   Object fields: id, word, cat ('cosas' | 'lugares' | 'acciones'), art (svg builder) or hot-only, pic {x,y,r,a,s}, start {…}, hot [dx,dy] or abs [x,y], r (hit radius). */
+const CATS = { cosas: 'Personas y cosas', lugares: 'Lugares', acciones: 'Acciones' };
+const DAMAGE = {
+  crack: { part: 'la pantalla', rx: /pantalla/, label: 'la pantalla rota' },
+  water: { part: 'la batería', rx: /bateria|pila|se seca/, label: 'agua dentro · la batería' },
+  port: { part: 'el puerto de carga', rx: /puerto|conector|entrada/, label: 'el puerto de carga dañado' },
+  coffee: { part: 'el parlante', rx: /parlante|altavoz|bocina/, label: 'café en el parlante' },
+  camera: { part: 'la cámara', rx: /camara|lente/, label: 'la cámara rota' },
+  battery: { part: 'la batería', rx: /bateria|pila/, label: 'la batería hinchada' },
+};
+const WHEN = ['Ayer por la tarde.', 'El sábado por la mañana.', 'Anteayer, por la noche.', 'El domingo, después de almorzar.', 'Hace tres días.'];
+const BOUGHT = ['Lo compré hace un año.', 'Lo compré hace seis meses, en diciembre.', 'Me lo regalaron hace dos años, para mi cumpleaños.', 'Lo compré el año pasado.'];
+const PERSON = (o) => () => personSVG(o);
+
+const CASES = {
+  metrocable: {
+    title: 'En el Metrocable', damage: 'crack', bg: bgMetrocable,
+    objs: [
+      { id: 'cabina', word: 'la cabina', cat: 'cosas', art: () => cabinSVG(PAL.red), ay: 0, pic: { x: 1190, y: 422, s: 1.7 }, start: { x: 180, y: 186, s: 1.7 }, hot: [0, 90] },
+      { id: 'cable', word: 'el cable', cat: 'cosas', abs: [520, 266], r: 40 },
+      { id: 'ventana', word: 'la ventana', cat: 'cosas', on: 'cabina', hot: [0, 92], r: 36, labelDy: 60 },
+      { id: 'montana', word: 'la montaña', cat: 'lugares', abs: [330, 560], r: 70 },
+      { id: 'estacion', word: 'la estación', cat: 'lugares', abs: [1390, 600], r: 70 },
+      { id: 'persona', word: 'tomó una foto', cat: 'acciones', art: PERSON({ pose: 'photo', top: PAL.yellow, fem: true, hair: '#2B1D16', skin: '#C68863' }), ay: 1, pic: { x: 1030, y: 790, a: 1 }, start: { x: 1030, y: 790, a: 0 }, hot: [40, -330] },
+      { id: 'motion', word: 'se cayó', cat: 'acciones', art: motionSVG, pic: { x: 1170, y: 590, a: 1 }, start: { x: 1170, y: 590, a: 0 } },
+      { id: 'cel', word: 'el celular', cat: 'cosas', art: () => phoneSVG(), pic: { x: 1170, y: 680, r: .7, s: .55, a: 1 }, start: { x: 1080, y: 470, r: 0, s: .4, a: 0 } },
+    ],
+    story: [
+      { es: 'Subí al Metrocable con mi familia.', act: async S => { await tween(S.cabina, { x: 1190, y: 422 }, 3200, 'inOut'); } },
+      { es: 'Desde la cabina, vi toda la ciudad. ¡Qué bonita es Medellín!', act: async S => { await tween(S.root, { s: 1.04 }, 1200, 'inOut'); await tween(S.root, { s: 1 }, 900, 'inOut'); } },
+      { es: 'Llegamos a la estación y salí de la cabina.', act: async S => { await tween(S.persona, { a: 1 }, 700); } },
+      { es: 'Saqué el celular y tomé una foto de la montaña.', act: async S => { S.cel.alpha = 1; S.flash(); await wait(500); } },
+      { es: '¡Pero se me cayó el celular!', act: async S => { S.motion.alpha = 1; await tween(S.cel, { x: 1180, y: 780, r: 1.9, s: .55 }, 900, 'bounce'); } },
+      { es: 'La pantalla se rompió en mil pedazos.', act: async S => { crack(S.root, 1180, 780, 60); shakeNode(S.root, 8, 300); await wait(600); } },
+    ],
+    after: 'Lo guardé en el bolso y no lo toqué más.',
+  },
+  lluvia: {
+    title: 'Un aguacero', damage: 'water', bg: bgRain,
+    objs: [
+      { id: 'nube', art: () => cloudSVG('#5A5F6C'), pic: { x: 520, y: 120, s: 1.6 }, start: { x: 520, y: 120, s: 1.6, a: .3 } },
+      { id: 'lluvia', word: 'la lluvia', cat: 'cosas', rain: true, abs: [880, 330], r: 70 },
+      { id: 'senora', art: PERSON({ pose: 'stand', fem: true, top: PAL.violet, hair: '#9AA0AC', skin: '#E0AC85' }), ay: 1, pic: { x: 240, y: 800 } },
+      { id: 'paraguas', word: 'el paraguas', cat: 'cosas', art: umbrellaSVG, pic: { x: 270, y: 430, s: 1.2 } },
+      { id: 'paradero', word: 'el paradero', cat: 'lugares', art: busStopSVG, ay: 1, pic: { x: 1360, y: 700, s: 1.25 }, hot: [0, -260] },
+      { id: 'calle', word: 'la calle', cat: 'lugares', abs: [560, 840], r: 60 },
+      { id: 'corredor', word: 'corrió', cat: 'acciones', art: PERSON({ pose: 'run', top: PAL.red, hair: '#17110E', skin: '#8D5A3B' }), ay: 1, pic: { x: 820, y: 790 }, start: { x: 120, y: 790, a: 0 }, hot: [0, -220] },
+      { id: 'charco', word: 'el charco', cat: 'cosas', art: puddleSVG, pic: { x: 1040, y: 790, s: 1.3 } },
+      { id: 'splash', word: 'se mojó', cat: 'acciones', art: splashSVG, pic: { x: 1040, y: 730, a: 1 }, start: { x: 1040, y: 730, a: 0 } },
+      { id: 'cel', word: 'el celular', cat: 'cosas', art: () => phoneSVG(), pic: { x: 1060, y: 780, r: 1.4, s: .5 }, start: { x: 860, y: 640, r: 0, s: .4, a: 0 } },
+    ],
+    story: [
+      { es: 'Salí del trabajo a las seis.', act: async S => { await tween(S.corredor, { a: 1, x: 260 }, 900); } },
+      { es: 'De repente, empezó a llover muchísimo.', act: async S => { await Promise.all([tween(S.nube, { a: 1 }, 800), tween(S.rain, { alpha: 1 }, 800)]); } },
+      { es: 'No tenía paraguas, así que corrí hasta el paradero.', act: async S => { await tween(S.corredor, { x: 820 }, 1800, 'inOut'); } },
+      { es: 'En la calle, me resbalé y se me cayó el celular.', act: async S => { await tween(S.corredor, { rotation: -.25 }, 200); tween(S.corredor, { rotation: 0 }, 400); S.cel.alpha = 1; await tween(S.cel, { x: 1060, y: 780, r: 1.4, s: .5 }, 800, 'in'); } },
+      { es: '¡Cayó en un charco enorme y se mojó!', act: async S => { S.splash.alpha = 1; burst(S.root, 1050, 770, { color: 0xBFE6FF, n: 22, speed: 9 }); await wait(700); } },
+      { es: 'Ahora no prende.', act: async S => { S.cel.tint = 0x444444; await wait(600); } },
+    ],
+    after: 'Lo puse en una bolsa de arroz toda la noche.',
+  },
+  perro: {
+    title: 'Toby, el perro', damage: 'port', bg: bgLiving,
+    objs: [
+      { id: 'sala', word: 'la sala', cat: 'lugares', abs: [700, 300], r: 70 },
+      { id: 'jardin', word: 'el jardín', cat: 'lugares', abs: [1210, 330], r: 80 },
+      { id: 'sofa', word: 'el sofá', cat: 'cosas', art: sofaSVG, ay: 1, pic: { x: 380, y: 760, s: 1.2 } },
+      { id: 'cargador', word: 'el cargador', cat: 'cosas', art: cableSVG, pic: { x: 300, y: 600 } },
+      { id: 'saltar', word: 'saltó', cat: 'acciones', art: motionSVG, pic: { x: 640, y: 560, r: -.6, a: 1 }, start: { x: 640, y: 560, r: -.6, a: 0 } },
+      { id: 'perro', word: 'el perro', cat: 'cosas', art: dogSVG, ay: 1, pic: { x: 820, y: 790, s: 1.5 }, start: { x: 1080, y: 790, s: 1.5, a: 0 } },
+      { id: 'morder', word: 'mordió', cat: 'acciones', on: 'perro', hot: [130, -150], r: 40 },
+      { id: 'cel', word: 'el celular', cat: 'cosas', art: () => phoneSVG(), pic: { x: 960, y: 660, r: 1.2, s: .42 }, start: { x: 360, y: 600, r: 1.57, s: .42 } },
+    ],
+    story: [
+      { es: 'Dejé el celular cargando en el sofá.', act: async S => { await tween(S.cel, { s: .5 }, 300); await tween(S.cel, { s: .42 }, 300); } },
+      { es: 'Mi perro, Toby, es muy juguetón.', act: async S => { await tween(S.perro, { a: 1 }, 600); for (let i = 0; i < 3; i++) { await tween(S.perro, { rotation: .08 }, 120); await tween(S.perro, { rotation: -.08 }, 120); } S.perro.rotation = 0; } },
+      { es: 'Toby saltó al sofá.', act: async S => { S.saltar.alpha = 1; await tween(S.perro, { x: 700, y: 560 }, 500, 'out'); await tween(S.perro, { x: 520, y: 640 }, 400, 'in'); } },
+      { es: 'Agarró el celular con la boca y lo mordió.', act: async S => { await tween(S.cel, { x: 660, y: 520, r: 1.2 }, 400); shakeNode(S.cel, 6, 500); await wait(500); } },
+      { es: 'Después, salió corriendo al jardín.', act: async S => { await Promise.all([tween(S.perro, { x: 1150, y: 800 }, 1200, 'inOut'), tween(S.cel, { x: 1290, y: 670 }, 1200, 'inOut')]); } },
+      { es: 'Ahora el celular no carga.', act: async S => { await tween(S.cel, { x: 960, y: 780 }, 500, 'bounce'); burst(S.root, 960, 800, { color: 0xFFC27A, n: 8, speed: 4 }); await wait(400); } },
+    ],
+    after: 'Se lo quité a Toby y lo limpié con una toalla.',
+  },
+  tinto: {
+    title: 'Un tinto en la cafetería', damage: 'coffee', bg: bgCafe,
+    objs: [
+      { id: 'cafeteria', word: 'la cafetería', cat: 'lugares', abs: [1180, 250], r: 90 },
+      { id: 'yo', art: PERSON({ pose: 'stand', fem: true, top: PAL.teal, hair: '#5A2E1E', skin: '#F2C6A0' }), ay: 1, pic: { x: 380, y: 840 }, start: { x: 380, y: 840, a: 0 } },
+      { id: 'mesa', word: 'la mesa', cat: 'cosas', art: tableSVG, ay: 0, pic: { x: 720, y: 640, s: 1.1 } },
+      { id: 'arepa', word: 'la arepa', cat: 'cosas', art: arepaSVG, ay: 1, pic: { x: 600, y: 648 }, start: { x: 600, y: 648, s: 0 } },
+      { id: 'tinto', word: 'el tinto', cat: 'cosas', art: tintoSVG, ay: 1, pic: { x: 760, y: 650, r: 1.1 }, start: { x: 780, y: 646, s: 0 } },
+      { id: 'cel', word: 'el celular', cat: 'cosas', art: () => phoneSVG(), pic: { x: 870, y: 630, r: 1.57, s: .45 }, start: { x: 870, y: 630, r: 1.57, s: .45, a: 0 } },
+      { id: 'senor', word: 'el señor', cat: 'cosas', art: PERSON({ pose: 'reach', top: PAL.blue, hair: '#E6E6EA', skin: '#C68863' }), ay: 1, pic: { x: 1040, y: 840 }, start: { x: 1500, y: 840, a: 0 }, hot: [0, -300] },
+      { id: 'tropezar', word: 'tropezó', cat: 'acciones', art: motionSVG, pic: { x: 960, y: 700, r: 1.57, a: 1 }, start: { x: 960, y: 700, r: 1.57, a: 0 } },
+      { id: 'mancha', word: 'se derramó', cat: 'acciones', art: () => [svgDoc(220, 60, '<ellipse cx="110" cy="30" rx="100" ry="22" fill="#5A2E1E" opacity=".85"/>'), 220, 60], pic: { x: 840, y: 646, a: 1 }, start: { x: 840, y: 646, a: 0 } },
+    ],
+    story: [
+      { es: 'Fui a desayunar a la cafetería de la esquina.', act: async S => { await tween(S.yo, { a: 1 }, 700); } },
+      { es: 'Pedí una arepa con queso y un tinto.', act: async S => { S.arepa.alpha = 1; S.tinto.alpha = 1; await Promise.all([tween(S.arepa, { s: 1 }, 500, 'back'), tween(S.tinto, { s: 1 }, 500, 'back', 200)]); } },
+      { es: 'Puse el celular en la mesa, al lado del tinto.', act: async S => { await tween(S.cel, { a: 1 }, 500); } },
+      { es: 'Un señor pasó con prisa y tropezó con la mesa.', act: async S => { await tween(S.senor, { a: 1, x: 1040 }, 1100, 'out'); S.tropezar.alpha = 1; shakeNode(S.mesa, 10, 400); } },
+      { es: '¡Y el tinto se derramó encima del celular!', act: async S => { await tween(S.tinto, { rotation: 1.1, x: 760 }, 300); burst(S.root, 800, 620, { color: 0x5A2E1E, n: 18, speed: 5, dir: 0, spread: 1.4 }); await tween(S.mancha, { a: 1 }, 400); } },
+      { es: 'Ahora el parlante suena muy mal.', act: async S => { S.cel.tint = 0xB08A6A; shakeNode(S.cel, 4, 600); await wait(600); } },
+    ],
+    after: 'Lo sequé con una servilleta.',
+  },
+  ciclovia: {
+    title: 'Domingo de ciclovía', damage: 'camera', bg: bgCiclovia,
+    objs: [
+      { id: 'ciclovia', word: 'la ciclovía', cat: 'lugares', abs: [120, 290], r: 70 },
+      { id: 'parque', word: 'el parque', cat: 'lugares', abs: [1200, 400], r: 80 },
+      { id: 'arbol', art: treeSVG, ay: 1, pic: { x: 1360, y: 560 } },
+      { id: 'bici', word: 'la bicicleta', cat: 'cosas', art: bikeSVG, ay: 1, pic: { x: 620, y: 780 }, start: { x: -200, y: 780 } },
+      { id: 'frenar', word: 'frenó', cat: 'acciones', art: motionSVG, pic: { x: 450, y: 700, r: 1.57, a: 1 }, start: { x: 450, y: 700, r: 1.57, a: 0 } },
+      { id: 'ciclista', word: 'se cayó', cat: 'acciones', art: PERSON({ pose: 'stand', top: PAL.yellow, hair: '#17110E', skin: '#E0AC85' }), ay: 1, pic: { x: 860, y: 800, r: -1.35 }, start: { x: -180, y: 650, r: 0 }, hot: [130, -40] },
+      { id: 'casco', word: 'el casco', cat: 'cosas', art: helmetSVG, pic: { x: 1000, y: 780, s: .7, r: .3 }, start: { x: -180, y: 290, s: .7, a: 0 } },
+      { id: 'botella', word: 'la botella', cat: 'cosas', art: bottleSVG, pic: { x: 520, y: 800, r: 1.4 }, start: { x: 600, y: 700, a: 0 } },
+      { id: 'cel', word: 'el celular', cat: 'cosas', art: () => phoneSVG(), pic: { x: 1180, y: 790, r: -.4, s: .45 }, start: { x: 700, y: 560, s: .3, a: 0 } },
+    ],
+    story: [
+      { es: 'Fui a la ciclovía en bicicleta con unos amigos.', act: async S => { S.casco.alpha = 1; await Promise.all([tween(S.bici, { x: 620 }, 2000, 'out'), tween(S.ciclista, { x: 620, y: 650 }, 2000, 'out'), tween(S.casco, { x: 620, y: 300 }, 2000, 'out')]); } },
+      { es: 'Puse el celular en el bolsillo de la chaqueta.', act: async S => { S.cel.alpha = 1; S.cel.x = 640; S.cel.y = 560; await tween(S.cel, { s: .2 }, 400); } },
+      { es: 'En una curva, frené muy rápido.', act: async S => { S.frenar.alpha = 1; shakeNode(S.bici, 8, 400); await wait(400); } },
+      { es: '¡Y me caí de la bici!', act: async S => { await Promise.all([tween(S.ciclista, { x: 860, y: 800, r: -1.35 }, 600, 'in'), tween(S.casco, { x: 1000, y: 780, r: .3 }, 700, 'bounce'), tween(S.botella, { a: 1, x: 520, y: 800, r: 1.4 }, 700, 'bounce')]); shakeNode(S.root, 6, 300); } },
+      { es: 'El celular salió volando del bolsillo.', act: async S => { await tween(S.cel, { x: 1180, y: 790, r: -.4, s: .45 }, 800, 'bounce'); } },
+      { es: 'Yo estoy bien, pero la cámara del celular se rompió.', act: async S => { crack(S.root, 1180, 770, 30); await wait(500); } },
+    ],
+    after: 'Lo recogí, lo guardé en la mochila y volví a casa despacio.',
+  },
+  carro: {
+    title: 'Un día de sol', damage: 'battery', bg: bgParking,
+    objs: [
+      { id: 'centro', word: 'el centro comercial', cat: 'lugares', abs: [800, 330], r: 90 },
+      { id: 'parqueadero', word: 'el parqueadero', cat: 'lugares', abs: [1440, 650], r: 80 },
+      { id: 'sol', word: 'el sol', cat: 'cosas', art: sunSVG, pic: { x: 1380, y: 120 }, start: { x: 1380, y: 120, s: .7 } },
+      { id: 'carro', word: 'el carro', cat: 'cosas', art: () => carSVG(PAL.red), ay: 1, pic: { x: 700, y: 820, s: 1.3 } },
+      { id: 'cel', word: 'el celular', cat: 'cosas', art: () => phoneSVG(), pic: { x: 640, y: 700, r: 1.57, s: .35 }, start: { x: 640, y: 700, r: 1.57, s: .35, a: 0 } },
+      { id: 'calor', word: 'se calentó', cat: 'acciones', art: heatSVG, pic: { x: 640, y: 630, a: 1 }, start: { x: 640, y: 630, a: 0 } },
+      { id: 'yo', art: PERSON({ pose: 'stand', fem: false, top: PAL.violet, hair: '#2B1D16', skin: '#C68863' }), ay: 1, pic: { x: 1180, y: 860 }, start: { x: 1180, y: 860, a: 0 } },
+      { id: 'gafas', word: 'las gafas de sol', cat: 'cosas', art: glassesSVG, pic: { x: 1180, y: 530, s: .55 }, start: { x: 1180, y: 530, s: 0 }, labelDy: 110 },
+      { id: 'bolsa', word: 'compró', cat: 'acciones', art: () => bagSVG(PAL.pink), ay: 1, pic: { x: 1300, y: 860 }, start: { x: 1300, y: 860, s: 0 } },
+    ],
+    story: [
+      { es: 'Fui de compras al centro comercial.', act: async S => { await tween(S.yo, { a: 1 }, 700); } },
+      { es: 'Dejé el celular en el carro, encima del tablero.', act: async S => { await tween(S.cel, { a: 1 }, 600); } },
+      { es: 'Compré ropa y unas gafas de sol nuevas.', act: async S => { S.bolsa.alpha = 1; S.gafas.alpha = 1; await Promise.all([tween(S.bolsa, { s: 1 }, 500, 'back'), tween(S.gafas, { s: .55 }, 500, 'back', 200)]); } },
+      { es: 'Ese día hizo muchísimo sol.', act: async S => { await tween(S.sol, { s: 1.15 }, 800, 'inOut'); await tween(S.sol, { s: 1 }, 600); } },
+      { es: 'Cuando volví, el celular estaba muy caliente.', act: async S => { await tween(S.calor, { a: 1 }, 600); S.cel.tint = 0xFFB070; } },
+      { es: 'Ahora la batería está hinchada y no carga.', act: async S => { await tween(S.cel, { sy: 1.25 }, 600, 'back'); } },
+    ],
+    after: 'Lo apagué y lo puse en la sombra.',
+  },
+};

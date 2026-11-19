@@ -1,0 +1,98 @@
+<div class="wrap fwrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Español 30-3Y · Juego 5 · Medellín</div>
+      <h1>Se me rompió</h1>
+      <p class="lede">A day at a phone-repair shop in Medellín. Study a picture of what happened, hear the customer’s story, ask the right questions and explain how it’s fixed.</p>
+    </div>
+    <div class="toggles">
+      <button class="pill" id="settingsBtn" type="button">⚙ Ajustes</button>
+      <label class="switch sfx-switch"><input type="checkbox" id="sfxOn" checked> Sonido</label>
+    </div>
+  </header>
+
+  <section class="stage3d" id="stage">
+    <div class="stagehead">
+      <div class="place" id="place"></div>
+      <div class="gemtally">✦ Datos de Medellín <b id="gemCount">0/6</b></div>
+    </div>
+    <div id="view3d"></div>
+    <div class="linebar" id="linebar">
+      <div class="who" id="who">Lucía</div>
+      <div class="line"><div id="lineEs" class="es"></div><div id="lineEn" class="en"></div></div>
+      <div class="audio">
+        <button class="btn small ghost tts-only" id="replay" type="button" title="Alt+R">⟲ Repetir</button>
+        <button class="btn small ghost tts-only" id="slow" type="button">🐢 Lento</button>
+      </div>
+      <button class="btn primary" id="goBtn" type="button" hidden></button>
+    </div>
+    <div id="gemCard" class="gemcard" hidden>
+      <div class="gh">✦ Dato de Medellín</div>
+      <p id="gemEs" class="es"></p>
+      <p id="gemEn" class="en2"></p>
+      <button class="btn small" id="gemClose" type="button">Cerrar</button>
+    </div>
+    <div class="titlecard" id="titleCard" hidden><p class="eyebrow" id="tcEyebrow"></p><h2 id="tcTitle"></h2><p id="tcSub"></p></div>
+    <div class="intro" id="intro">
+      <div class="box">
+        <div class="lucia-row"><div class="face" id="introFace"></div><div><p class="eyebrow">Con Lucía</p><h2>Se me rompió</h2></div></div>
+        <p>Lucía is in Medellín, Colombia. Today you help Fabio at <b>Reparaciones El Parcero</b>, a phone-repair shop. Three customers come in with broken phones.</p>
+        <ul>
+          <li><b>La foto.</b> Each customer shows you a picture of what happened. Find and label the things in it, then sort the words.</li>
+          <li><b>La historia.</b> Listen to the customer’s story while the picture comes to life.</li>
+          <li><b>El taller.</b> Ask questions in the <b>preterite</b> with <b>usted</b>, examine the phone, and say how it’s fixed with <b>impersonal se</b> and an object pronoun (<i>Se cambia la pantalla. Lo tiene listo mañana.</i>). Then put the conversation in order.</li>
+          <li><b>El informe.</b> At the end, write the day’s report using your word bank.</li>
+        </ul>
+        <p class="notice">Conversations are spoken; picture labels are written. You can turn on text for the conversations in <b>⚙ Ajustes</b>, and your report will say so. Click the sparkles in the shop to find six <i>Datos de Medellín</i>.</p>
+        <p class="notice tts-only"><b>Headphones on?</b> <button class="btn ghost small" id="testVoice" type="button">▶ Test the voice</button></p>
+        <div><button class="btn primary" id="startBtn" type="button">Abrir el taller</button></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gamegrid">
+    <section class="card panel" id="taskCard">
+      <div class="panelhead"><h3 id="taskEyebrow">Ahora</h3></div>
+      <p class="task" id="task">Press <b>Abrir el taller</b> to begin.</p>
+      <div class="row ctrls"><button class="btn ghost small" id="helpBtn" type="button">💡 Ayuda</button></div>
+      <div id="ia"></div>
+      <div class="fbs" id="fbs" aria-live="polite"></div>
+    </section>
+    <aside class="sidecol">
+      <section class="card missions"><h3>Tu jornada</h3><ol id="missionList"></ol></section>
+      <section class="card"><h3>Orden de reparación</h3><div id="orden"></div></section>
+      <section class="card libreta">
+        <div class="libtabs"><button type="button" class="on" data-pane="bankList">Banco de palabras <span id="bankCount">0</span></button><button type="button" data-pane="gemList">Datos</button></div>
+        <ul class="libpane" id="bankList"></ul>
+        <ul class="libpane" id="gemList" hidden></ul>
+      </section>
+    </aside>
+  </div>
+
+  <section class="card summary" id="summary" hidden></section>
+
+  <details class="teacher">
+    <summary>Para el profe</summary>
+    <ul>
+      <li><b>How it works.</b> Three customers, each in six steps, then a written report. (1) <b>Picture study (PWIM):</b> a detailed illustrated scene of how the phone broke; students click to find eight things (people and things, places, actions), hearing each word and seeing its label; every word goes into a word bank. (2) <b>Sorting:</b> students classify the eight words into people and things / places / actions. (3) <b>The story (Comprehensible Input):</b> the customer narrates in six short preterite sentences while the picture animates each event (MovieTalk-style: meaning first, heavy visual support). (4) <b>The work order:</b> students ask three questions in the preterite with usted (when it happened, what they did afterwards, when they bought it). (5) <b>The repair:</b> they examine the phone close-up (the damaged part is labelled), then tell the customer how it is fixed with impersonal se and an object pronoun. (6) <b>Ordering:</b> the conversation’s six lines, with ▶ to replay each. Finally, the day’s report, written from the word bank (the PWIM step from words to sentences and paragraphs).</li>
+      <li><b>Randomized every time.</b> Three of six cases (Metrocable, a rainstorm, the dog, a tinto in a café, the ciclovía, a hot car), three of six customers, the day it happened and when the phone was bought.</li>
+      <li><b>Grammar checked (LC–1.4 b, structured).</b> Preterite in the questions (¿Cuándo pasó? ¿Qué hizo? ¿Cuándo lo compró?) and in the report, with the series’ corrections for irregular and spelling-change forms. Impersonal se in the repair (se cambia la pantalla / se cambian las piezas, with agreement checked). Direct object pronouns for the phone (lo tiene listo, se lo devuelvo), placed before the conjugated verb; le for a thing is corrected. Usted with customers is noted (LC–4.1 b).</li>
+      <li><b>Modelled, never marked.</b> Accidental se in every story (se me cayó, se me mojó, se me dañó), the imperfect in descriptions (no tenía paraguas, estaba muy caliente), Colombian vocabulary (celular, prender, parlante, paradero, parqueadero, tinto, parce).</li>
+      <li><b>Text.</b> Conversations are audio-only by default; picture-word labels and the ordering cards are always written (PWIM and the ordering task are reading steps). <code>?texto=1</code> turns text on for students who need it; the report notes when text was used.</li>
+      <li><b>Stars.</b> Each customer: 3★ with at most one slip (sorting errors, questions without the preterite or with tú, a repair missing se / the part / a pronoun, more than two ordering tries). Report: 5+ preterite verbs, se twice, 6+ word-bank words, two customers named (3★ with at most one slip).</li>
+      <li><b>Accuracy notes.</b> The shop, Fabio and the customers are invented. Medellín facts: the Metrocable (2004) was the first cable car built as everyday public transport; Comuna 13’s outdoor escalators and murals; the City of Eternal Spring (about 22 °C); the Feria de las Flores and silleteros in August; a tinto is a small black coffee; ¿Qué más, parce? is a paisa greeting. Prices on the café menu are in Colombian pesos.</li>
+      <li><b>2D graphics.</b> PixiJS (loaded from cdnjs, with jsDelivr as a backup). Light on older machines; no graphics card needed.</li>
+      <li><b>Outcomes (30-3Y).</b> LC–1.3 a (technology) · LC–1.4 b (preterite, direct object pronouns, impersonal se) · LC–4.1 b · A–3.2 a · A–4.3 a, b · A–4.4 a · LC–2.1 a · LC–2.3 a · LC–5.1 a · LC–5.2 a.</li>
+      <li>Audio uses this computer’s best Spanish voice: <b id="vozName">checking…</b>. Change it in ⚙ Ajustes.</li>
+    </ul>
+  </details>
+</div>
+
+<dialog id="settingsDlg">
+  <h2>Ajustes</h2>
+  <div class="setrow"><div><b>Mostrar texto</b><small>Subtitles and Spanish text. Off by default: try listening first.</small></div><label class="toggle"><input type="checkbox" id="optText"><span></span></label></div>
+  <div class="setrow tts-only"><div><b>Velocidad</b><small>How fast people speak.</small></div><div class="seg"><button type="button" data-speed="lento">Lento</button><button type="button" data-speed="normal">Normal</button><button type="button" data-speed="natural">Natural</button></div></div>
+  <div class="setrow tts-only"><div><b>Voz</b><small>Spanish voices on this computer.</small></div><select id="voiceSel"></select></div>
+  <div class="setrow"><div><b>Efectos de sonido</b><small>Chimes, bangs and crackles.</small></div><label class="toggle"><input type="checkbox" id="optSfx" checked><span></span></label></div>
+  <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn primary" id="closeSettings" type="button">Listo</button></div>
+</dialog>
