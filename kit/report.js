@@ -26,6 +26,7 @@
     26: ['20-3Y', 'La farmacia de guardia', 'Escena 6 · Puerto Viejo'],
     27: ['20-3Y', 'Conexión perdida', 'Escena 7 · Lima'],
     28: ['20-3Y', 'Mismo idioma, otro mundo', 'Escena 8 · Lethbridge'],
+    29: ['20-3Y', 'Las siete ciudades de oro', 'Final · Cíbola'],
     31: ['30-3Y', 'Noche de leyendas', 'Juego 1 · Antigua Guatemala'],
     32: ['30-3Y', 'Cuando era pequeño', 'Juego 2 · Montevideo'],
     33: ['30-3Y', '¡Fallas!', 'Juego 3 · Valencia'],

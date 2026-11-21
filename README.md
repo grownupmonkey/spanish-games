@@ -5,7 +5,7 @@ Interactive Spanish games for the Alberta Spanish classes (10-3Y, 20-3Y, 30-3Y).
 ## Layout
 
 - `10-3y/`, `20-3y/`, `30-3y/`: built game pages, one file per game.
-- `kit/`: the starter kit and design guide (`README.md`), the 10-3Y/20-3Y source bundles, the 30-3Y build folders (`kit/30-3y/<game>/`, run `python3 assemble.py`), and the shared end-of-session report (`report.js`, `report.css`, `report_inject.py`; games 1–9, 21–28 and 31–34).
+- `kit/`: the starter kit and design guide (`README.md`), the 10-3Y/20-3Y source bundles, the 20-3Y final's source (`kit/20-3y-final/`, see its `NOTES.md`), the 30-3Y build folders (`kit/30-3y/<game>/`, run `python3 assemble.py`), and the shared end-of-session report (`report.js`, `report.css`, `report_inject.py`; games 1–9, 21–29 and 31–36).
 - `index.html`: the hub page that links every game.
 
 ## Games
@@ -36,6 +36,7 @@ Interactive Spanish games for the Alberta Spanish classes (10-3Y, 20-3Y, 30-3Y).
 | La farmacia de guardia | Puerto Viejo, Costa Rica | `20-3y/la-farmacia.html` | https://claude.ai/artifact/KfaGtdWtuVrzWzVEUU4KfX |
 | Conexión perdida | Lima | `20-3y/conexion-perdida.html` | https://claude.ai/artifact/WZkdHmGafPrrF6ZAE8ncmd |
 | Mismo idioma, otro mundo | Lethbridge | `20-3y/mismo-idioma.html` | https://claude.ai/artifact/WxJEoQgXyXwUTLW3YcxNCy |
+| Las siete ciudades de oro (final, 60–90 min) | 7 cities + Granada | `20-3y/las-siete-ciudades.html` | https://claude.ai/artifact/87LwUa78nQXpZrLEvBVTu3 |
 
 ### Spanish 30-3Y
 

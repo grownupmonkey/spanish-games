@@ -1,0 +1,101 @@
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Español 20-3Y · Final · Las siete ciudades</p>
+      <h1>Las siete ciudades de oro</h1>
+      <p class="lede">An old trunk in a Lethbridge attic holds your great-great-grandmother’s map and a medallion with seven empty slots. Someone got there first. Follow the trail across the Spanish-speaking world, collect the seven seals, work out who the thief is, and get to Granada before Sunday morning.</p>
+    </div>
+    <div class="toggles">
+      <label class="switch sfx-switch"><input type="checkbox" id="sfxOn" checked> Efectos de sonido</label>
+      <button class="switch" id="restart" type="button">Empezar de nuevo</button>
+    </div>
+  </header>
+
+  <div class="game">
+    <section class="card stage" aria-label="La escena">
+      <div class="stagehead">
+        <span class="place" id="placeName">Lethbridge, Alberta</span>
+        <span class="clock" id="clock" aria-live="polite"></span>
+      </div>
+      <div class="viewport scene" id="viewport">
+        <svg id="sceneSvg" viewBox="0 0 760 420" role="group" aria-label="La escena"></svg>
+        <div class="puzzle" id="puzzle" hidden></div>
+        <div class="cine" id="cine" hidden></div>
+        <div class="intro" id="intro">
+          <div class="box">
+            <p class="eyebrow">El final de Español 20-3Y</p>
+            <h2>Las siete ciudades de oro</h2>
+            <p>A detective race through history. About an hour to an hour and a half; every game is a different route and a different thief.</p>
+            <ul>
+              <li><b>Talk to witnesses</b> (each question costs one hour) and read their clues to work out where the thief went next. Pictures and the <b>Glosario</b> help with new words.</li>
+              <li><b>Remember the Datos</b> from the other games: some clues are about them, and they save you time.</li>
+              <li><b>Solve the code</b> in each city to win one of the seven seals.</li>
+              <li><b>Fly</b> to the next city. A wrong city costs you hours.</li>
+              <li>Collect clues about the thief in the <b>Expediente</b>. In Granada you’ll have to prove who it is.</li>
+            </ul>
+            <div class="introbtns">
+              <button class="btn primary" id="startBtn" type="button">Empezar</button>
+              <button class="btn ghost" id="resumeBtn" type="button">Tengo un código</button>
+            </div>
+            <form class="resume" id="resumeForm" hidden autocomplete="off">
+              <input type="text" id="resumeCode" placeholder="XXXX-XXXX-XXXX-XXXX" aria-label="Resume code" spellcheck="false">
+              <button class="btn primary small" type="submit">Continuar</button>
+              <p class="rmsg" id="resumeMsg"></p>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="dossier">
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" class="tab on" data-tab="sospechosos">Sospechosos</button>
+          <button type="button" role="tab" class="tab" data-tab="pruebas">Pruebas <span class="n" id="nPruebas">0</span></button>
+          <button type="button" role="tab" class="tab" data-tab="archivo">Archivo <span class="n" id="nArchivo">0</span></button>
+          <button type="button" role="tab" class="tab" data-tab="glosario">Glosario <span class="n" id="nGlos">0</span></button>
+        </div>
+        <div class="tabpane" id="tab-sospechosos"></div>
+        <div class="tabpane" id="tab-pruebas" hidden></div>
+        <div class="tabpane" id="tab-archivo" hidden></div>
+        <div class="tabpane" id="tab-glosario" hidden></div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="card missions">
+        <h3>El viaje</h3>
+        <div class="timebar"><div class="fill" id="timeFill"></div></div>
+        <p class="timeleft" id="timeLeft"></p>
+        <div class="tripgrid"><div class="medal" id="medal"></div><ol id="missionList"></ol></div>
+        <p class="gems" id="gemCount"></p>
+      </div>
+      <div class="card feedcard">
+        <div class="feedhead"><h3>Conversación</h3><label class="mini-switch tts-only"><input type="checkbox" id="autoplay" checked> Audio automático</label></div>
+        <div class="feed" id="feed" aria-live="polite"></div>
+      </div>
+      <div class="card panel">
+        <div class="panelhead"><h3>Tu tarea</h3><button class="btn ghost small" id="hintBtn" type="button">Pista (−1 h)</button></div>
+        <p class="task" id="task">Press Empezar to begin.</p>
+        <div class="choices" id="actions"></div>
+        <div class="fbs" id="fbs" aria-live="polite"></div>
+        <div class="codebox" id="codeBox" hidden></div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="card summary" id="summary" hidden></section>
+
+  <details class="teacher">
+    <summary>Para el profe: how this game works</summary>
+    <ul id="profeList">
+      <li><b>The story:</b> the student finds the trunk of their great-great-grandmother, Elena Robles, a cartographer born in Granada in 1890 who spent her life following the legend of <i>las siete ciudades de Cíbola</i>. She left a seal in seven cities. A collector has stolen a page of her map and is one city ahead. In the end the “seven cities of gold” turn out to be the seven cities where her children and grandchildren settled; the eighth is Lethbridge.</li>
+      <li><b>The history behind it (real):</b> the medieval legend of seven bishops who fled across the ocean after 711; Cabeza de Vaca’s shipwreck on the Gulf coast (1528) and his eight-year walk to Mexico City (1536) with Estebanico, a Moroccan; fray Marcos de Niza (1539) and Coronado (1540), who found Zuni pueblos of adobe, not gold; Granada in 1492. Each city adds its own history: Tenochtitlan, the Muisca and El Dorado, the Inca and the quipu, Monte Albán, El Morro, Columbus in Costa Rica (1502), the Flota de Indias in Havana, Madrid as capital (1561), Antigua after the 1541 flood, and so on. People are shown in the values of their own time; Catholic and Muslim history is presented respectfully and factually.</li>
+      <li><b>Each playthrough:</b> Mexico City and Miami are always on the route; five more come at random from Bogotá, San Juan, Oaxaca, Madrid, Buenos Aires, Cusco, Antigua, Puerto Viejo and Havana; Granada is always last. The thief is one of five suspects with shared features, so it takes at least three clues to know who it is. Puzzles are re-randomized every time.</li>
+      <li><b>Comprehensible input:</b> everything needed to solve a clue or puzzle is short, high-frequency Spanish with a picture, and audio (Escuchar / Lento). New words light up and go into the Glosario with a picture and an English meaning. Each city also has an Archivo card with a longer Spanish text and an English summary for extension.</li>
+      <li><b>Datos payoff:</b> some clues refer to the Datos from the other games (a tinto that isn’t wine, the coquí, chapulines, the cats of Madrid, mate, ¡pura vida!, the Arco de Santa Catalina, Machu Picchu…). Students who remember go straight to the right city; others can buy a hint for an hour. In the familiar cities a <i>¿Te acuerdas?</i> question gives two bonus hours.</li>
+      <li><b>The clock:</b> Monday 08:00 to Sunday 08:00 (game time). Questions cost 1 h, hints 1 h, puzzle mistakes 1 h, flights 3–15 h; nights (23:00–07:00) are slept. A careful player reaches Granada with about a day to spare; three or four wrong flights, plus mistakes, usually mean the thief escapes (a partial ending, still with a report).</li>
+      <li><b>Granada:</b> the student names the thief from the suspect board, then faces them in the Alhambra: the thief makes four claims and the student presents the piece of evidence that proves each one false. Then the seven seals go into the medallion by year, using the Archivo. A successful game ends with a short 3D scene with narration.</li>
+      <li><b>Resume code:</b> on arrival in each city the game shows a 16-character code. Typing it after <i>Tengo un código</i> continues from that city with the same route, thief, clock and stars, so the game can be split over two classes.</li>
+      <li id="profeOutcomes">Outcomes practised (20-3Y): LC–2.1 a (understand short, simple oral texts) · LC–3.1 a (main point and supporting details of written texts) · LC–3.3 a (meaning from visual elements) · LC–4.3 a (regional variation: greetings, voseo, local words) · A–4.1 c (discover relationships and patterns) · A–4.2 b (compare and contrast in simple ways) · A–4.3 a, b (describe a problem, use the steps of problem solving) · A–5.3 a (personal enjoyment: games) · GC–1.1 b (connections with their own culture) · GC–1.2 b (explore elements of Spanish-speaking cultures) · GC–1.4 a (diversity between groups within Spanish-speaking cultures) · GC–2.1 b (English words borrowed from Spanish) · GC–2.2 a (different words for the same thing) · GC–2.4 a (speakers of one language from different cultural backgrounds).</li>
+      <li>Audio uses one Spanish voice from this computer: <b id="vozName">checking…</b>. If it says “none found”, the audio buttons are hidden and the game works with text only.</li>
+    </ul>
+  </details>
+</div>
