@@ -8,77 +8,380 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap">
 <style>
-  :root {
-    --bg: #17122E; --surface: #221B44; --line: rgba(255,255,255,.12);
-    --text: #F4F0FF; --muted: #B9B2D6; --accent: #5FE0C8; --sun: #FFC27A;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; min-height: 100vh; color: var(--text);
-    font: 16px/1.5 'Manrope', system-ui, sans-serif;
-    background: radial-gradient(1200px 600px at 80% -10%, #6A3F7E55, transparent 60%),
-                linear-gradient(180deg, #241D4D 0%, var(--bg) 60%);
-  }
-  main { max-width: 960px; margin: 0 auto; padding: 48px 20px 64px; }
-  h1 { font: 800 clamp(28px, 5vw, 42px)/1.15 'Unbounded', 'Manrope', sans-serif; margin: 0 0 8px; }
-  .lede { color: var(--muted); margin: 0 0 36px; max-width: 60ch; }
-  h2 { font: 700 13px/1 'Manrope', sans-serif; letter-spacing: .14em; text-transform: uppercase;
-       color: var(--sun); margin: 40px 0 14px; }
-  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
-  a.card {
-    display: block; padding: 18px 20px; border-radius: 22px; text-decoration: none; color: inherit;
-    background: var(--surface); border: 1px solid var(--line);
-    transition: transform .15s ease, border-color .15s ease;
-  }
-  a.card:hover, a.card:focus-visible { transform: translateY(-2px); border-color: var(--accent); outline: none; }
-  .card .t { font: 600 17px/1.3 'Manrope', sans-serif; }
-  .card .s { color: var(--muted); font-size: 14px; margin-top: 4px; }
-  .card.soon { opacity: .55; pointer-events: none; }
-  footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+/* Atardecer, same tokens as the games */
+:root {
+  color-scheme: dark;
+  --bg: #17122E; --bg-top: #2A2152; --night: #0E0B20;
+  --surface: #221B44; --ink: #F5F1FF; --muted: #BDB4DD; --line: rgba(255, 255, 255, .14);
+  --accent: #5FE0C8; --sun: #FFC27A; --fold-ink: #17122E;
+  --font-display: "Unbounded", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --fold-h: 380px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+body {
+  margin: 0; min-height: 100svh; color: var(--ink); font: 16px/1.5 var(--font-body);
+  background: linear-gradient(180deg, var(--bg-top) 0, var(--bg) 900px, var(--bg) 60%, var(--night) 100%) no-repeat, var(--night);
+}
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 3px; }
+
+/* ---------- skyline band (from the games) ---------- */
+.dusk-band { position: relative; height: 150px; overflow: hidden; }
+.dusk-band svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.dusk-band .bulb { animation: glow 3.2s ease-in-out infinite; }
+.dusk-band .bulb:nth-of-type(3n) { animation-delay: -1.1s; }
+.dusk-band .bulb:nth-of-type(3n+1) { animation-delay: -2.2s; }
+@keyframes glow { 50% { opacity: .55; } }
+
+/* ---------- sticky level bar ---------- */
+.bar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 12px 5%; background: rgba(23, 18, 46, .72); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.bar .mark { font: 700 14px/1 var(--font-display); letter-spacing: -.01em; text-decoration: none; white-space: nowrap; }
+.bar .mark span { color: var(--sun); }
+.bar nav { display: flex; gap: 6px; }
+.bar nav a {
+  display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+  padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line);
+  font: 800 13px/1 var(--font-body); letter-spacing: .06em; color: var(--muted);
+  transition: color .2s, border-color .2s, background .2s;
+}
+.bar nav a i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); }
+.bar nav a:hover { color: var(--ink); border-color: rgba(255, 255, 255, .34); }
+.bar nav a[aria-current="true"] { color: var(--fold-ink); background: var(--c); border-color: var(--c); }
+.bar nav a[aria-current="true"] i { background: var(--fold-ink); box-shadow: none; }
+
+/* ---------- intro ---------- */
+.intro { margin: 56px 5% 8px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px 40px; }
+.eyebrow { margin: 0 0 10px; font: 800 12px/1.2 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+.intro h1 { margin: 0; font: 700 clamp(34px, 6vw, 72px)/1 var(--font-display); letter-spacing: -.03em; text-wrap: balance; }
+.intro h1 em { font-style: normal; color: var(--sun); }
+.intro p.lede { margin: 0; max-width: 46ch; color: var(--muted); font-size: 17px; }
+
+/* ---------- a level ---------- */
+.level { position: relative; padding: 70px 0 30px; overflow-x: clip; }
+.level + .level::before {
+  /* the horizon between levels: the sky gets darker as the course goes on */
+  content: ""; position: absolute; left: 5%; right: 5%; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--c), transparent); opacity: .6;
+}
+.lhead { margin: 0 5%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: end; gap: 10px 28px; }
+.sky { width: 74px; height: 74px; flex: none; }
+.lhead h2 { margin: 0; font: 700 clamp(26px, 3.6vw, 44px)/1.05 var(--font-display); letter-spacing: -.02em; }
+.lhead h2 .lv { color: var(--c); }
+.lhead p { margin: 6px 0 0; color: var(--muted); max-width: 62ch; }
+.lhead .count {
+  justify-self: end; white-space: nowrap; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--line);
+  font: 800 12px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+
+/* ---------- the folds ---------- */
+.art { padding: 54px 4vw 40px; display: flex; justify-content: center; }
+.folds {
+  display: flex; width: 100%; max-width: 1280px; height: var(--fold-h);
+  isolation: isolate; transform: rotate(var(--tilt, -2.5deg));
+  filter: drop-shadow(0 24px 40px rgba(6, 4, 18, .55));
+}
+.fold {
+  --i: var(--fi); --n: var(--fn);
+  position: relative; z-index: calc(var(--n) - var(--i));
+  flex: 1 1 0; min-width: 0; margin-right: -1px; color: var(--fold-ink);
+  clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 95%);
+  background: linear-gradient(90deg, #fff4, transparent 40%, #0003 92%, #0005), var(--color);
+  transition: flex .65s cubic-bezier(.2, .8, .2, 1);
+}
+.fold:nth-child(even) {
+  clip-path: polygon(0 5%, 100% 0, 100% 95%, 0 100%);
+  background: linear-gradient(90deg, #0004, transparent 62%, #fff3), var(--color);
+}
+.fold .hit {
+  position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0;
+  border: 0; background: none; cursor: pointer; color: inherit; font: inherit; z-index: 1;
+}
+.fold .hit:focus-visible { outline: 3px solid var(--fold-ink); outline-offset: -8px; }
+
+/* collapsed: number at the top, the title up the spine */
+.fold .num {
+  position: absolute; top: 26px; left: 50%; pointer-events: none;
+  font: 600 20px/1 var(--font-display); opacity: .7;
+  transform: translateX(-50%) skewY(var(--fold-angle, 5deg)); transition: opacity .25s;
+}
+.fold .spine {
+  position: absolute; top: 64%; left: 50%; pointer-events: none; white-space: nowrap;
+  font: 700 17px/1.1 var(--font-display); letter-spacing: .01em;
+  transform: translate(-50%, -50%) skewY(var(--fold-angle, 5deg)) rotate(-90deg);
+  transition: opacity .25s;
+}
+
+/* expanded: the teaser card inside the fold */
+.fold .body {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 10px;
+  padding: 44px clamp(22px, 2.6vw, 34px) 46px; width: max(100%, 330px);
+  opacity: 0; transform: skewY(var(--fold-angle, 5deg)) translateY(10px);
+  transition: opacity .2s, transform .35s;
+}
+.fold .body .bnum { font: 600 15px/1 var(--font-display); opacity: .65; margin-bottom: auto; }
+.fold .body .where { margin: 0; font: 800 11.5px/1.3 var(--font-body); letter-spacing: .14em; text-transform: uppercase; opacity: .78; }
+.fold .body h3 { margin: 0; font: 700 clamp(22px, 2.2vw, 30px)/1.08 var(--font-display); letter-spacing: -.02em; text-wrap: balance; }
+.fold .body p.teaser { margin: 0; font-size: 15.5px; line-height: 1.45; font-weight: 600; max-width: 38ch; }
+.fold .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.fold .tags span { font: 800 11px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; padding: 6px 9px; border-radius: 999px; border: 1.5px solid rgba(23, 18, 46, .45); }
+.fold .play {
+  align-self: flex-start; margin-top: 6px; display: inline-flex; align-items: center; gap: 10px;
+  min-height: 46px; padding: 0 22px; border-radius: 999px; text-decoration: none;
+  background: var(--fold-ink); color: #FFE7A8; font: 800 15px/1 var(--font-body);
+  box-shadow: 0 8px 22px rgba(23, 18, 46, .35); transition: transform .15s, box-shadow .15s;
+}
+.fold .play:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(23, 18, 46, .45); }
+.fold .play svg { width: 16px; height: 16px; }
+
+/* which fold is open: the chosen one, unless you are pointing at another */
+.fold.open { flex: 0 0 clamp(330px, 36%, 470px); }
+.fold.open .num, .fold.open .spine { opacity: 0; }
+.fold.open .body { opacity: 1; transform: skewY(var(--fold-angle, 5deg)); transition-delay: .18s, .18s; }
+.fold.open .play { pointer-events: auto; }
+@media (hover: hover) {
+  .folds:hover .fold:hover { flex: 0 0 clamp(330px, 36%, 470px); }
+  .folds:hover .fold:hover .num, .folds:hover .fold:hover .spine { opacity: 0; }
+  .folds:hover .fold:hover .body { opacity: 1; transform: skewY(var(--fold-angle, 5deg)); transition-delay: .18s, .18s; }
+  .folds:hover .fold:hover .play { pointer-events: auto; }
+  .folds:hover .fold.open:not(:hover) { flex: 1 1 0; }
+  .folds:hover .fold.open:not(:hover) .num, .folds:hover .fold.open:not(:hover) .spine { opacity: 1; }
+  .folds:hover .fold.open:not(:hover) .body { opacity: 0; transition-delay: 0s; }
+  .folds:hover .fold.open:not(:hover) .play { pointer-events: none; }
+}
+
+.hint { margin: 0 5%; text-align: center; color: var(--muted); font: 800 11px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; opacity: .7; }
+
+footer {
+  margin: 50px 5% 0; padding: 22px 0 34px; border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
+  color: var(--muted); font: 800 11px/1.4 var(--font-body); letter-spacing: .14em; text-transform: uppercase;
+}
+
+/* ---------- smaller screens: the folds stack, each one a strip ---------- */
+@media (max-width: 760px) {
+  .bar { padding: 10px 4%; }
+  .bar .mark { display: none; }
+  .bar nav { width: 100%; justify-content: space-between; }
+  .bar nav a { flex: 1; justify-content: center; padding: 8px 6px; }
+  .intro { margin-top: 36px; }
+  .lhead { grid-template-columns: auto minmax(0, 1fr); }
+  .lhead .count { grid-column: 1 / -1; justify-self: start; }
+  .sky { width: 54px; height: 54px; }
+  .art { padding: 28px 4% 20px; }
+  .folds { flex-direction: column; height: auto; transform: rotate(calc(var(--tilt) * .3)); }
+  .fold { flex: none; margin: 0 0 -1px; min-height: 68px; display: grid; transition: none; }
+  .fold, .fold:nth-child(even) { clip-path: polygon(0 0, 100% 6px, 100% 100%, 0 calc(100% - 6px)); }
+  .fold:nth-child(even) { clip-path: polygon(0 6px, 100% 0, 100% calc(100% - 6px), 0 100%); }
+  .fold .num { top: 50%; left: 22px; transform: translateY(-50%); font-size: 15px; }
+  .fold .spine { top: 50%; left: 64px; transform: translateY(-50%); font-size: 16px; white-space: normal; right: 16px; text-align: left; }
+  .fold .body { position: relative; inset: auto; width: auto; display: none; transform: none; padding: 22px 22px 26px; }
+  .fold .body .bnum { margin-bottom: 4px; }
+  .fold.open { flex: none; }
+  .fold.open .body { display: flex; opacity: 1; transform: none; animation: drop .35s ease-out; }
+  .fold.open .hit { height: 68px; }
+  @keyframes drop { from { opacity: 0; transform: translateY(-6px); } }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
 </style>
 </head>
 <body>
-<main>
-  <h1>Juegos de español</h1>
-  <p class="lede">Escoge tu nivel y tu escena. Cada juego es una página sola: ábrela en el navegador y empieza.</p>
 
-  <h2>Español 10-3Y</h2>
-  <div class="grid">
-    <a class="card" href="10-3y/primer-encuentro.html"><div class="t">Primer encuentro con Lucía</div></a>
-    <a class="card" href="10-3y/una-tarde-en-guadalajara.html"><div class="t">Una tarde en Guadalajara</div><div class="s">Escena 2D</div></a>
-    <a class="card" href="10-3y/una-tarde-en-guadalajara-3d.html"><div class="t">Una tarde en Guadalajara 3D</div><div class="s">Escena 3D</div></a>
-    <a class="card" href="10-3y/quien-se-comio-el-pastel.html"><div class="t">¿Quién se comió el pastel?</div></a>
-    <a class="card" href="10-3y/los-quehaceres.html"><div class="t">Los quehaceres de Abuela Rosa</div></a>
-    <a class="card" href="10-3y/la-maleta.html"><div class="t">La maleta de Lucía</div></a>
-    <a class="card" href="10-3y/el-primer-dia-de-clases.html"><div class="t">El primer día de clases</div><div class="s">Pasillo 3D</div></a>
-    <a class="card" href="10-3y/la-fiesta-de-lucia.html"><div class="t">La fiesta de Lucía</div></a>
-    <a class="card" href="10-3y/el-taller-de-alebrijes.html"><div class="t">El taller de alebrijes</div></a>
-  </div>
+<div class="dusk-band" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="xMidYMax slice"><defs><linearGradient id="bandSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#241D4D"/><stop offset=".55" stop-color="#6A3F7E"/><stop offset="1" stop-color="#E7896A"/></linearGradient><radialGradient id="bandSun"><stop offset="0" stop-color="#FFE3A3"/><stop offset=".45" stop-color="#FFC27A" stop-opacity=".75"/><stop offset="1" stop-color="#FFC27A" stop-opacity="0"/></radialGradient><radialGradient id="bandBulb"><stop offset="0" stop-color="#FFE7A8"/><stop offset="1" stop-color="#FFC75F" stop-opacity="0"/></radialGradient></defs><rect width="1440" height="150" fill="url(#bandSky)"/><circle cx="1080" cy="138" r="90" fill="url(#bandSun)"/><path d="M0 150 V104 H80 V96 H140 V108 H220 V90 H300 V102 H380 V94 H460 V106 H540 V92 H620 V100 H700 V88 H780 V98 H860 V92 H940 V102 H1200 V94 H1280 V104 H1360 V90 H1440 V150 Z" fill="#4A3170" opacity=".85"/><path d="M0 150 V116 H60 V108 H110 V122 H150 V102 H210 V112 H260 V98 H300 V118 H360 V106 H420 V114 H470 V96 H520 V110 H580 V104 H640 V118 H700 V100 H760 V112 H820 V106 H880 V116 H930 V98 H990 V108 H1000 V78 L1012 48 L1024 78 V94 H1060 V86 A16 16 0 0 1 1092 86 V94 H1120 V78 L1132 48 L1144 78 V108 H1190 V102 H1250 V114 H1300 V100 H1360 V112 H1440 V150 Z" fill="#2A2152"/><g fill="#FFC27A" opacity=".55"><rect x="120" y="128" width="6" height="8"/><rect x="330" y="126" width="6" height="8"/><rect x="610" y="130" width="6" height="8"/><rect x="900" y="128" width="6" height="8"/><rect x="1072" y="108" width="6" height="9"/><rect x="1330" y="128" width="6" height="8"/></g><path d="M-10 26 Q 720 96 1450 30" stroke="#14102A" stroke-width="1.5" fill="none"/><g id="bulbs"></g></svg></div>
 
-  <h2>Español 20-3Y</h2>
-  <div class="grid">
-    <a class="card" href="20-3y/otra-vez-tarde.html"><div class="t">Otra vez tarde</div><div class="s">Rutina diaria · Bogotá</div></a>
-    <a class="card" href="20-3y/quedamos.html"><div class="t">¿Quedamos?</div><div class="s">Vida social · San Juan</div></a>
-    <a class="card" href="20-3y/el-mercado.html"><div class="t">El mercado</div><div class="s">Comida · Oaxaca</div></a>
-    <a class="card" href="20-3y/moda.html"><div class="t">¿Moda o no moda?</div><div class="s">Compras y tendencias · Madrid</div></a>
-    <a class="card" href="20-3y/gol.html"><div class="t">¡Gol!</div><div class="s">Deporte y ejercicio · Buenos Aires</div></a>
-    <a class="card" href="20-3y/la-farmacia.html"><div class="t">La farmacia de guardia</div><div class="s">Salud y seguridad · Puerto Viejo</div></a>
-    <a class="card" href="20-3y/conexion-perdida.html"><div class="t">Conexión perdida</div><div class="s">Vacaciones y viajes · Lima</div></a>
-    <a class="card" href="20-3y/mismo-idioma.html"><div class="t">Mismo idioma, otro mundo</div><div class="s">Diversidad cultural · Lethbridge</div></a>
-    <a class="card" href="20-3y/las-siete-ciudades.html"><div class="t">Las siete ciudades de oro</div><div class="s">Final · El misterio de Cíbola</div></a>
-  </div>
+<header class="bar">
+  <a class="mark" href="#top">Juegos de <span>español</span></a>
+  <nav aria-label="Niveles" id="levelNav"></nav>
+</header>
 
-  <h2>Español 30-3Y</h2>
-  <div class="grid">
-    <a class="card" href="30-3y/noche-de-leyendas.html"><div class="t">Noche de leyendas</div><div class="s">Antigua Guatemala</div></a>
-    <a class="card" href="30-3y/cuando-era-pequeno.html"><div class="t">Cuando era pequeño</div><div class="s">Montevideo</div></a>
-    <a class="card" href="30-3y/fallas.html"><div class="t">¡Fallas!</div><div class="s">Celebraciones · Valencia (3D)</div></a>
-    <a class="card" href="30-3y/radio-habana.html"><div class="t">Radio Habana</div><div class="s">Música · La Habana (3D)</div></a>
-        <a class="card" href="30-3y/se-me-rompio.html"><div class="t">Se me rompió</div><div class="s">Tecnología · Medellín (2D)</div></a>
-        <a class="card" href="30-3y/se-busca.html"><div class="t">Se busca</div><div class="s">Trabajo · Barcelona (app)</div></a>
-  </div>
-
-  <footer>Proyecto para las clases de español en Alberta.</footer>
+<main id="top">
+  <section class="intro">
+    <div>
+      <p class="eyebrow">Español 10-3Y · 20-3Y · 30-3Y · Alberta</p>
+      <h1>Juegos de <em>español.</em></h1>
+    </div>
+    <p class="lede">Every game is a scene to live in Spanish, not a quiz. Pick your level, open a fold, and press <b>Jugar</b>. Every playthrough is different.</p>
+  </section>
+  <div id="levels"></div>
 </main>
+
+<footer>
+  <span>Proyecto para las clases de español en Alberta</span>
+  <span id="total"></span>
+</footer>
+
+<script>
+(() => {
+'use strict';
+/* =====================================================================
+   THE GAMES. To add one, add a line to its level's list:
+   { href, title, spine (short name for the folded edge), where, teaser, tags }
+   ===================================================================== */
+const LEVELS = [
+  {
+    id: 'n10', label: '10-3Y', title: 'Conoce a Lucía',
+    blurb: 'Your first scenes in Spanish, with Lucía as your guide: meeting people, family, home, school and a party.',
+    tilt: '-2.5deg', sky: 'sun', c: '#FFB574',
+    colors: ['#FFDB8C', '#FFCB7C', '#FFB874', '#FFA46F', '#FB906E', '#F37E72', '#EB717E', '#E26A8D', '#D8679C'],
+    games: [
+      { href: '10-3y/primer-encuentro.html', title: 'Primer encuentro con Lucía', spine: 'Primer encuentro', where: 'Saludos · Conversación', teaser: 'Meet Lucía, your guide for the whole course, and introduce yourself in a real typed conversation.', tags: ['Conversación'] },
+      { href: '10-3y/una-tarde-en-guadalajara.html', title: 'Una tarde en Guadalajara', spine: 'Guadalajara', where: 'Guadalajara · Direcciones', teaser: 'Find your way around Guadalajara by map and by bus, following directions in Spanish. The route changes every time.', tags: ['Mapa'] },
+      { href: '10-3y/una-tarde-en-guadalajara-3d.html', title: 'Una tarde en Guadalajara 3D', spine: 'Guadalajara 3D', where: 'Guadalajara · Direcciones', teaser: 'The same afternoon in 3D: walk the streets yourself, follow the directions and find the right door.', tags: ['3D'] },
+      { href: '10-3y/quien-se-comio-el-pastel.html', title: '¿Quién se comió el pastel?', spine: 'El pastel', where: 'La familia · Misterio', teaser: 'Someone ate the cake. Question the family, compare their stories and catch the culprit. Careful: the guilty one lies.', tags: ['Misterio'] },
+      { href: '10-3y/los-quehaceres.html', title: 'Los quehaceres de Abuela Rosa', spine: 'Los quehaceres', where: 'La casa · Las tareas', teaser: 'Abuela Rosa’s house needs work and the clock is ticking. Say what you’re doing, in the yo form, before time runs out.', tags: ['Contrarreloj'] },
+      { href: '10-3y/la-maleta.html', title: 'La maleta de Lucía', spine: 'La maleta', where: 'El tiempo · La ropa', teaser: 'Listen to the forecast, pack the right clothes for each city, then dress two travellers in the vestidor.', tags: ['Arrastrar'] },
+      { href: '10-3y/el-primer-dia-de-clases.html', title: 'El primer día de clases', spine: 'El primer día', where: 'La escuela · El horario', teaser: 'Your first day at a new school, in a 3D hallway. Read the timetable, listen for the bell and get to class on time.', tags: ['3D'] },
+      { href: '10-3y/la-fiesta-de-lucia.html', title: 'La fiesta de Lucía', spine: 'La fiesta', where: 'Profesiones · Cumpleaños', teaser: 'It’s Lucía’s party. Mingle with the guests and find out their jobs, their birthdays and what they love to do.', tags: ['Conversación'] },
+      { href: '10-3y/el-taller-de-alebrijes.html', title: 'El taller de alebrijes', spine: 'Los alebrijes', where: 'Oaxaca · El cuerpo · Colores', teaser: 'Warm up with Simón dice, then build your own alebrije, Oaxaca’s brightly painted fantasy creatures, and describe it.', tags: ['Crear'] }
+    ]
+  },
+  {
+    id: 'n20', label: '20-3Y', title: 'Un viaje por el mundo hispano',
+    blurb: 'One city per game, from Bogotá to Lima and home to Lethbridge. Look for the hidden Datos in every scene: the final game remembers them.',
+    tilt: '2deg', sky: 'dusk', c: '#B57ED4',
+    colors: ['#D36AA8', '#C873BD', '#BA7CCE', '#AA85DA', '#9A8EE2', '#8C98E6', '#82A3E8', '#7AAFE8', '#FFC27A'],
+    games: [
+      { href: '20-3y/otra-vez-tarde.html', title: 'Otra vez tarde', spine: 'Otra vez tarde', where: 'Bogotá · La rutina', teaser: 'Mateo keeps missing the school bus, and the morning keeps repeating. Give him the right commands to break the loop.', tags: ['Bucle'] },
+      { href: '20-3y/quedamos.html', title: '¿Quedamos?', spine: '¿Quedamos?', where: 'San Juan · La vida social', teaser: 'A group chat, four busy friends and one weekend. Find a plan that works for everyone, then deal with the cancellations.', tags: ['Chat'] },
+      { href: '20-3y/el-mercado.html', title: 'El mercado', spine: 'El mercado', where: 'Oaxaca · La comida', teaser: 'Shop a busy market on a budget (¿este, ese o aquel?), then order dinner for a family with very particular tastes.', tags: ['Regatear'] },
+      { href: '20-3y/moda.html', title: '¿Moda o no moda?', spine: '¿Moda o no moda?', where: 'Madrid · La ropa', teaser: 'Help out at a second-hand shop in Malasaña: style the customers, return lost things to their owners and poll the trends.', tags: ['Tienda'] },
+      { href: '20-3y/gol.html', title: '¡Gol!', spine: '¡Gol!', where: 'Buenos Aires · El deporte', teaser: 'Lead the warm-up, follow the first half on the radio, call the second half live and interview the star. ¡Dale, che!', tags: ['Radio'] },
+      { href: '20-3y/la-farmacia.html', title: 'La farmacia de guardia', spine: 'La farmacia', where: 'Puerto Viejo · La salud', teaser: 'The night shift at a beach-town pharmacy in Costa Rica. Ask about symptoms, give advice and know when to send someone to the doctor.', tags: ['Pura vida'] },
+      { href: '20-3y/conexion-perdida.html', title: 'Conexión perdida', spine: 'Conexión perdida', where: 'Lima · Los viajes', teaser: 'A cancelled flight, a lost bag and a surprise gate change. Talk your way through Lima’s airport and still reach Lucía in Cusco.', tags: ['Aeropuerto'] },
+      { href: '20-3y/mismo-idioma.html', title: 'Mismo idioma, otro mundo', spine: 'Mismo idioma', where: 'Lethbridge · La diversidad', teaser: 'Back home, friends from the trip video-call you. Guess where each caller is from by their words and customs.', tags: ['Videollamada'] },
+      { href: '20-3y/las-siete-ciudades.html', title: 'Las siete ciudades de oro', spine: 'Las siete ciudades', where: 'Final · El misterio de Cíbola', teaser: 'The final chase. A thief is one city ahead, and seven seals hide a family secret. Race the clock across the Spanish-speaking world.', tags: ['Final', '60–90 min'] }
+    ]
+  },
+  {
+    id: 'n30', label: '30-3Y', title: 'Solo con el oído',
+    blurb: 'Audio only: listen first. If you need the text, it is in each game’s ⚙ Ajustes, and your report will say so.',
+    tilt: '-2.5deg', sky: 'moon', c: '#5FE0C8',
+    colors: ['#6EB9E6', '#64C6E0', '#5DD3D6', '#5FE0C8', '#78E6B6', '#98EAA6'],
+    games: [
+      { href: '30-3y/noche-de-leyendas.html', title: 'Noche de leyendas', spine: 'Noche de leyendas', where: 'Antigua Guatemala · Las leyendas', teaser: 'A storyteller tells Guatemala’s legends after dark. Listen closely, piece the story back together, then tell it yourself.', tags: ['Solo audio'] },
+      { href: '30-3y/cuando-era-pequeno.html', title: 'Cuando era pequeño', spine: 'Cuando era pequeño', where: 'Montevideo · La niñez', teaser: 'Abuelos in Montevideo share the games of their childhood: rayuela, escondidas and more. Play them, then tell them about yours.', tags: ['Solo audio'] },
+      { href: '30-3y/fallas.html', title: '¡Fallas!', spine: '¡Fallas!', where: 'Valencia · Las celebraciones', teaser: 'Valencia’s fire festival in 3D: giant ninots, the thunder of the mascletà and the final cremà. Live the week, then write about it.', tags: ['3D', 'Solo audio'] },
+      { href: '30-3y/radio-habana.html', title: 'Radio Habana', spine: 'Radio Habana', where: 'La Habana · La música', teaser: 'You’re on the air at a Havana community radio station. Interview a musician and take the listeners’ requests.', tags: ['3D', 'Solo audio'] },
+      { href: '30-3y/se-me-rompio.html', title: 'Se me rompió', spine: 'Se me rompió', where: 'Medellín · La tecnología', teaser: 'A day at a phone-repair shop. Study what happened, hear each customer’s story, ask the right questions and explain the fix.', tags: ['Solo audio'] },
+      { href: '30-3y/se-busca.html', title: 'Se busca', spine: 'Se busca', where: 'Barcelona · El trabajo', teaser: 'Summer job hunting on the Curro app: read the postings, match the applicants, survive a video interview and write your profile.', tags: ['App', 'Solo audio'] }
+    ]
+  }
+];
+
+/* ---------- small drawings: the sun sets as the levels go up ---------- */
+const SKY = {
+  sun: '<svg class="sky" viewBox="0 0 74 74" aria-hidden="true"><defs><radialGradient id="g1"><stop offset="0" stop-color="#FFE7A8"/><stop offset="1" stop-color="#FFC27A" stop-opacity="0"/></radialGradient></defs><circle cx="37" cy="30" r="30" fill="url(#g1)"/><circle cx="37" cy="30" r="13" fill="#FFD38A"/><path d="M6 58 H68" stroke="#FFC27A" stroke-width="2" stroke-linecap="round" opacity=".6"/><path d="M14 66 H60" stroke="#FFC27A" stroke-width="2" stroke-linecap="round" opacity=".3"/></svg>',
+  dusk: '<svg class="sky" viewBox="0 0 74 74" aria-hidden="true"><defs><radialGradient id="g2"><stop offset="0" stop-color="#F7A08A"/><stop offset="1" stop-color="#C873BD" stop-opacity="0"/></radialGradient><clipPath id="c2"><rect width="74" height="50"/></clipPath></defs><circle cx="37" cy="50" r="30" fill="url(#g2)"/><circle cx="37" cy="50" r="15" fill="#F2826F" clip-path="url(#c2)"/><path d="M6 50 H68" stroke="#E7A8C8" stroke-width="2" stroke-linecap="round"/><path d="M16 58 H58" stroke="#E7A8C8" stroke-width="2" stroke-linecap="round" opacity=".45"/><path d="M24 66 H50" stroke="#E7A8C8" stroke-width="2" stroke-linecap="round" opacity=".25"/></svg>',
+  moon: '<svg class="sky" viewBox="0 0 74 74" aria-hidden="true"><defs><radialGradient id="g3"><stop offset="0" stop-color="#9FF3E4"/><stop offset="1" stop-color="#5FE0C8" stop-opacity="0"/></radialGradient><mask id="m3"><rect width="74" height="74" fill="#fff"/><circle cx="45" cy="22" r="12" fill="#000"/></mask></defs><circle cx="37" cy="28" r="28" fill="url(#g3)" opacity=".55"/><circle cx="37" cy="28" r="13" fill="#CFFAF1" mask="url(#m3)"/><g fill="#F5F1FF"><circle cx="12" cy="14" r="1.4"/><circle cx="62" cy="40" r="1.2"/><circle cx="58" cy="10" r="1"/><circle cx="16" cy="44" r="1"/></g><path d="M6 60 H68" stroke="#5FE0C8" stroke-width="2" stroke-linecap="round" opacity=".5"/></svg>'
+};
+const PLAY_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5 L13 8 L4 13.5 Z" fill="currentColor"/></svg>';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+
+/* ---------- string lights in the band ---------- */
+document.getElementById('bulbs').innerHTML = Array.from({ length: 11 }, (_, i) => {
+  const x = 112 + i * 121.6, t = (x + 10) / 1460, y = (1 - t) * (1 - t) * 26 + 2 * (1 - t) * t * 96 + t * t * 30 + 10;
+  return `<g class="bulb"><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="11" fill="url(#bandBulb)"/><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="2.8" fill="#FFE7A8"/></g>`;
+}).join('');
+
+/* ---------- build the page ---------- */
+const nav = document.getElementById('levelNav'), host = document.getElementById('levels');
+let total = 0;
+LEVELS.forEach(L => {
+  total += L.games.length;
+  nav.insertAdjacentHTML('beforeend', `<a href="#${L.id}" style="--c:${L.c}" data-level="${L.id}"><i></i>${L.label}</a>`);
+  const sec = document.createElement('section');
+  sec.className = 'level'; sec.id = L.id; sec.style.setProperty('--c', L.c); sec.setAttribute('aria-labelledby', L.id + '-h');
+  sec.innerHTML = `
+    <div class="lhead">
+      ${SKY[L.sky]}
+      <div><p class="eyebrow" style="color:${L.c}">Español ${L.label}</p><h2 id="${L.id}-h"><span class="lv">${L.label}</span> · ${esc(L.title)}</h2><p>${esc(L.blurb)}</p></div>
+      <span class="count">${L.games.length} juegos</span>
+    </div>
+    <div class="art"><div class="folds" style="--tilt:${L.tilt}" role="list"></div></div>`;
+  const row = sec.querySelector('.folds');
+  L.games.forEach((g, i) => {
+    const f = document.createElement('div');
+    const bid = `${L.id}-${i + 1}`;
+    f.className = 'fold' + (i === 0 ? ' open' : '');
+    f.setAttribute('role', 'listitem');
+    f.dataset.num = i + 1;
+    f.style.setProperty('--color', L.colors[i % L.colors.length]);
+    f.style.setProperty('--fi', i + 1); f.style.setProperty('--fn', L.games.length);
+    f.innerHTML = `
+      <button class="hit" type="button" aria-expanded="${i === 0}" aria-controls="${bid}"><span class="num" aria-hidden="true">${pad(i + 1)}</span><span class="spine">${esc(g.spine || g.title)}</span></button>
+      <div class="body" id="${bid}">
+        <span class="bnum" aria-hidden="true">${pad(i + 1)} / ${pad(L.games.length)}</span>
+        <p class="where">${esc(g.where)}</p>
+        <h3>${esc(g.title)}</h3>
+        <p class="teaser">${esc(g.teaser)}</p>
+        ${g.tags && g.tags.length ? `<div class="tags">${g.tags.map(t => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
+        <a class="play" href="${esc(g.href)}">Jugar ${PLAY_ICON}</a>
+      </div>`;
+    row.appendChild(f);
+  });
+  host.appendChild(sec);
+});
+document.getElementById('total').textContent = `${total} juegos · 3 niveles`;
+
+/* ---------- open / close ---------- */
+function openFold(f) {
+  const row = f.parentElement;
+  row.querySelectorAll('.fold').forEach(x => {
+    const on = x === f;
+    x.classList.toggle('open', on);
+    x.querySelector('.hit').setAttribute('aria-expanded', on);
+  });
+}
+host.addEventListener('click', e => {
+  const hit = e.target.closest('.hit');
+  if (hit) openFold(hit.parentElement);
+});
+// arrow keys move along a row; Enter/Space opens (it's a button)
+host.addEventListener('keydown', e => {
+  const hit = e.target.closest('.hit');
+  if (!hit || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) return;
+  const hits = [...hit.closest('.folds').querySelectorAll('.hit')], i = hits.indexOf(hit);
+  const next = e.key === 'Home' ? 0 : e.key === 'End' ? hits.length - 1 : (i + (/Right|Down/.test(e.key) ? 1 : -1) + hits.length) % hits.length;
+  e.preventDefault(); hits[next].focus(); openFold(hits[next].parentElement);
+});
+
+/* ---------- the text leans with each fold (as in Chromatic Folds) ---------- */
+const narrow = matchMedia('(max-width: 760px)');
+const foldObserver = new ResizeObserver(entries => {
+  for (const { target } of entries) {
+    if (narrow.matches) { target.style.setProperty('--fold-angle', '0deg'); continue; }
+    const dir = Number(target.dataset.num) % 2 ? 1 : -1;
+    const angle = dir * Math.atan2(target.offsetHeight * 0.05, Math.max(1, target.offsetWidth)) * 180 / Math.PI;
+    target.style.setProperty('--fold-angle', `${angle}deg`);
+  }
+});
+document.querySelectorAll('.fold').forEach(f => foldObserver.observe(f));
+narrow.addEventListener('change', () => document.querySelectorAll('.fold').forEach(f => { foldObserver.unobserve(f); foldObserver.observe(f); }));
+
+/* ---------- highlight the level you're looking at ---------- */
+const links = [...nav.querySelectorAll('a')];
+const seen = new Map();
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => seen.set(en.target.id, en.intersectionRatio));
+  let best = null, r = 0;
+  seen.forEach((v, k) => { if (v > r) { r = v; best = k; } });
+  links.forEach(a => a.setAttribute('aria-current', a.dataset.level === best ? 'true' : 'false'));
+}, { threshold: [0, .15, .3, .5, .7, 1] });
+document.querySelectorAll('.level').forEach(s => io.observe(s));
+
+window.__hub = { LEVELS, openFold };
+})();
+</script>
 </body>
 </html>
