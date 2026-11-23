@@ -227,6 +227,8 @@ details.teacher ul { margin: 12px 0 4px; padding-left: 20px; display: flex; flex
 .gemcard.letter .gen { color: #6A5236; }
 .gemcard.letter .btn.ghost { color: #3A2A1A; border-color: rgba(58, 42, 26, .4); }
 .gemcard.letter .gw { border-bottom-color: rgba(122, 59, 26, .5); }
+.gemcard.letter .gw.new { color: #085247; font-weight: 700; border-bottom: 2px solid rgba(8, 82, 71, .55); }
+.msg.me .bubble .gw.new { color: var(--accent-ink); font-weight: 800; text-decoration: underline; }
 
 /* the speaking panel (witness) */
 .talk { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: start; }
@@ -238,7 +240,7 @@ details.teacher ul { margin: 12px 0 4px; padding-left: 20px; display: flex; flex
 
 /* glossary words in text */
 .gw { border-bottom: 1.5px dotted rgba(95, 224, 200, .7); cursor: help; position: relative; }
-.gw.new { color: var(--accent); }
+.gw.new { color: var(--accent); font-weight: 700; }
 .gwtip { position: fixed; z-index: 50; background: #0F0B22; color: var(--ink); border: 1px solid var(--accent); border-radius: 12px; padding: 6px 10px; font-size: 14px; pointer-events: none; box-shadow: 0 8px 24px rgba(0, 0, 0, .4); max-width: 260px; }
 .gwtip .ic { font-size: 22px; margin-right: 6px; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
 
